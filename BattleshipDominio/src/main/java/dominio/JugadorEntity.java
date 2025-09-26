@@ -9,5 +9,5 @@ package dominio;
  * @author skyro
  */
 public class JugadorEntity {
-    
+    //prueba commit
 }
