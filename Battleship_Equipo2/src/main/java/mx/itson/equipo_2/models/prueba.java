@@ -9,5 +9,5 @@ package mx.itson.equipo_2.models;
  * @author Cricri
  */
 public class prueba {
-    
+    //prueba commit
 }
