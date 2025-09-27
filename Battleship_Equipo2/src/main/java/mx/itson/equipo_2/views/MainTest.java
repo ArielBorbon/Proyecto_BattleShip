@@ -21,8 +21,11 @@ public class MainTest {
         JFrame frame = new JFrame();
         frame.setSize(1280, 720);
         frame.setVisible(true);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         frame.add(new DispararView());
+        frame.pack();
         
         frame.setVisible(true);
     }

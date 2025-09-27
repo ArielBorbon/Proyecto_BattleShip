@@ -11,7 +11,7 @@ import mx.itson.equipo_2.models.entitys.Partida;
  *
  * @author skyro
  */
-public class JuegoModel {
+public class PartidaModel {
     
     private Partida partida;
     

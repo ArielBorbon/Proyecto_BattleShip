@@ -4,7 +4,6 @@
  */
 package mx.itson.equipo_2.models.entitys;
 
-
 import java.util.Arrays;
 import mx.itson.equipo_2.models.enums.EstadoPartida;
 
@@ -13,72 +12,65 @@ import mx.itson.equipo_2.models.enums.EstadoPartida;
  * @author Jose Eduardo Aguilar Garcia
  */
 public class Partida {
-  
+
     private Jugador jugadorEnTurno;
-    private int contadorTurno;
-    private Jugador[] jugadores;
+    private Jugador jugador1;
+    private Jugador jugador2;
     private EstadoPartida estado;
 
-  
     public Partida() {
     }
 
- 
     public Partida(Jugador jugador1, Jugador jugador2) {
-        this.jugadores = new Jugador[]{jugador1, jugador2};
+        this.jugador1 = new Jugador();
+        this.jugador2 = new Jugador();
         this.jugadorEnTurno = jugador1;
-        this.contadorTurno = 0;
         this.estado = EstadoPartida.CONFIGURACION;
     }
 
- 
     public Jugador getJugadorEnTurno() {
         return jugadorEnTurno;
     }
 
-    public int getContadorTurno() {
-        return contadorTurno;
+    public Jugador getJugador1() {
+        return jugador1;
     }
 
-    public Jugador[] getJugadores() {
-        return jugadores;
+    public void setJugador1(Jugador jugador1) {
+        this.jugador1 = jugador1;
+    }
+
+    public Jugador getJugador2() {
+        return jugador2;
+    }
+
+    public void setJugador2(Jugador jugador2) {
+        this.jugador2 = jugador2;
     }
 
     public EstadoPartida getEstado() {
         return estado;
     }
 
- 
     public void setJugadorEnTurno(Jugador jugadorEnTurno) {
         this.jugadorEnTurno = jugadorEnTurno;
-    }
-
-    public void setContadorTurno(int contadorTurno) {
-        this.contadorTurno = contadorTurno;
-    }
-
-    public void setJugadores(Jugador[] jugadores) {
-        this.jugadores = jugadores;
     }
 
     public void setEstado(EstadoPartida estado) {
         this.estado = estado;
     }
 
- 
     public void cambiarTurno() {
-        contadorTurno++;
-        jugadorEnTurno = jugadores[contadorTurno % jugadores.length];
+        if (jugadorEnTurno.equals(jugador1)) {
+            jugadorEnTurno = jugador2;
+        } else {
+            jugadorEnTurno = jugador1;   
+        }
     }
-
 
     @Override
     public String toString() {
-        return "PartidaEntity{" +
-                "jugadorEnTurno=" + jugadorEnTurno +
-                ", contadorTurno=" + contadorTurno +
-                ", jugadores=" + Arrays.toString(jugadores) +
-                ", estado=" + estado +
-                '}';
+        return "Partida{" + "jugadorEnTurno=" + jugadorEnTurno + ", jugador1=" + jugador1 + ", jugador2=" + jugador2 + ", estado=" + estado + '}';
     }
+
 }

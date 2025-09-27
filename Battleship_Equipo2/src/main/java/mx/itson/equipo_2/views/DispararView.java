@@ -6,30 +6,31 @@ package mx.itson.equipo_2.views;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
+import mx.itson.equipo_2.patterns.factory.ViewFactory;
+import mx.itson.equipo_2.patterns.mediator.ViewController;
 
 /**
  *
  * @author skyro
  */
-public class DispararView extends javax.swing.JPanel {
+public class DispararView extends javax.swing.JPanel implements ViewFactory {
 
     /**
      * Creates new form DispararView
      */
     public DispararView() {
         initComponents();
-        
-        for (int i = 0; i < 100; i++) {
-            JButton celda = new JButton();
-            celda.setBackground(new Color(50, 70, 100)); // color de fondo
-            celda.setBorder(new LineBorder(Color.BLACK, 2)); // borde negro de 2px
-            tablero.add(celda);
-        }
+        crearCeldas();
     }
 
     /**
@@ -41,32 +42,95 @@ public class DispararView extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        tablero = new JPanel();
+        tableroEnemigo = new JPanel();
+        btnRendirse = new JButton();
+        btnDisparar = new JButton();
+        tableroPropio = new JPanel();
 
         setBackground(new Color(83, 111, 137));
         setPreferredSize(new Dimension(1280, 720));
+        setLayout(null);
 
-        tablero.setBackground(new Color(82, 113, 177));
-        tablero.setLayout(new GridLayout(10, 10));
+        tableroEnemigo.setBackground(new Color(82, 113, 177));
+        tableroEnemigo.setMaximumSize(new Dimension(600, 600));
+        tableroEnemigo.setMinimumSize(new Dimension(600, 600));
+        tableroEnemigo.setLayout(new GridLayout(10, 10));
+        add(tableroEnemigo);
+        tableroEnemigo.setBounds(615, 56, 600, 600);
 
-        GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(615, Short.MAX_VALUE)
-                .addComponent(tablero, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE)
-                .addGap(65, 65, 65))
-        );
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(tablero, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(64, Short.MAX_VALUE))
-        );
+        btnRendirse.setBackground(new Color(75, 75, 75));
+        btnRendirse.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
+        btnRendirse.setForeground(new Color(255, 255, 255));
+        btnRendirse.setText("RENDIRSE");
+        btnRendirse.setBorder(null);
+        btnRendirse.setFocusPainted(false);
+        btnRendirse.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnRendirseActionPerformed(evt);
+            }
+        });
+        add(btnRendirse);
+        btnRendirse.setBounds(60, 650, 156, 41);
+
+        btnDisparar.setBackground(new Color(75, 75, 75));
+        btnDisparar.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
+        btnDisparar.setForeground(new Color(255, 255, 255));
+        btnDisparar.setText("DISPARAR");
+        btnDisparar.setBorder(null);
+        btnDisparar.setFocusPainted(false);
+        btnDisparar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnDispararActionPerformed(evt);
+            }
+        });
+        add(btnDisparar);
+        btnDisparar.setBounds(260, 650, 156, 41);
+
+        tableroPropio.setBackground(new Color(82, 113, 177));
+        tableroPropio.setMaximumSize(new Dimension(250, 250));
+        tableroPropio.setMinimumSize(new Dimension(250, 250));
+        tableroPropio.setLayout(new GridLayout(10, 10));
+        add(tableroPropio);
+        tableroPropio.setBounds(130, 50, 250, 250);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro que deseas rendirte?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        
+        if (opcion == JOptionPane.YES_OPTION) {
+            System.out.println("El jugador se rindió");
+        }
+    }//GEN-LAST:event_btnRendirseActionPerformed
+
+    private void btnDispararActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDispararActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JPanel tablero;
+    private JButton btnDisparar;
+    private JButton btnRendirse;
+    private JPanel tableroEnemigo;
+    private JPanel tableroPropio;
     // End of variables declaration//GEN-END:variables
+
+    private void crearCeldas() {
+        for (int i = 0; i < 100; i++) {
+            JButton celdaEnemigo = new JButton();
+            celdaEnemigo.setBackground(new Color(50, 70, 100));
+            celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
+            tableroEnemigo.add(celdaEnemigo);
+
+            JButton celdaPropio = new JButton();
+            celdaPropio.setEnabled(false);
+            celdaPropio.setBackground(new Color(50, 70, 100));
+            celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
+            tableroPropio.add(celdaPropio);
+        }
+    }
+
+    @Override
+    public JPanel crear(ViewController control) {
+        return this;
+    }
 }
