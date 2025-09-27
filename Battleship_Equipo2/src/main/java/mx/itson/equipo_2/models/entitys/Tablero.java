@@ -15,20 +15,20 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableroEntity {
+public class Tablero {
 
-    private CeldaEntity[][] celdas;
-    private List<NaveEntity> naves;
+    private Celda[][] celdas;
+    private List<Nave> naves;
 
     public static final int TAMANIO = 10;
 
    
-    public CeldaEntity[][] getCeldas() {
+    public Celda[][] getCeldas() {
         return celdas;
     }
     
-    public TableroEntity() {
-        this.celdas = new CeldaEntity[TAMANIO][TAMANIO];
+    public Tablero() {
+        this.celdas = new Celda[TAMANIO][TAMANIO];
         this.naves = new ArrayList<>();
         inicializarCeldas();
     }
@@ -36,23 +36,23 @@ public class TableroEntity {
     private void inicializarCeldas() {
         for (int fila = 0; fila < TAMANIO; fila++) {
             for (int col = 0; col < TAMANIO; col++) {
-                celdas[fila][col] = new CeldaEntity(new CoordenadaEntity(fila, col));
+                celdas[fila][col] = new Celda(new Coordenada(fila, col));
             }
         }
     }
 
-    public CeldaEntity getCelda(int fila, int columna) {
+    public Celda getCelda(int fila, int columna) {
         return celdas[fila][columna];
     }
 
-    public void agregarNave(NaveEntity nave) {
+    public void agregarNave(Nave nave) {
         naves.add(nave);
-        for (CoordenadaEntity coord : nave.getCoordenadas()) {
+        for (Coordenada coord : nave.getCoordenadas()) {
             celdas[coord.getFila()][coord.getColumna()].setNave(nave);
         }
     }
 
-    public List<NaveEntity> getNaves() {
+    public List<Nave> getNaves() {
         return naves;
     }
 

@@ -10,17 +10,17 @@ import mx.itson.equipo_2.models.enums.EstadoCelda;
  *
  * @author Jose Eduardo Aguilar Garcia
  */
-public class CeldaEntity {
+public class Celda {
 
     private EstadoCelda estado;
-    private CoordenadaEntity coordenada;
-    private NaveEntity nave;
+    private Coordenada coordenada;
+    private Nave nave;
 
-    public CeldaEntity() {
+    public Celda() {
     }
     
 
-    public CeldaEntity(CoordenadaEntity coordenada) {
+    public Celda(Coordenada coordenada) {
         this.coordenada = coordenada;
         this.estado = EstadoCelda.NO_DISPARADA;
         this.nave = null;
@@ -34,20 +34,20 @@ public class CeldaEntity {
         this.estado = estado;
     }
 
-    public CoordenadaEntity getCoordenada() {
+    public Coordenada getCoordenada() {
         return coordenada;
     }
 
-    public void setCoordenada(CoordenadaEntity coordenada) {
+    public void setCoordenada(Coordenada coordenada) {
         this.coordenada = coordenada;
     }
     
 
-    public NaveEntity getNave() {
+    public Nave getNave() {
         return nave;
     }
 
-    public void setNave(NaveEntity nave) {
+    public void setNave(Nave nave) {
         this.nave = nave;
     }
     

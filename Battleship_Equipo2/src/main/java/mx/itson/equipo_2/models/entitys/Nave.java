@@ -14,17 +14,17 @@ import mx.itson.equipo_2.models.enums.TipoNave;
  *
  * @author Jose Eduardo Aguilar Garcia
  */
-public class NaveEntity {
+public class Nave {
     private TipoNave tipo;
     private EstadoNave estado;
-    private List<CoordenadaEntity> coordenadas;
+    private List<Coordenada> coordenadas;
     private OrientacionNave orientacion;
 
-    public NaveEntity() {
+    public Nave() {
     }
     
 
-    public NaveEntity(TipoNave tipo, List<CoordenadaEntity> coordenadas, OrientacionNave orientacion) {
+    public Nave(TipoNave tipo, List<Coordenada> coordenadas, OrientacionNave orientacion) {
         this.tipo = tipo;
         this.coordenadas = coordenadas;
         this.orientacion = orientacion;
@@ -43,7 +43,7 @@ public class NaveEntity {
         this.estado = estado;
     }
 
-    public List<CoordenadaEntity> getCoordenadas() {
+    public List<Coordenada> getCoordenadas() {
         return coordenadas;
     }
 

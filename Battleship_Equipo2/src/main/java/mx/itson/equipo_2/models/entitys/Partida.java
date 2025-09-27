@@ -12,27 +12,27 @@ import mx.itson.equipo_2.models.enums.EstadoPartida;
  *
  * @author Jose Eduardo Aguilar Garcia
  */
-public class PartidaEntity {
+public class Partida {
   
-    private JugadorEntity jugadorEnTurno;
+    private Jugador jugadorEnTurno;
     private int contadorTurno;
-    private JugadorEntity[] jugadores;
+    private Jugador[] jugadores;
     private EstadoPartida estado;
 
   
-    public PartidaEntity() {
+    public Partida() {
     }
 
  
-    public PartidaEntity(JugadorEntity jugador1, JugadorEntity jugador2) {
-        this.jugadores = new JugadorEntity[]{jugador1, jugador2};
+    public Partida(Jugador jugador1, Jugador jugador2) {
+        this.jugadores = new Jugador[]{jugador1, jugador2};
         this.jugadorEnTurno = jugador1;
         this.contadorTurno = 0;
         this.estado = EstadoPartida.CONFIGURACION;
     }
 
  
-    public JugadorEntity getJugadorEnTurno() {
+    public Jugador getJugadorEnTurno() {
         return jugadorEnTurno;
     }
 
@@ -40,7 +40,7 @@ public class PartidaEntity {
         return contadorTurno;
     }
 
-    public JugadorEntity[] getJugadores() {
+    public Jugador[] getJugadores() {
         return jugadores;
     }
 
@@ -49,7 +49,7 @@ public class PartidaEntity {
     }
 
  
-    public void setJugadorEnTurno(JugadorEntity jugadorEnTurno) {
+    public void setJugadorEnTurno(Jugador jugadorEnTurno) {
         this.jugadorEnTurno = jugadorEnTurno;
     }
 
@@ -57,7 +57,7 @@ public class PartidaEntity {
         this.contadorTurno = contadorTurno;
     }
 
-    public void setJugadores(JugadorEntity[] jugadores) {
+    public void setJugadores(Jugador[] jugadores) {
         this.jugadores = jugadores;
     }
 

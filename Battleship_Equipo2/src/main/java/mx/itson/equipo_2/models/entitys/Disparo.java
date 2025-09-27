@@ -12,16 +12,16 @@ import mx.itson.equipo_2.models.enums.ResultadoDisparo;
  *
  * @author Jose Eduardo Aguilar Garcia
  */
-public class DisparoEntity {
+public class Disparo {
   
     private ResultadoDisparo resultado;
-    private CoordenadaEntity coordenada;
+    private Coordenada coordenada;
 
-    public DisparoEntity() {
+    public Disparo() {
     }
     
 
-    public DisparoEntity(ResultadoDisparo resultado, CoordenadaEntity coordenada) {
+    public Disparo(ResultadoDisparo resultado, Coordenada coordenada) {
         this.resultado = resultado;
         this.coordenada = coordenada;
     }
@@ -30,7 +30,7 @@ public class DisparoEntity {
         return resultado;
     }
 
-    public CoordenadaEntity getCoordenada() {
+    public Coordenada getCoordenada() {
         return coordenada;
     }
 

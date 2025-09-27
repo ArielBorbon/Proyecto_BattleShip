@@ -4,8 +4,6 @@
  */
 package mx.itson.equipo_2.models.enums;
 
-import mx.itson.equipo_2.models.entitys.*;
-
 /**
  *
  * @author  Jose Eduardo Aguilar Garcia

@@ -1,0 +1,58 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package mx.itson.equipo_2.patterns.mediator;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import mx.itson.equipo_2.patterns.factory.ViewFactory;
+
+/**
+ *
+ * @author skyro
+ */
+public class ViewController implements ViewManager {
+    
+    private JFrame frame;
+    private Map<String, ViewFactory> factories;
+    private Map<String, JPanel> pantallas;
+
+    public ViewController() {
+        frame = new JFrame("App con Mediator");
+        frame.setSize(1280, 720);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+
+        factories = new HashMap<>();
+        pantallas = new HashMap<>();
+
+        frame.setVisible(true);
+    }
+    
+    @Override
+    public void registrarPantalla(String nombre, ViewFactory factory) {
+        factories.put(nombre, factory);
+    }
+
+    @Override
+    public void cambiarPantalla(String nombre) {
+        JPanel panel = pantallas.get(nombre);
+
+        if (panel == null) {
+            ViewFactory factory = factories.get(nombre);
+            if (factory == null) {
+                throw new IllegalArgumentException("Pantalla no registrada: " + nombre);
+            }
+            panel = factory.crear(this);
+            pantallas.put(nombre, panel);
+        }
+
+        frame.setContentPane(panel);
+        frame.revalidate();
+        frame.repaint();
+    }
+    
+}

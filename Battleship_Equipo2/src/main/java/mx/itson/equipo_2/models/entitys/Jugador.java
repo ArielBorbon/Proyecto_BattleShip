@@ -4,6 +4,7 @@
  */
 package mx.itson.equipo_2.models.entitys;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,19 +13,21 @@ import java.util.List;
  * @author skyro
  * 
  */
-public class JugadorEntity {
+public class Jugador {
 
     private String nombre;
-    private TableroEntity tablero;
-    private List<DisparoEntity> disparos;
+    private Color color;
+    private Tablero tablero;
+    private List<Disparo> disparos;
 
-    public JugadorEntity() {
+    public Jugador() {
     }
     
 
-    public JugadorEntity(String nombre) {
+    public Jugador(String nombre) {
         this.nombre = nombre;
-        this.tablero = new TableroEntity();
+        this.color = Color.BLUE;
+        this.tablero = new Tablero();
         this.disparos = new ArrayList<>();
     }
 
@@ -32,15 +35,23 @@ public class JugadorEntity {
         return nombre;
     }
 
-    public TableroEntity getTablero() {
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Tablero getTablero() {
         return tablero;
     }
 
-    public List<DisparoEntity> getDisparos() {
+    public List<Disparo> getDisparos() {
         return disparos;
     }
 
-    public void agregarDisparo(DisparoEntity disparo) {
+    public void agregarDisparo(Disparo disparo) {
         disparos.add(disparo);
     }
 

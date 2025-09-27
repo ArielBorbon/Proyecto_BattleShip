@@ -8,16 +8,16 @@ package mx.itson.equipo_2.models.entitys;
  *
  * @author Jose Eduardo Aguilar Garcia
  */
-public class CoordenadaEntity {
+public class Coordenada {
     
     private int fila;
     private int columna;
 
-    public CoordenadaEntity() {
+    public Coordenada() {
     }
 
     
-    public CoordenadaEntity(int fila, int columna) {
+    public Coordenada(int fila, int columna) {
         this.fila = fila;
         this.columna = columna;
     }
