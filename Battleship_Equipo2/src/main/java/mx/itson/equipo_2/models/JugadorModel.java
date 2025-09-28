@@ -10,35 +10,40 @@ import mx.itson.equipo_2.models.entitys.Jugador;
 
 /**
  *
- * @author skyro
+ * @author 
+ * Ariel Eduardo Borbon Izaguirre   00000252116
+* Sebastián Bórquez Huerta          00000252115
+* Alberto Jiménez García            00000252595
+* José Eduardo Aguilar García       00000252049
+* José Luis Islas Molina            00000252574
  */
 public class JugadorModel {
     
-    private Jugador jugador;
-      private final TableroModel tableroModel;
-
-    public JugadorModel(Jugador jugador) {
-        this.jugador = jugador;
-        this.tableroModel = new TableroModel(jugador.getTablero());
-    }
-    
-    public boolean registrarDisparo(Disparo d) {
-        jugador.agregarDisparo(d);
-        return true;
-    }
-    
-    public List<Disparo> obtenerDisparos() {
-        return jugador.getDisparos();
-    }
- 
-    public Jugador getJugador() {
-        return jugador;
-    }
-
-
-    public TableroModel getTableroModel() {
-        return tableroModel;
-    }
+//    private Jugador jugador;
+//      private final TableroModel tableroModel;
+//
+//    public JugadorModel(Jugador jugador) {
+//        this.jugador = jugador;
+//        this.tableroModel = new TableroModel(jugador.getTablero());
+//    }
+//    
+//    public boolean registrarDisparo(Disparo d) {
+//        jugador.agregarDisparo(d);
+//        return true;
+//    }
+//    
+//    public List<Disparo> obtenerDisparos() {
+//        return jugador.getDisparos();
+//    }
+// 
+//    public Jugador getJugador() {
+//        return jugador;
+//    }
+//
+//
+//    public TableroModel getTableroModel() {
+//        return tableroModel;
+//    }
     
     
 }
