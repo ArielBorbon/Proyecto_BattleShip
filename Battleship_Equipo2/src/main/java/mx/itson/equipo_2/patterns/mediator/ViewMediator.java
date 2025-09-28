@@ -14,13 +14,13 @@ import mx.itson.equipo_2.patterns.factory.ViewFactory;
  *
  * @author skyro
  */
-public class ViewController implements ViewManager {
+public class ViewMediator implements ViewManager {
     
     private JFrame frame;
     private Map<String, ViewFactory> factories;
     private Map<String, JPanel> pantallas;
 
-    public ViewController() {
+    public ViewMediator() {
         frame = new JFrame("App con Mediator");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

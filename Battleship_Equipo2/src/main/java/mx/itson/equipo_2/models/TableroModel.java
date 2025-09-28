@@ -4,6 +4,9 @@
  */
 package mx.itson.equipo_2.models;
 
+import java.util.ArrayList;
+import java.util.List;
+import mx.itson.equipo_2.mapper.TableroMapper;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Nave;
@@ -11,16 +14,22 @@ import mx.itson.equipo_2.models.entitys.Tablero;
 import mx.itson.equipo_2.models.enums.EstadoCelda;
 import mx.itson.equipo_2.models.enums.EstadoNave;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
+import mx.itson.equipo_2.patterns.observer.Subject;
+import mx.itson.equipo_2.patterns.observer.TableroObserver;
 
 /**
  *
  * @author Jose Eduardo Aguilar Garcia 
  */
-public class TableroModel {
-     private final Tablero tablero;
-
+public class TableroModel implements Subject<TableroObserver>{
+    
+    private final Tablero tablero;
+     
+    public List<TableroObserver> observadores;
+    
     public TableroModel(Tablero tablero) {
         this.tablero = tablero;
+        this.observadores = new ArrayList<>();
     }
 
     public boolean validarCoordenada(Coordenada c) {
@@ -66,5 +75,22 @@ public class TableroModel {
 
     public boolean todasNavesHundidas() {
         return tablero.getNaves().stream().allMatch(n -> n.getEstado() == EstadoNave.HUNDIDO);
+    }
+
+    @Override
+    public void addObserver(TableroObserver observer) {
+        observadores.add(observer);
+    }
+
+    @Override
+    public void removeObserver(TableroObserver observer) {
+        observadores.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for(TableroObserver o : observadores) {
+            o.update(TableroMapper.toDTO(this.tablero));
+        }
     }
 }

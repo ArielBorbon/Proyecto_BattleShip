@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.patterns.factory.ViewFactory;
-import mx.itson.equipo_2.patterns.mediator.ViewController;
+import mx.itson.equipo_2.patterns.mediator.ViewMediator;
 
 /**
  *
@@ -130,7 +130,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     }
 
     @Override
-    public JPanel crear(ViewController control) {
+    public JPanel crear(ViewMediator control) {
         return this;
     }
 }

@@ -4,9 +4,10 @@
  */
 package mx.itson.equipo_2.controllers;
 
+import mx.itson.equipo_2.dto.CoordenadaDTO;
+import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.JugadorModel;
 import mx.itson.equipo_2.models.PartidaModel;
-import mx.itson.equipo_2.models.TableroModel;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Jugador;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
@@ -24,9 +25,13 @@ public class PartidaController {
         this.partidaModel = partidaModel;
     }
 
-    public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) {
+//    public PartidaController() {
+//        this.partidaModel = new PartidaModel(j1, j2); 
+//    }
+
+    public ResultadoDisparo realizarDisparo(Jugador atacante, CoordenadaDTO c) {
         try {
-            ResultadoDisparo resultado = partidaModel.realizarDisparo(atacante, coord);
+            ResultadoDisparo resultado = partidaModel.realizarDisparo(atacante, CoordenadaMapper.toEntity(c));
 
         
             JugadorModel oponente = partidaModel.obtenerOponente(atacante);

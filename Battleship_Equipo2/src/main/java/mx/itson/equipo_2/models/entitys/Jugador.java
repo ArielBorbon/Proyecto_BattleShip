@@ -31,6 +31,15 @@ public class Jugador {
         this.disparos = new ArrayList<>();
     }
 
+    public Jugador(String nombre, Color color) {
+        this.nombre = nombre;
+        this.color = color;
+        this.tablero = new Tablero();
+        this.disparos = new ArrayList<>();
+    }
+    
+    
+
     public String getNombre() {
         return nombre;
     }

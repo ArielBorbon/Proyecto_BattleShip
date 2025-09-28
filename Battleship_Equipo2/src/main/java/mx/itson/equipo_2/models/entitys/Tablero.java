@@ -14,6 +14,7 @@ import java.util.List;
  */
 import java.util.ArrayList;
 import java.util.List;
+import mx.itson.equipo_2.models.enums.EstadoCelda;
 
 public class Tablero {
 
@@ -33,10 +34,15 @@ public class Tablero {
         inicializarCeldas();
     }
 
+    public Tablero(Celda[][] celdas, List<Nave> naves) {
+        this.celdas = celdas;
+        this.naves = naves;
+    }
+
     private void inicializarCeldas() {
         for (int fila = 0; fila < TAMANIO; fila++) {
             for (int col = 0; col < TAMANIO; col++) {
-                celdas[fila][col] = new Celda(new Coordenada(fila, col));
+                celdas[fila][col] = new Celda(EstadoCelda.NO_DISPARADA, new Coordenada(fila, col), null);
             }
         }
     }
