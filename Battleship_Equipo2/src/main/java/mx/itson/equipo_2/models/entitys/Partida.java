@@ -20,13 +20,15 @@ public class Partida {
 
     public Partida() {
     }
-
+    
     public Partida(Jugador jugador1, Jugador jugador2) {
-        this.jugador1 = new Jugador();
-        this.jugador2 = new Jugador();
-        this.jugadorEnTurno = jugador1;
+        this.jugador1 = jugador1;       
+        this.jugador2 = jugador2;        
+        this.jugadorEnTurno = jugador1;  
         this.estado = EstadoPartida.CONFIGURACION;
     }
+
+
 
     public Jugador getJugadorEnTurno() {
         return jugadorEnTurno;

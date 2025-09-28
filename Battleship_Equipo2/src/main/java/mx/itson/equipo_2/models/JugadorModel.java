@@ -15,6 +15,12 @@ import mx.itson.equipo_2.models.entitys.Jugador;
 public class JugadorModel {
     
     private Jugador jugador;
+      private final TableroModel tableroModel;
+
+    public JugadorModel(Jugador jugador) {
+        this.jugador = jugador;
+        this.tableroModel = new TableroModel(jugador.getTablero());
+    }
     
     public boolean registrarDisparo(Disparo d) {
         jugador.agregarDisparo(d);
@@ -24,4 +30,15 @@ public class JugadorModel {
     public List<Disparo> obtenerDisparos() {
         return jugador.getDisparos();
     }
+ 
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+
+    public TableroModel getTableroModel() {
+        return tableroModel;
+    }
+    
+    
 }
