@@ -37,6 +37,11 @@ public class TableroModel {
     public void addObserver(TableroObserver observer) {
         this.observers.add(observer);
     }
+    
+        public void removeObserver(TableroObserver observer) {
+        observers.remove(observer);
+    }
+
 
     private void notifyObservers(int fila, int columna, ResultadoDisparo resultado) {
         for (TableroObserver observer : observers) {
