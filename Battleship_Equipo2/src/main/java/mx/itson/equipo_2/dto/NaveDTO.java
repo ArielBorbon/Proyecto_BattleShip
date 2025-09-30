@@ -2,8 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package mx.itson.equipo_2.models.entitys;
-
+package mx.itson.equipo_2.dto;
 
 import java.util.List;
 import mx.itson.equipo_2.models.enums.EstadoNave;
@@ -12,41 +11,31 @@ import mx.itson.equipo_2.models.enums.TipoNave;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author sonic
  */
-public class Nave {
+public class NaveDTO {
+    
     private TipoNave tipo;
     private EstadoNave estado;
-    private List<Coordenada> coordenadas;
+    private List<CoordenadaDTO> coordenadas;
     private OrientacionNave orientacion;
 
-    public Nave() {
-    }
-    
-
-    public Nave(TipoNave tipo, List<Coordenada> coordenadas, OrientacionNave orientacion) {
-        this.tipo = tipo;
-        this.coordenadas = coordenadas;
-        this.orientacion = orientacion;
-        this.estado = EstadoNave.SIN_DANIOS;
+    public NaveDTO() {
     }
 
-    public Nave(TipoNave tipo, EstadoNave estado, List<Coordenada> coordenadas, OrientacionNave orientacion) {
+    public NaveDTO(TipoNave tipo, EstadoNave estado, List<CoordenadaDTO> coordenadas, OrientacionNave orientacion) {
         this.tipo = tipo;
         this.estado = estado;
         this.coordenadas = coordenadas;
         this.orientacion = orientacion;
     }
-    
-    
 
     public TipoNave getTipo() {
         return tipo;
+    }
+
+    public void setTipo(TipoNave tipo) {
+        this.tipo = tipo;
     }
 
     public EstadoNave getEstado() {
@@ -57,20 +46,24 @@ public class Nave {
         this.estado = estado;
     }
 
-    public List<Coordenada> getCoordenadas() {
+    public List<CoordenadaDTO> getCoordenadas() {
         return coordenadas;
+    }
+
+    public void setCoordenadas(List<CoordenadaDTO> coordenadas) {
+        this.coordenadas = coordenadas;
     }
 
     public OrientacionNave getOrientacion() {
         return orientacion;
     }
 
+    public void setOrientacion(OrientacionNave orientacion) {
+        this.orientacion = orientacion;
+    }
+
     @Override
     public String toString() {
-        return "NaveEntity{" + "tipo=" + tipo + ", estado=" + estado + ", coordenadas=" + coordenadas + ", orientacion=" + orientacion + '}';
+        return "NaveDTO{" + "tipo=" + tipo + ", estado=" + estado + ", coordenadas=" + coordenadas + ", orientacion=" + orientacion + '}';
     }
-    
-    
 }
-
-

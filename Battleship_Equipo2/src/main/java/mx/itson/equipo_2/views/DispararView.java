@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -61,6 +62,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
         btnRendirse = new JButton();
         btnDisparar = new JButton();
         panelTableroPropio = new JPanel();
+        lblTimer = new JLabel();
 
         setBackground(new Color(83, 111, 137));
         setPreferredSize(new Dimension(1280, 720));
@@ -107,6 +109,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
         panelTableroPropio.setLayout(new GridLayout(10, 10));
         add(panelTableroPropio);
         panelTableroPropio.setBounds(130, 50, 250, 250);
+
+        lblTimer.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
+        lblTimer.setText("jLabel1");
+        add(lblTimer);
+        lblTimer.setBounds(100, 320, 360, 50);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
@@ -125,6 +132,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnDisparar;
     private JButton btnRendirse;
+    private JLabel lblTimer;
     private JPanel panelTableroEnemigo;
     private JPanel panelTableroPropio;
     // End of variables declaration//GEN-END:variables
@@ -198,6 +206,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     public JPanel crear(ViewController control) {
         return this;
     }
+    
+    
 
     /**
      * Muestra el estado inicial del tablero del jugador, pintando las celdas
@@ -216,6 +226,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
             }
         }
 
+    }
+    
+    public void actualizarTimer(int segundosRestantes, String jugador) {
+        lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
     }
     
 

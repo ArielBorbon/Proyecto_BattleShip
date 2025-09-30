@@ -31,6 +31,15 @@ public class Celda {
         this.nave = null;
     }
 
+    public Celda(EstadoCelda estado, Coordenada coordenada, Nave nave) {
+        this.estado = estado;
+        this.coordenada = coordenada;
+        this.nave = nave;
+    }
+    
+    
+
+
     public EstadoCelda getEstado() {
         return estado;
     }

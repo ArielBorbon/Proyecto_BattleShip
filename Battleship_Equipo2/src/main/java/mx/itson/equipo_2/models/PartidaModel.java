@@ -12,12 +12,9 @@ import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
 public class PartidaModel {
 
@@ -56,38 +53,35 @@ public class PartidaModel {
     }
 
     public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) {
-        if (!verificarTurno(atacante)) {
-            throw new IllegalStateException("No es el turno de " + atacante.getNombre());
-        }
-
-        // --- MODIFICADO: Obtener el TableroModel del oponente ---
-        TableroModel oponenteTablero = obtenerTableroOponente(atacante);
-
-        if (!oponenteTablero.validarCoordenada(coord)) {
-            throw new IllegalArgumentException("Coordenada inválida: " + coord);
-        }
-
-        ResultadoDisparo resultado = oponenteTablero.recibirDisparo(coord);
-
-        // --- MODIFICADO: Registrar el disparo directamente en el jugador ---
-        Disparo disparo = new Disparo(resultado, coord);
-        atacante.agregarDisparo(disparo); // Mucho más simple
-
-        if (resultado == ResultadoDisparo.AGUA) {
-            cambiarTurno();
-        }
-
-        return resultado;
+    if (!verificarTurno(atacante)) {
+        throw new IllegalStateException("No es el turno de " + atacante.getNombre());
     }
 
+    TableroModel oponenteTablero = obtenerTableroOponente(atacante);
+
+    if (!oponenteTablero.validarCoordenada(coord)) {
+        throw new IllegalArgumentException("Coordenada inválida: " + coord);
+    }
+
+    ResultadoDisparo resultado = oponenteTablero.recibirDisparo(coord);
+    Disparo disparo = new Disparo(resultado, coord);
+    atacante.agregarDisparo(disparo);
+
+    return resultado;
+}
+
     public boolean partidaFinalizada() {
-      
+
         return tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas();
-        
+
     }
 
     public Jugador getJugadorEnTurno() {
         return partida.getJugadorEnTurno();
+    }
+
+    public void setJugadorEnTurno(Jugador jugador) {
+        partida.setJugadorEnTurno(jugador);
     }
 
     public Partida getPartida() {

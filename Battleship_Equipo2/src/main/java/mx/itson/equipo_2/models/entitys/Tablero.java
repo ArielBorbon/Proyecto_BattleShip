@@ -36,6 +36,13 @@ public class Tablero {
         inicializarCeldas();
     }
 
+    public Tablero(Celda[][] celdas, List<Nave> naves) {
+        this.celdas = celdas;
+        this.naves = naves;
+    }
+    
+    
+
     private void inicializarCeldas() {
         for (int fila = 0; fila < TAMANIO; fila++) {
             for (int col = 0; col < TAMANIO; col++) {

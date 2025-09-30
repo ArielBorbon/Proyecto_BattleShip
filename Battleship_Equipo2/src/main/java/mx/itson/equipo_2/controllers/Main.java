@@ -51,6 +51,8 @@ public class Main {
             // conectamos modelo y vista con controlador
             // ya con todo conectado todo lo movemos con el controlador
             PartidaController partidaController = new PartidaController(partidaModel, dispararView, jugador1, jugador2);
+            
+            partidaController.iniciarPartida(); //iniciar partida despues de crear el controlador
 
             // sacamos el gestionador de pantallas
             ViewController viewController = new ViewController();

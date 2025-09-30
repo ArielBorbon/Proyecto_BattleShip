@@ -5,6 +5,7 @@
 package mx.itson.equipo_2.controllers;
 
 import java.util.Random;
+import javax.swing.Timer;
 import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.TableroModel;
 import mx.itson.equipo_2.models.entitys.Coordenada;
@@ -16,20 +17,21 @@ import mx.itson.equipo_2.views.DispararView;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
 public class PartidaController implements TableroObserver {
 
     private final PartidaModel partidaModel;
-    private final DispararView dispararView; 
+    private final DispararView dispararView;
     private final Jugador jugadorHumano;
     private final Jugador jugadorAI;
     private final Random random = new Random();
+
+    private Timer turnoTimer;
+    private int tiempoRestante;
+    private final int DURACION_TURNO = 31;
 
     public PartidaController(PartidaModel partidaModel, DispararView dispararView, Jugador jugadorHumano, Jugador jugadorAI) {
         this.partidaModel = partidaModel;
@@ -49,6 +51,11 @@ public class PartidaController implements TableroObserver {
         partidaModel.getTableroModel2().addObserver(this);
     }
 
+    public void iniciarPartida() {
+        System.out.println("¡La partida ha comenzado!");
+        iniciarTurno(this.jugadorHumano);
+    }
+
     // Método privado que recibe coordenadas desde la vista
     private void handleDisparoHumano(Coordenada coord) {
         // Evitar que el jugador dispare si no es su turno
@@ -57,49 +64,129 @@ public class PartidaController implements TableroObserver {
             return;
         }
 
+        if (turnoTimer != null) {
+            turnoTimer.stop();
+        }
+
         // Realizar el disparo del humano
-        realizarDisparo(jugadorHumano, coord);
+        ResultadoDisparo resultado = realizarDisparo(jugadorHumano, coord);
 
         // NUEVO: Después del disparo del humano, comprobar si es el turno de la IA
-        if (partidaModel.getJugadorEnTurno() == jugadorAI && !partidaModel.partidaFinalizada()) {
-            // Pausar ligeramente para dar una sensación de que la IA "piensa"
-            // (Opcional, pero mejora la experiencia)
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000); // Espera 1 segundo
-                } catch (InterruptedException e) {
-                }
-                gestionarTurnoIA();
-            }).start();
+        if (resultado == ResultadoDisparo.AGUA) {
+            System.out.println("¡Agua! Turno para la IA.");
+            pasarTurno();
+        } else {
+            System.out.println("¡Impacto! Tienes otro turno.");
+            iniciarTurno(jugadorHumano);
         }
     }
 
+    //iffy
     // NUEVO: Método completo para gestionar el turno de la IA
     private void gestionarTurnoIA() {
         System.out.println("Turno de la IA...");
-        // La IA seguirá disparando mientras sea su turno (si acierta, repite)
-        while (partidaModel.getJugadorEnTurno() == jugadorAI && !partidaModel.partidaFinalizada()) {
-            Coordenada coordDisparoIA;
 
-            // Lógica para encontrar una coordenada no repetida
-            do {
-                int fila = random.nextInt(Tablero.TAMANIO);
-                int col = random.nextInt(Tablero.TAMANIO);
-                coordDisparoIA = new Coordenada(fila, col);
-            } while (haSidoDisparadaPorIA(coordDisparoIA));
+        //////////////////////////////////////////////////////////////////////////////////////////// TODO ESTO SE UTILIZA SOLO PARA SIMULAR QUE LA IA 
+        //////////////////////////////////////////////////////////////////////////////////////////// PIENSA Y REALIZA SU TURNO COMO UN JUGADOR REAL, LUEGO SE BORRARA
+        tiempoRestante = DURACION_TURNO - 1;
 
-            System.out.println("IA dispara en: (" + coordDisparoIA.getFila() + "," + coordDisparoIA.getColumna() + ")");
+        int segundosDeEspera = random.nextInt(5) + 3;
+        int momentoDelDisparo = DURACION_TURNO - segundosDeEspera;
 
-            // La IA realiza el disparo
-            realizarDisparo(jugadorAI, coordDisparoIA);
+        dispararView.actualizarTimer(tiempoRestante, jugadorAI.getNombre());
 
-            // Pausa breve entre disparos si la IA tiene turnos consecutivos
-            try {
-                Thread.sleep(800);
-            } catch (InterruptedException e) {
+        turnoTimer = new Timer(1000, e -> {
+            tiempoRestante--;
+            dispararView.actualizarTimer(tiempoRestante, jugadorAI.getNombre());
+
+            if (tiempoRestante <= momentoDelDisparo) {
+                ((Timer) e.getSource()).stop(); // Detiene el temporizador.
+                ejecutarDisparoIA();          // La IA realiza su acción.
             }
+        });
+        turnoTimer.start();
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    private void ejecutarDisparoIA() {
+        if (partidaModel.partidaFinalizada()) {
+            return;
         }
-        System.out.println("Fin del turno de la IA. Turno de: " + partidaModel.getJugadorEnTurno().getNombre());
+
+        Coordenada coordDisparoIA;
+        do {
+            int fila = random.nextInt(10);
+            int col = random.nextInt(10);
+            coordDisparoIA = new Coordenada(fila, col);
+        } while (haSidoDisparadaPorIA(coordDisparoIA));
+
+        System.out.println("IA dispara en: (" + coordDisparoIA + ")");
+        ResultadoDisparo resultado = realizarDisparo(jugadorAI, coordDisparoIA);
+
+        if (partidaModel.partidaFinalizada()) {
+            return;
+        }
+
+        if (resultado == ResultadoDisparo.AGUA) {
+            System.out.println("IA falló el disparo. Turno para el jugador.");
+            pasarTurno();
+        } else {
+            System.out.println("IA acertó. Vuelve a 'pensar' para el siguiente disparo.");
+            gestionarTurnoIA();
+        }
+    }
+
+    private void iniciarTurno(Jugador jugador) {
+        // Reiniciar tiempo
+        tiempoRestante = DURACION_TURNO;
+
+        // Cancelar cualquier timer previo
+        if (turnoTimer != null && turnoTimer.isRunning()) {
+            turnoTimer.stop();
+        }
+
+        // Crear un nuevo Timer que dispare cada 1 segundo
+        turnoTimer = new Timer(1000, e -> {
+            tiempoRestante--;
+
+            if (dispararView != null) {
+                dispararView.actualizarTimer(tiempoRestante, jugador.getNombre());
+            }
+
+            if (tiempoRestante <= 0) {
+                turnoTimer.stop();
+                System.out.println("Tiempo agotado para " + jugador.getNombre());
+
+                // Forzar cambio de turno
+                pasarTurno();
+            }
+        });
+
+        turnoTimer.start();
+    }
+
+    private void pasarTurno() {
+        if (partidaModel.partidaFinalizada()) {
+            return;
+        }
+
+        // Detener cualquier timer que aún esté corriendo.
+        if (turnoTimer != null) {
+            turnoTimer.stop();
+        }
+
+        Jugador actual = partidaModel.getJugadorEnTurno();
+        Jugador siguiente = (actual == jugadorHumano) ? jugadorAI : jugadorHumano;
+
+        partidaModel.setJugadorEnTurno(siguiente);
+        System.out.println("Cambiando turno. Ahora juega: " + siguiente.getNombre());
+
+        if (siguiente == jugadorAI) {
+            gestionarTurnoIA();
+        } else {
+            iniciarTurno(siguiente);
+        }
     }
 
     // NUEVO: Método auxiliar para la IA
