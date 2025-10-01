@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package mx.itson.equipo_2.patterns.Strategy;
 
 import java.util.Random;
@@ -26,8 +23,7 @@ public class StrategyTurnoIA implements StrategyTurno {
     public void ejecutarTurno(PartidaModel partidaModel, PartidaController partidaController) {
         System.out.println("IA está 'pensando' su movimiento...");
 
-        // Simula un retraso para que el disparo no sea instantáneo
-        int segundosDeEspera = random.nextInt(4) + 2; // Espera entre 2 y 5 segundos
+        int segundosDeEspera = random.nextInt(4) + 2; 
         Timer timer = new Timer(segundosDeEspera * 1000, e -> {
 
             if (partidaModel.partidaFinalizada()) {
@@ -46,16 +42,11 @@ public class StrategyTurnoIA implements StrategyTurno {
             partidaController.solicitarDisparo(jugadorAI, coordDisparoIA);
         });
 
-        timer.setRepeats(false); // El timer se ejecuta solo una vez
+        timer.setRepeats(false);
         timer.start();
     }
 
     private boolean haSidoDisparadaPorIA(PartidaModel model, Coordenada c) {
-        // Obtenemos al oponente del jugador 1, que es la IA (jugador 2)
-        
-       // Jugador ia = model.getJugador2();
-        //return ia.getDisparos().stream()
-        //        .anyMatch(disparo -> disparo.getCoordenada().equals(c));
         
         return this.jugadorAI.getDisparos().stream()
                 .anyMatch(disparo -> disparo.getCoordenada().equals(c));

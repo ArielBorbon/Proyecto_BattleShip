@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package mx.itson.equipo_2.controllers;
 
 import java.util.HashMap;
@@ -45,7 +42,7 @@ public class PartidaController {
             return;
         }
 
-        partidaModel.iniciarTurno(); // Esto notifica a la vista para que actualice el timer
+        partidaModel.iniciarTurno(); 
 
         Jugador jugadorEnTurno = partidaModel.getJugadorEnTurno();
         StrategyTurno estrategiaActual = estrategias.get(jugadorEnTurno);
@@ -60,17 +57,16 @@ public class PartidaController {
             ResultadoDisparo resultado = partidaModel.realizarDisparo(jugador, coordenada);
 
             if (partidaModel.partidaFinalizada()) {
-                partidaModel.notifyObservers(); // Notifica a la vista para el mensaje final
+                partidaModel.notifyObservers(); 
                 return;
             }
 
-            // --- LÓGICA DE FLUJO CENTRALIZADA Y CORREGIDA ---
             if (resultado == ResultadoDisparo.AGUA) {
-                partidaModel.pasarTurno(); // 1. Actualiza el modelo
-                gestionarSiguienteTurno();   // 2. Inicia el turno del SIGUIENTE jugador
+                partidaModel.pasarTurno(); 
+                gestionarSiguienteTurno(); 
             } else {
-                partidaModel.repetirTurno(); // 1. Actualiza el modelo
-                gestionarSiguienteTurno();   // 2. Inicia de nuevo el turno del MISMO jugador
+                partidaModel.repetirTurno();
+                gestionarSiguienteTurno();  
             }
 
         } catch (IllegalStateException | IllegalArgumentException e) {

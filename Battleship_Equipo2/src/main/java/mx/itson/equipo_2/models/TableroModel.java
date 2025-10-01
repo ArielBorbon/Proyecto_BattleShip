@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package mx.itson.equipo_2.models;
 
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ public class TableroModel {
         this.tablero = tablero;
     }
 
-    // --- NUEVO: Método para agregar observadores ---
     public void addObserver(TableroObserver observer) {
         this.observers.add(observer);
     }
@@ -75,7 +71,6 @@ public class TableroModel {
             celda.setEstado(EstadoCelda.DISPARADA);
             resultado = ResultadoDisparo.AGUA;
 
-            // Creamos el DTO simple
             dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
 
         } else {
@@ -89,39 +84,26 @@ public class TableroModel {
                 nave.setEstado(EstadoNave.HUNDIDO);
                 resultado = ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
 
-                // --- LÓGICA CLAVE ---
-                // 1. Obtenemos todas las coordenadas de la nave hundida.
                 List<CoordenadaDTO> coordsHundidas = nave.getCoordenadas().stream()
-                        .map(CoordenadaMapper::toDTO) // Usamos tu mapper para convertir
+                        .map(CoordenadaMapper::toDTO)
                         .collect(Collectors.toList());
 
-                // 2. Creamos el DTO enriquecido con la lista de coordenadas.
                 dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()), coordsHundidas);
 
             } else {
                 nave.setEstado(EstadoNave.AVERIADO);
                 resultado = ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
 
-                // Creamos el DTO simple
                 dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
             }
         }
 
-        // Notificamos a los observadores con el DTO correspondiente
         notifyObservers(dto);
 
         return resultado;
     }
 
-//    private ResultadoDisparo determinarResultadoAnterior(Celda celda) {
-//        if (celda.getNave() == null) {
-//            return ResultadoDisparo.AGUA;
-//        } else {
-//            return celda.getNave().getEstado() == EstadoNave.HUNDIDO
-//                    ? ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO
-//                    : ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
-//        }
-//    }
+
     public boolean todasNavesHundidas() {
         return tablero.getNaves().stream().allMatch(n -> n.getEstado() == EstadoNave.HUNDIDO);
     }

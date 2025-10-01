@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package mx.itson.equipo_2.mapper;
 
 import mx.itson.equipo_2.dto.CeldaDTO;
@@ -32,28 +29,27 @@ public class CeldaMapper {
         );
     }
     
-    public static Celda[][] toEntityMatrix(CeldaDTO[][] dtoMatrix) {
-        int filas = dtoMatrix.length;
-        int columnas = dtoMatrix[0].length;
+    public static Celda[][] toEntityMatrix(CeldaDTO[][] matrizDto) {
+        int filas = matrizDto.length;
+        int columnas = matrizDto[0].length;
         Celda[][] result = new Celda[filas][columnas];
 
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                result[i][j] = toEntity(dtoMatrix[i][j]);
+                result[i][j] = toEntity(matrizDto[i][j]);
             }
         }
         return result;
     }
 
-    // Convierte una matriz de entidad a DTO
-    public static CeldaDTO[][] toDTOMatrix(Celda[][] entityMatrix) {
-        int filas = entityMatrix.length;
-        int columnas = entityMatrix[0].length;
+    public static CeldaDTO[][] toDTOMatrix(Celda[][] matrizEntidad) {
+        int filas = matrizEntidad.length;
+        int columnas = matrizEntidad[0].length;
         CeldaDTO[][] result = new CeldaDTO[filas][columnas];
 
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                result[i][j] = toDTO(entityMatrix[i][j]);
+                result[i][j] = toDTO(matrizEntidad[i][j]);
             }
         }
         return result;

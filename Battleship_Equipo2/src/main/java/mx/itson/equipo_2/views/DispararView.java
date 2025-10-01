@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package mx.itson.equipo_2.views;
 
 import java.awt.Color;
@@ -44,7 +41,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];
 
-    // private TableroModel tableroModel; // <-- ¡Bien! Lo quitaste.
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
     private Color colorOriginalUltima;
@@ -146,7 +142,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             return;
         }
         if (mediator != null) {
-            // Correcto: Notifica al mediador
+           
             mediator.notificarDisparo(this.jugador, CoordenadaMapper.toEntity(coordSeleccionada));
         }
     }//GEN-LAST:event_btnDispararActionPerformed
@@ -166,24 +162,23 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
-                // === CELDAS ENEMIGO ===
+              
                 JButton celdaEnemigo = new JButton();
                 celdaEnemigo.setBackground(new Color(50, 70, 100));
                 celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
 
                 final int f = fila;
                 final int c = col;
-                //celdaEnemigo.addActionListener(e -> dispararEn(f, c));
+              
                 celdaEnemigo.addActionListener(e -> {
-                    // Restaurar el borde de la última seleccionada
+                 
                     if (ultimaSeleccionada != null) {
-                        ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1)); // borde normal
+                        ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1)); 
                     }
 
-                    // Guardar el botón seleccionado
+                
                     ultimaSeleccionada = celdaEnemigo;
 
-                    // Aplicar borde gris más grueso al seleccionado
                     celdaEnemigo.setBorder(new LineBorder(Color.GRAY, 3));
 
                     coordSeleccionada = new CoordenadaDTO(f, c);
@@ -192,7 +187,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
 
-                // === CELDAS PROPIO ===
+            
                 JButton celdaPropio = new JButton();
                 celdaPropio.setEnabled(false);
                 celdaPropio.setBackground(new Color(50, 70, 100));
@@ -210,17 +205,17 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     public void actualizarCeldaEnemigo(DisparoDTO dto) {
 
-        // Si el resultado es HUNDIMIENTO, usamos la nueva lógica
+      
         if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
 
-            // Recorremos la lista de todas las coordenadas del barco y las pintamos
+          
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
             }
 
         } else {
-            // Si no, usamos la lógica antigua para pintar una sola celda
+           
             CoordenadaDTO c = dto.getCoordenada();
             JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
             Color nuevoColor = switch (dto.getResultado()) {
@@ -229,19 +224,19 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 case IMPACTO_SIN_HUNDIMIENTO ->
                     Color.ORANGE;
                 default ->
-                    boton.getBackground(); // No debería pasar, pero por seguridad
+                    boton.getBackground(); //no deberia pasar pero pues por si acaso
             };
             boton.setBackground(nuevoColor);
         }
     }
 
     public void actualizarCeldaPropia(DisparoDTO dto) {
-        // Es buena idea replicar la lógica aquí también
+       
         if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
 
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesPropio[coord.getFila()][coord.getColumna()];
-                boton.setBackground(Color.BLACK); // Pintamos todo el barco hundido de negro
+                boton.setBackground(Color.BLACK);
             }
 
         } else {
@@ -261,18 +256,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         return this;
     }
 
-    /**
-     * Muestra el estado inicial del tablero del jugador, pintando las celdas
-     * donde se encuentran sus naves.
-     *
-     * @param tablero El tablero del jugador.
-     */
+
     public void mostrarTableroPropio(Tablero tablero) {
         for (int fila = 0; fila < Tablero.TAMANIO; fila++) {
             for (int col = 0; col < Tablero.TAMANIO; col++) {
                 Celda celda = tablero.getCelda(fila, col);
                 if (celda.getNave() != null) {
-                    // Pinta las celdas con naves de un color distintivo (ej. GRIS)
+                    
                     botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
                 }
             }
@@ -287,14 +277,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.jugador = jugador;
     }
 
-    // AÑADE este método para mostrar errores
+   
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
-        // Tu lógica aquí es 100% correcta
+       
         if (tableroAfectado == this.tableroEnemigo) {
             actualizarCeldaEnemigo(disparo);
         } else if (tableroAfectado == this.miTablero) {
@@ -304,7 +294,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     @Override
     public void onChange(PartidaModel model) {
-        // Tu lógica de observador de la partida es perfecta
+       
         actualizarTimer(model.getTiempoRestante(), model.getJugadorEnTurno().getNombre());
         String error = model.getUltimoError();
         if (error != null) {
@@ -324,16 +314,12 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.mediator = mediator;
     }
 
-    // --- MÉTODO NUEVO A AÑADIR ---
-    /**
-     * Establece las referencias a los modelos de tablero para que la vista sepa
-     * a quién pertenece cada uno. Es crucial para la lógica del observador.
-     */
+
     public void setTableros(TableroModel miTablero, TableroModel tableroEnemigo) {
         this.miTablero = miTablero;
         this.tableroEnemigo = tableroEnemigo;
 
-        // ¡Arregla el bug de que no se veían las naves!
+       
         mostrarTableroPropio(miTablero.getTablero());
     }
 

@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package mx.itson.equipo_2.models;
 
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ public class PartidaModel {
     public PartidaModel(Jugador j1, Jugador j2) {
         this.partida = new Partida(j1, j2);
 
-        // --- MODIFICADO: Inicialización directa ---
+
         this.jugador1 = j1;
         this.jugador2 = j2;
         this.tableroModel1 = new TableroModel(j1.getTablero());
@@ -67,15 +64,15 @@ public class PartidaModel {
     }
 
     public void iniciarTurno() {
-        // Reiniciar tiempo
+
         tiempoRestante = DURACION_TURNO;
 
-        // Cancelar cualquier timer previo
+
         if (turnoTimer != null && turnoTimer.isRunning()) {
             turnoTimer.stop();
         }
 
-        // Crear un nuevo Timer que dispare cada 1 segundo
+
         turnoTimer = new Timer(1000, e -> {
             tiempoRestante--;
 
@@ -83,7 +80,7 @@ public class PartidaModel {
                 turnoTimer.stop();
                 System.out.println("Tiempo de turno agotado!");
 
-                // Forzar cambio de turno
+
                 pasarTurno();
                 notifyObservers();
             }
@@ -97,13 +94,13 @@ public class PartidaModel {
     public void pasarTurno() {
 
         if (partidaFinalizada()) {
-            return; // No cambiar turno si la partida terminó
+            return; 
         }
 
-        // Cambiar turno dentro de la entidad Partida
+       
         partida.cambiarTurno();
 
-        // Notificar a los observadores que el turno ha cambiado
+        
         notifyObservers();
     }
 
@@ -112,7 +109,7 @@ public class PartidaModel {
             return;
         }
 
-        // Detener cualquier timer que aún esté corriendo.
+       
         if (turnoTimer != null) {
             turnoTimer.stop();
         }
@@ -120,12 +117,12 @@ public class PartidaModel {
         partida.cambiarTurno();
     }
 
-    // --- MODIFICADO: Devuelve la entidad Jugador ---
+    
     public Jugador obtenerOponente(Jugador atacante) {
         return atacante.equals(jugador1) ? jugador2 : jugador1;
     }
 
-    // --- NUEVO: Método para obtener el TableroModel del oponente ---
+    
     public TableroModel obtenerTableroOponente(Jugador atacante) {
         return atacante.equals(jugador1) ? tableroModel2 : tableroModel1;
     }
@@ -150,21 +147,21 @@ public class PartidaModel {
 
     public void repetirTurno() {
         if (partidaFinalizada()) {
-            return; // No hacer nada si la partida terminó
+            return; 
         }
 
-        // Detener cualquier timer activo
+      
         if (turnoTimer != null && turnoTimer.isRunning()) {
             turnoTimer.stop();
         }
 
-        // Reiniciar el tiempo del turno
+     
         tiempoRestante = DURACION_TURNO;
 
-        // Notificar a los observadores que el turno se repite
+       
         notifyObservers();
 
-        // Crear un nuevo timer para el turno
+      
         turnoTimer = new Timer(1000, e -> {
             tiempoRestante--;
 
@@ -172,7 +169,7 @@ public class PartidaModel {
                 turnoTimer.stop();
                 System.out.println("Tiempo de turno agotado!");
 
-                // Cambiar turno automáticamente
+               
                 pasarTurno();
             }
 
@@ -231,17 +228,17 @@ public class PartidaModel {
         return tiempoRestante;
     }
 
-    // Getter
+    
     public String getUltimoError() {
         String error = ultimoError;
-        ultimoError = null; // El error se consume al leerlo
+        ultimoError = null; 
         return error;
     }
 
-// Setter que también notifica
+
     public void setUltimoError(String mensaje) {
         this.ultimoError = mensaje;
-        notifyObservers(); // Notifica a la vista que hay un nuevo estado (un error)
+        notifyObservers();
     }
 
     public void setTiempoRestante(int tiempoRestante) {
