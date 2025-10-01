@@ -172,19 +172,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 final int c = col;
                 //celdaEnemigo.addActionListener(e -> dispararEn(f, c));
                 celdaEnemigo.addActionListener(e -> {
-                    // Restaurar el color anterior de la última seleccionada
+                    // Restaurar el borde de la última seleccionada
                     if (ultimaSeleccionada != null) {
-                        ultimaSeleccionada.setBackground(colorOriginalUltima);
+                        ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1)); // borde normal
                     }
 
-                    // Guardar el color actual de la celda (para restaurarlo después)
-                    colorOriginalUltima = celdaEnemigo.getBackground();
+                    // Guardar el botón seleccionado
+                    ultimaSeleccionada = celdaEnemigo;
 
-                    // Pintar la nueva selección en gris
-                    celdaEnemigo.setBackground(Color.GRAY);
+                    // Aplicar borde gris más grueso al seleccionado
+                    celdaEnemigo.setBorder(new LineBorder(Color.GRAY, 3));
 
                     coordSeleccionada = new CoordenadaDTO(f, c);
-                    ultimaSeleccionada = celdaEnemigo;
                 });
 
                 panelTableroEnemigo.add(celdaEnemigo);
