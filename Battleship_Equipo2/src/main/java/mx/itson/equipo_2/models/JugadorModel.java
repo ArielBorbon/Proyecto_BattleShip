@@ -19,31 +19,23 @@ import mx.itson.equipo_2.models.entitys.Jugador;
  */
 public class JugadorModel {
     
-//    private Jugador jugador;
-//      private final TableroModel tableroModel;
-//
-//    public JugadorModel(Jugador jugador) {
-//        this.jugador = jugador;
-//        this.tableroModel = new TableroModel(jugador.getTablero());
-//    }
-//    
-//    public boolean registrarDisparo(Disparo d) {
-//        jugador.agregarDisparo(d);
-//        return true;
-//    }
-//    
-//    public List<Disparo> obtenerDisparos() {
-//        return jugador.getDisparos();
-//    }
-// 
-//    public Jugador getJugador() {
-//        return jugador;
-//    }
-//
-//
-//    public TableroModel getTableroModel() {
-//        return tableroModel;
-//    }
+    private Jugador jugador;
+
+    public JugadorModel(Jugador jugador) {
+        this.jugador = jugador;
+    }
     
+    public boolean registrarDisparo(Disparo d) {
+        jugador.agregarDisparo(d);
+        return true;
+    }
+    
+    public List<Disparo> obtenerDisparos() {
+        return jugador.getDisparos();
+    }
+ 
+    public Jugador getJugador() {
+        return jugador;
+    }    
     
 }
