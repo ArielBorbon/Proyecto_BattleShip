@@ -24,26 +24,49 @@ public class PartidaModel {
     private final Jugador jugador2;
     private final TableroModel tableroModel1;
     private final TableroModel tableroModel2;
-
     private String ultimoError;
 
-    private Timer turnoTimer;
+
+
     private int tiempoRestante;
-    private final int DURACION_TURNO = 30;
+    private final int DURACION_TURNO = 30; 
 
     private List<PartidaObserver> observers;
 
     public PartidaModel(Jugador j1, Jugador j2) {
         this.partida = new Partida(j1, j2);
-
-
         this.jugador1 = j1;
         this.jugador2 = j2;
         this.tableroModel1 = new TableroModel(j1.getTablero());
         this.tableroModel2 = new TableroModel(j2.getTablero());
-
         this.observers = new ArrayList<>();
     }
+    
+
+    public void iniciarTurno() {
+        this.tiempoRestante = DURACION_TURNO;
+        notifyObservers(); 
+    }
+    
+    public void repetirTurno() {
+        this.tiempoRestante = DURACION_TURNO;
+        notifyObservers(); 
+    }
+
+    public void pasarTurno() {
+        if (partidaFinalizada()) return;
+        partida.cambiarTurno();
+       
+    }
+    
+    public void decrementarTiempo() {
+        if (tiempoRestante > 0) {
+            tiempoRestante--;
+            notifyObservers(); 
+        }
+    }
+
+
 
     public void addObserver(PartidaObserver observer) {
         this.observers.add(observer);
@@ -63,59 +86,11 @@ public class PartidaModel {
         return partida.getJugadorEnTurno().equals(j);
     }
 
-    public void iniciarTurno() {
-
-        tiempoRestante = DURACION_TURNO;
 
 
-        if (turnoTimer != null && turnoTimer.isRunning()) {
-            turnoTimer.stop();
-        }
 
 
-        turnoTimer = new Timer(1000, e -> {
-            tiempoRestante--;
 
-            if (tiempoRestante <= 0) {
-                turnoTimer.stop();
-                System.out.println("Tiempo de turno agotado!");
-
-
-                pasarTurno();
-                notifyObservers();
-            }
-
-            notifyObservers();
-        });
-
-        turnoTimer.start();
-    }
-
-    public void pasarTurno() {
-
-        if (partidaFinalizada()) {
-            return; 
-        }
-
-       
-        partida.cambiarTurno();
-
-        
-        notifyObservers();
-    }
-
-    public void cambiarTurno() {
-        if (partidaFinalizada()) {
-            return;
-        }
-
-       
-        if (turnoTimer != null) {
-            turnoTimer.stop();
-        }
-
-        partida.cambiarTurno();
-    }
 
     
     public Jugador obtenerOponente(Jugador atacante) {
@@ -145,44 +120,12 @@ public class PartidaModel {
         return resultado;
     }
 
-    public void repetirTurno() {
-        if (partidaFinalizada()) {
-            return; 
-        }
 
-      
-        if (turnoTimer != null && turnoTimer.isRunning()) {
-            turnoTimer.stop();
-        }
-
-     
-        tiempoRestante = DURACION_TURNO;
-
-       
-        notifyObservers();
-
-      
-        turnoTimer = new Timer(1000, e -> {
-            tiempoRestante--;
-
-            if (tiempoRestante <= 0) {
-                turnoTimer.stop();
-                System.out.println("Tiempo de turno agotado!");
-
-               
-                pasarTurno();
-            }
-
-            notifyObservers();
-        });
-
-        turnoTimer.start();
-    }
 
     public boolean partidaFinalizada() {
 
         if (tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas()) {
-            turnoTimer.stop();
+            
             return true;
         }else{
             return false;
@@ -220,9 +163,6 @@ public class PartidaModel {
         return tableroModel2;
     }
 
-    public Timer getTurnoTimer() {
-        return turnoTimer;
-    }
 
     public int getTiempoRestante() {
         return tiempoRestante;
@@ -245,9 +185,7 @@ public class PartidaModel {
         this.tiempoRestante = tiempoRestante;
     }
 
-    public void setTurnoTimer(Timer turnoTimer) {
-        this.turnoTimer = turnoTimer;
-    }
+
     
     
     
