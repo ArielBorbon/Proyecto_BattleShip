@@ -26,39 +26,52 @@ import mx.itson.equipo_2.patterns.mediator.GameMediator;
 public class Main {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+               SwingUtilities.invokeLater(() -> {
 
+        
             Jugador jugador1 = new Jugador("Humano");
             Jugador jugador2 = new Jugador("IA");
 
+         
             colocarNavesDePrueba(jugador1);
             colocarNavesDePrueba(jugador2);
 
+            
             PartidaModel partidaModel = new PartidaModel(jugador1, jugador2);
+
+           
             GameMediator mediator = new GameMediator();
 
+           
             PartidaController partidaController = new PartidaController(partidaModel, mediator);
+
+          
             DispararView dispararView = new DispararView();
 
-            dispararView.setMediator(mediator);
-            dispararView.setJugador(jugador1);
-            dispararView.setTableros(partidaModel.getTableroModel1(), partidaModel.getTableroModel2());
+      
+            TableroController tableroController = new TableroController(
+                    dispararView,
+                    partidaModel.getTableroModel1(),
+                    partidaModel.getTableroModel2(),
+                    partidaModel,
+                    jugador1
+            );
 
-            partidaModel.addObserver(dispararView);
-            partidaModel.getTableroModel1().addObserver(dispararView);
-            partidaModel.getTableroModel2().addObserver(dispararView);
-
+      
             partidaController.registrarEstrategia(jugador1, new StrategyTurnoHumano());
             partidaController.registrarEstrategia(jugador2, new StrategyTurnoIA(jugador2));
 
+       
             ViewController viewController = new ViewController();
             viewController.registrarPantalla("disparar", (vc) -> dispararView);
             viewController.cambiarPantalla("disparar");
 
+  
             partidaController.iniciarPartida();
         });
     }
 
+   
     private static void colocarNavesDePrueba(Jugador jugador) {
         Tablero tablero = jugador.getTablero();
 
@@ -82,4 +95,5 @@ public class Main {
 
         System.out.println("Barcos añadidos al jugador " + jugador.getNombre() + ". Total: " + tablero.getNaves().size());
     }
+
 }
