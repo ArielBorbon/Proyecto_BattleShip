@@ -287,6 +287,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
        
         if (tableroAfectado == this.tableroEnemigo) {
             actualizarCeldaEnemigo(disparo);
+            JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
         } else if (tableroAfectado == this.miTablero) {
             actualizarCeldaPropia(disparo);
         }

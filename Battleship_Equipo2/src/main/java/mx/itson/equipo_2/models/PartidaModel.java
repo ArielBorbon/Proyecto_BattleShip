@@ -67,7 +67,6 @@ public class PartidaModel {
     }
 
 
-
     public void addObserver(PartidaObserver observer) {
         this.observers.add(observer);
     }
@@ -85,13 +84,6 @@ public class PartidaModel {
     public boolean verificarTurno(Jugador j) {
         return partida.getJugadorEnTurno().equals(j);
     }
-
-
-
-
-
-
-
     
     public Jugador obtenerOponente(Jugador atacante) {
         return atacante.equals(jugador1) ? jugador2 : jugador1;

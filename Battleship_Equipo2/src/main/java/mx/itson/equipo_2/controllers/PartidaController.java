@@ -6,6 +6,7 @@ import javax.swing.Timer;
 import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Jugador;
+import mx.itson.equipo_2.models.enums.EstadoCelda;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 import mx.itson.equipo_2.patterns.Strategy.StrategyTurno;
 import mx.itson.equipo_2.patterns.mediator.GameMediator;
@@ -80,6 +81,11 @@ public class PartidaController {
                 partidaModel.notifyObservers();
                 return;
             }
+            
+            if (jugador.getTablero().getCelda(coordenada.getFila(), coordenada.getColumna()).getEstado() == EstadoCelda.DISPARADA) {
+                turnoTimer.start();
+                return;
+            }
 
             if (resultado == ResultadoDisparo.AGUA) {
                 partidaModel.pasarTurno();
@@ -91,7 +97,7 @@ public class PartidaController {
 
         } catch (IllegalStateException | IllegalArgumentException e) {
             partidaModel.setUltimoError(e.getMessage());
-            gestionarSiguienteTurno();
+            turnoTimer.start();
         }
     }
 

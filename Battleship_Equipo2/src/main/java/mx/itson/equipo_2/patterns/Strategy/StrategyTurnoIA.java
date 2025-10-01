@@ -50,7 +50,5 @@ public class StrategyTurnoIA implements StrategyTurno {
         
         return this.jugadorAI.getDisparos().stream()
                 .anyMatch(disparo -> disparo.getCoordenada().equals(c));
-        
-        
     }
 }
