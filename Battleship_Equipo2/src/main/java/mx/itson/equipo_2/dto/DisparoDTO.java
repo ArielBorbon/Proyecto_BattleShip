@@ -4,6 +4,7 @@
  */
 package mx.itson.equipo_2.dto;
 
+import java.util.List;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 
 /**
@@ -11,9 +12,11 @@ import mx.itson.equipo_2.models.enums.ResultadoDisparo;
  * @author skyro
  */
 public class DisparoDTO {
-    
+
     private ResultadoDisparo resultado;
     private CoordenadaDTO coordenada;
+
+    private List<CoordenadaDTO> coordenadasBarcoHundido;
 
     public DisparoDTO() {
     }
@@ -21,6 +24,13 @@ public class DisparoDTO {
     public DisparoDTO(ResultadoDisparo resultado, CoordenadaDTO coordenada) {
         this.resultado = resultado;
         this.coordenada = coordenada;
+        this.coordenadasBarcoHundido = null;
+    }
+
+    public DisparoDTO(ResultadoDisparo resultado, CoordenadaDTO coordenada, List<CoordenadaDTO> coordenadasBarcoHundido) {
+        this.resultado = resultado;
+        this.coordenada = coordenada;
+        this.coordenadasBarcoHundido = coordenadasBarcoHundido;
     }
 
     public ResultadoDisparo getResultado() {
@@ -43,6 +53,17 @@ public class DisparoDTO {
     public String toString() {
         return "DisparoDTO{" + "resultado=" + resultado + ", coordenada=" + coordenada + '}';
     }
+
+    public List<CoordenadaDTO> getCoordenadasBarcoHundido() {
+        return coordenadasBarcoHundido;
+    }
+
+    public void setCoordenadasBarcoHundido(List<CoordenadaDTO> coordenadasBarcoHundido) {
+        this.coordenadasBarcoHundido = coordenadasBarcoHundido;
+    }
+
+    
+    
     
     
 }

@@ -209,35 +209,50 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     }
 
     public void actualizarCeldaEnemigo(DisparoDTO dto) {
-        CoordenadaDTO c = dto.getCoordenada();
-        JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
-        Color nuevoColor = switch (dto.getResultado()) {
-            case AGUA ->
-                Color.BLUE;
-            case IMPACTO_SIN_HUNDIMIENTO ->
-                Color.ORANGE;
-            case IMPACTO_CON_HUNDIMIENTO ->
-                Color.RED;
-        };
 
-        boton.setBackground(nuevoColor);
+        // Si el resultado es HUNDIMIENTO, usamos la nueva lógica
+        if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
 
-        // 👇 Si justo es la última seleccionada, actualiza el "color real"
-        if (boton == ultimaSeleccionada) {
-            colorOriginalUltima = nuevoColor;
+            // Recorremos la lista de todas las coordenadas del barco y las pintamos
+            for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
+                JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
+                boton.setBackground(Color.RED);
+            }
+
+        } else {
+            // Si no, usamos la lógica antigua para pintar una sola celda
+            CoordenadaDTO c = dto.getCoordenada();
+            JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
+            Color nuevoColor = switch (dto.getResultado()) {
+                case AGUA ->
+                    Color.BLUE;
+                case IMPACTO_SIN_HUNDIMIENTO ->
+                    Color.ORANGE;
+                default ->
+                    boton.getBackground(); // No debería pasar, pero por seguridad
+            };
+            boton.setBackground(nuevoColor);
         }
     }
 
     public void actualizarCeldaPropia(DisparoDTO dto) {
-        CoordenadaDTO c = dto.getCoordenada();
-        JButton boton = botonesPropio[c.getFila()][c.getColumna()];
-        switch (dto.getResultado()) {
-            case AGUA ->
-                boton.setBackground(Color.CYAN);
-            case IMPACTO_SIN_HUNDIMIENTO ->
-                boton.setBackground(Color.MAGENTA);
-            case IMPACTO_CON_HUNDIMIENTO ->
-                boton.setBackground(Color.BLACK);
+        // Es buena idea replicar la lógica aquí también
+        if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+
+            for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
+                JButton boton = botonesPropio[coord.getFila()][coord.getColumna()];
+                boton.setBackground(Color.BLACK); // Pintamos todo el barco hundido de negro
+            }
+
+        } else {
+            CoordenadaDTO c = dto.getCoordenada();
+            JButton boton = botonesPropio[c.getFila()][c.getColumna()];
+            switch (dto.getResultado()) {
+                case AGUA ->
+                    boton.setBackground(Color.CYAN);
+                case IMPACTO_SIN_HUNDIMIENTO ->
+                    boton.setBackground(Color.MAGENTA);
+            }
         }
     }
 
@@ -297,7 +312,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         }
         if (model.partidaFinalizada()) {
             JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getJugadorEnTurno().getNombre());
-            
+
         }
     }
 

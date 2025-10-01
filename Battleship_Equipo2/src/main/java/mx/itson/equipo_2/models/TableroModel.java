@@ -6,8 +6,10 @@ package mx.itson.equipo_2.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import mx.itson.equipo_2.dto.CoordenadaDTO;
 import mx.itson.equipo_2.dto.DisparoDTO;
+import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Nave;
@@ -33,7 +35,6 @@ public class TableroModel {
     }
 
     // --- NUEVO: Método para agregar observadores ---
-
     public void addObserver(TableroObserver observer) {
         this.observers.add(observer);
     }
@@ -63,19 +64,20 @@ public class TableroModel {
     public ResultadoDisparo recibirDisparo(Coordenada c) throws IllegalStateException {
         Celda celda = obtenerCelda(c);
 
-        // 1. Validación: Lanzar excepción si la celda ya fue disparada.
-        // El controlador se encargará de capturar esta excepción y notificar al usuario.
         if (celda.getEstado() == EstadoCelda.DISPARADA) {
             throw new IllegalStateException("Esta celda ya ha sido disparada.");
         }
 
-        // Variable para almacenar el resultado final.
         ResultadoDisparo resultado;
+        DisparoDTO dto;
 
-        // 2. Lógica del juego: Determinar el resultado del disparo.
         if (celda.getNave() == null) {
             celda.setEstado(EstadoCelda.DISPARADA);
             resultado = ResultadoDisparo.AGUA;
+
+            // Creamos el DTO simple
+            dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
+
         } else {
             Nave nave = celda.getNave();
             celda.setEstado(EstadoCelda.DISPARADA);
@@ -86,18 +88,28 @@ public class TableroModel {
             if (hundida) {
                 nave.setEstado(EstadoNave.HUNDIDO);
                 resultado = ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
+
+                // --- LÓGICA CLAVE ---
+                // 1. Obtenemos todas las coordenadas de la nave hundida.
+                List<CoordenadaDTO> coordsHundidas = nave.getCoordenadas().stream()
+                        .map(CoordenadaMapper::toDTO) // Usamos tu mapper para convertir
+                        .collect(Collectors.toList());
+
+                // 2. Creamos el DTO enriquecido con la lista de coordenadas.
+                dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()), coordsHundidas);
+
             } else {
                 nave.setEstado(EstadoNave.AVERIADO);
                 resultado = ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
+
+                // Creamos el DTO simple
+                dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
             }
         }
 
-        // 3. Notificación: Informar a todos los observadores sobre el cambio.
-        // Esta es la parte clave del patrón Observer.
-        DisparoDTO dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
+        // Notificamos a los observadores con el DTO correspondiente
         notifyObservers(dto);
 
-        // 4. Devolver el resultado.
         return resultado;
     }
 
@@ -110,7 +122,6 @@ public class TableroModel {
 //                    : ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
 //        }
 //    }
-
     public boolean todasNavesHundidas() {
         return tablero.getNaves().stream().allMatch(n -> n.getEstado() == EstadoNave.HUNDIDO);
     }
