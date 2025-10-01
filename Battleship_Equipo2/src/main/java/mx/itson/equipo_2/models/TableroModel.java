@@ -9,8 +9,6 @@ import mx.itson.equipo_2.dto.DisparoDTO;
 import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
-import mx.itson.equipo_2.models.entitys.Disparo;
-import mx.itson.equipo_2.models.entitys.Jugador;
 import mx.itson.equipo_2.models.entitys.Nave;
 import mx.itson.equipo_2.models.entitys.Tablero;
 import mx.itson.equipo_2.models.enums.EstadoCelda;
@@ -104,60 +102,6 @@ public class TableroModel {
 
         return resultado;
     }
-    
-    public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) throws IllegalStateException {
-    if (!validarCoordenada(coord)) {
-        throw new IllegalArgumentException("Coordenada inválida: " + coord);
-    }
-
-    Celda celda = obtenerCelda(coord);
-
-    if (celda.getEstado() == EstadoCelda.DISPARADA) {
-        throw new IllegalStateException("Esta celda ya ha sido disparada.");
-    }
-
-    ResultadoDisparo resultado;
-    DisparoDTO dto;
-
-    if (celda.getNave() == null) {
-        celda.setEstado(EstadoCelda.DISPARADA);
-        resultado = ResultadoDisparo.AGUA;
-
-        dto = new DisparoDTO(resultado, new CoordenadaDTO(coord.getFila(), coord.getColumna()));
-
-    } else {
-        Nave nave = celda.getNave();
-        celda.setEstado(EstadoCelda.DISPARADA);
-
-        boolean hundida = nave.getCoordenadas().stream()
-                .allMatch(c -> tablero.getCelda(c.getFila(), c.getColumna()).getEstado() == EstadoCelda.DISPARADA);
-
-        if (hundida) {
-            nave.setEstado(EstadoNave.HUNDIDO);
-            resultado = ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
-
-            List<CoordenadaDTO> coordsHundidas = nave.getCoordenadas().stream()
-                    .map(CoordenadaMapper::toDTO)
-                    .collect(Collectors.toList());
-
-            dto = new DisparoDTO(resultado, new CoordenadaDTO(coord.getFila(), coord.getColumna()), coordsHundidas);
-        } else {
-            nave.setEstado(EstadoNave.AVERIADO);
-            resultado = ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
-
-            dto = new DisparoDTO(resultado, new CoordenadaDTO(coord.getFila(), coord.getColumna()));
-        }
-    }
-
-   
-    notifyObservers(dto);
-
-       Disparo disparo = new Disparo(resultado, coord);
-    atacante.agregarDisparo(disparo);
-
-    return resultado;
-}
-
 
 
     public boolean todasNavesHundidas() {

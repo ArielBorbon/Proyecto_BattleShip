@@ -94,17 +94,23 @@ public class PartidaModel {
         return atacante.equals(jugador1) ? tableroModel2 : tableroModel1;
     }
 
-    public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) {
-     if (!verificarTurno(atacante)) {
-         throw new IllegalStateException("No es tu turno");
-     }
+    public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) throws IllegalStateException {
+        if (!verificarTurno(atacante)) {
+            throw new IllegalStateException("No es tu turno");
+        }
 
-     TableroModel oponenteTablero = obtenerTableroOponente(atacante);
+        TableroModel oponenteTablero = obtenerTableroOponente(atacante);
 
+        if (!oponenteTablero.validarCoordenada(coord)) {
+            throw new IllegalArgumentException("Coordenada inválida: " + coord);
+        }
 
-     return oponenteTablero.realizarDisparo(atacante, coord);
- }
+        ResultadoDisparo resultado = oponenteTablero.recibirDisparo(coord);
+        Disparo disparo = new Disparo(resultado, coord);
+        atacante.agregarDisparo(disparo);
 
+        return resultado;
+    }
 
 
 

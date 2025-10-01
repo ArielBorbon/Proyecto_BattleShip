@@ -69,32 +69,36 @@ public class PartidaController {
         }
     }
 
-   public void solicitarDisparo(Jugador jugador, Coordenada coordenada) {
-    if (turnoTimer != null) {
-        turnoTimer.stop();
-    }
-
-    try {
-        ResultadoDisparo resultado = partidaModel.realizarDisparo(jugador, coordenada);
-
-        if (partidaModel.partidaFinalizada()) {
-            partidaModel.notifyObservers();
-            return;
+    public void solicitarDisparo(Jugador jugador, Coordenada coordenada) {
+        if (turnoTimer != null) {
+            turnoTimer.stop();
         }
 
-        if (resultado == ResultadoDisparo.AGUA) {
-            partidaModel.pasarTurno();
-        } else {
-            partidaModel.repetirTurno();
+        try {
+            ResultadoDisparo resultado = partidaModel.realizarDisparo(jugador, coordenada);
+
+            if (partidaModel.partidaFinalizada()) {
+                partidaModel.notifyObservers();
+                return;
+            }
+            
+            if (jugador.getTablero().getCelda(coordenada.getFila(), coordenada.getColumna()).getEstado() == EstadoCelda.DISPARADA) {
+                turnoTimer.start();
+                return;
+            }
+
+            if (resultado == ResultadoDisparo.AGUA) {
+                partidaModel.pasarTurno();
+            } else {
+                partidaModel.repetirTurno(); 
+            }
+
+            gestionarSiguienteTurno();
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            partidaModel.setUltimoError(e.getMessage());
+            turnoTimer.start();
         }
-
-        gestionarSiguienteTurno();
-
-    } catch (IllegalStateException | IllegalArgumentException e) {
-        partidaModel.setUltimoError(e.getMessage());
-        turnoTimer.start();
     }
-}
-
 
 }

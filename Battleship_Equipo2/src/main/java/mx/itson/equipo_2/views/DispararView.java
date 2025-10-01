@@ -43,11 +43,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
+    private Color colorOriginalUltima;
 
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
 
     private Jugador jugador;
+    private GameMediator mediator;
 
     private Consumer<Coordenada> listenerDisparo;
 
@@ -58,6 +60,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         initComponents();
         crearCeldas();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -126,8 +129,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
-        int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Estás seguro que deseas rendirte?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro que deseas rendirte?", "Confirmación", JOptionPane.YES_NO_OPTION);
 
         if (opcion == JOptionPane.YES_OPTION) {
             System.out.println("El jugador se rindió");
@@ -135,12 +137,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     }//GEN-LAST:event_btnRendirseActionPerformed
 
     private void btnDispararActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
-       if (coordSeleccionada == null) {
+        if (coordSeleccionada == null) {
             mostrarError("Debes seleccionar una casilla para disparar.");
             return;
         }
-        if (listenerDisparo != null) {
-            listenerDisparo.accept(CoordenadaMapper.toEntity(coordSeleccionada));
+        if (mediator != null) {
+           
+            mediator.notificarDisparo(this.jugador, CoordenadaMapper.toEntity(coordSeleccionada));
         }
     }//GEN-LAST:event_btnDispararActionPerformed
 
@@ -196,41 +199,54 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         }
     }
 
-    
     public void setListenerDisparo(Consumer<Coordenada> listener) {
         this.listenerDisparo = listener;
     }
 
-   public void actualizarCeldaEnemigo(DisparoDTO dto) {
+    public void actualizarCeldaEnemigo(DisparoDTO dto) {
+
+      
         if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+
+          
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
             }
+
         } else {
+           
             CoordenadaDTO c = dto.getCoordenada();
             JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
             Color nuevoColor = switch (dto.getResultado()) {
-                case AGUA -> Color.BLUE;
-                case IMPACTO_SIN_HUNDIMIENTO -> Color.ORANGE;
-                default -> boton.getBackground();
+                case AGUA ->
+                    Color.BLUE;
+                case IMPACTO_SIN_HUNDIMIENTO ->
+                    Color.ORANGE;
+                default ->
+                    boton.getBackground(); //no deberia pasar pero pues por si acaso
             };
             boton.setBackground(nuevoColor);
         }
     }
 
     public void actualizarCeldaPropia(DisparoDTO dto) {
+       
         if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesPropio[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.BLACK);
             }
+
         } else {
             CoordenadaDTO c = dto.getCoordenada();
             JButton boton = botonesPropio[c.getFila()][c.getColumna()];
             switch (dto.getResultado()) {
-                case AGUA -> boton.setBackground(Color.CYAN);
-                case IMPACTO_SIN_HUNDIMIENTO -> boton.setBackground(Color.MAGENTA);
+                case AGUA ->
+                    boton.setBackground(Color.CYAN);
+                case IMPACTO_SIN_HUNDIMIENTO ->
+                    boton.setBackground(Color.MAGENTA);
             }
         }
     }
@@ -240,11 +256,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         return this;
     }
 
+
     public void mostrarTableroPropio(Tablero tablero) {
         for (int fila = 0; fila < Tablero.TAMANIO; fila++) {
             for (int col = 0; col < Tablero.TAMANIO; col++) {
                 Celda celda = tablero.getCelda(fila, col);
                 if (celda.getNave() != null) {
+                    
                     botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
                 }
             }
@@ -259,12 +277,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.jugador = jugador;
     }
 
+   
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
+       
         if (tableroAfectado == this.tableroEnemigo) {
             actualizarCeldaEnemigo(disparo);
             JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
@@ -275,20 +295,33 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     @Override
     public void onChange(PartidaModel model) {
+       
         actualizarTimer(model.getTiempoRestante(), model.getJugadorEnTurno().getNombre());
         String error = model.getUltimoError();
         if (error != null) {
             mostrarError(error);
         }
         if (model.partidaFinalizada()) {
-            JOptionPane.showMessageDialog(this,
-                    "¡Partida terminada! Ganador: " + model.getJugadorEnTurno().getNombre());
+            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getJugadorEnTurno().getNombre());
+
         }
     }
+
+    public GameMediator getMediator() {
+        return mediator;
+    }
+
+    public void setMediator(GameMediator mediator) {
+        this.mediator = mediator;
+    }
+
 
     public void setTableros(TableroModel miTablero, TableroModel tableroEnemigo) {
         this.miTablero = miTablero;
         this.tableroEnemigo = tableroEnemigo;
+
+       
         mostrarTableroPropio(miTablero.getTablero());
     }
+
 }
