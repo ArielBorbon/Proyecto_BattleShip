@@ -9,6 +9,7 @@ import mx.itson.equipo_2.models.enums.EstadoCelda;
 /**
  *
  * @author skyro
+ * @author sonic
  */
 public class CeldaDTO {
 

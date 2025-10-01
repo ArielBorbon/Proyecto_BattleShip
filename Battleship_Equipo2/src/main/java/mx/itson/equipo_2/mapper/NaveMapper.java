@@ -13,6 +13,7 @@ import mx.itson.equipo_2.models.entitys.Nave;
 /**
  *
  * @author skyro
+ * @author sonic
  */
 public class NaveMapper {
 

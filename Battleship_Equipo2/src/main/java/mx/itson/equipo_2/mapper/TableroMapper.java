@@ -10,6 +10,7 @@ import mx.itson.equipo_2.models.entitys.Tablero;
 /**
  *
  * @author skyro
+ * @author sonic
  */
 public class TableroMapper {
     

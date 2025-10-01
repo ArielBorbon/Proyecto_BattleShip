@@ -12,18 +12,26 @@ import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 
 /**
  *
- * @author skyro,Jose Aguilar
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
 public class PartidaModel {
-  
+
     private final Partida partida;
-    private final JugadorModel jugador1;
-    private final JugadorModel jugador2;
+    private final Jugador jugador1;
+    private final Jugador jugador2;
+    private final TableroModel tableroModel1;
+    private final TableroModel tableroModel2;
 
     public PartidaModel(Jugador j1, Jugador j2) {
         this.partida = new Partida(j1, j2);
-        this.jugador1 = new JugadorModel(j1);
-        this.jugador2 = new JugadorModel(j2);
+
+        // --- MODIFICADO: Inicialización directa ---
+        this.jugador1 = j1;
+        this.jugador2 = j2;
+        this.tableroModel1 = new TableroModel(j1.getTablero());
+        this.tableroModel2 = new TableroModel(j2.getTablero());
     }
 
     public boolean verificarTurno(Jugador j) {
@@ -34,43 +42,66 @@ public class PartidaModel {
         partida.cambiarTurno();
     }
 
- 
-    public JugadorModel obtenerOponente(Jugador atacante) {
-        return atacante.equals(jugador1.getJugador()) ? jugador2 : jugador1;
+    // --- MODIFICADO: Devuelve la entidad Jugador ---
+    public Jugador obtenerOponente(Jugador atacante) {
+        return atacante.equals(jugador1) ? jugador2 : jugador1;
+    }
+
+    // --- NUEVO: Método para obtener el TableroModel del oponente ---
+    public TableroModel obtenerTableroOponente(Jugador atacante) {
+        return atacante.equals(jugador1) ? tableroModel2 : tableroModel1;
     }
 
     public ResultadoDisparo realizarDisparo(Jugador atacante, Coordenada coord) {
-        if (!verificarTurno(atacante)) {
-            throw new IllegalStateException("No es el turno de " + atacante.getNombre());
-        }
-
-        JugadorModel oponente = obtenerOponente(atacante);
-
-        if (!oponente.getTableroModel().validarCoordenada(coord)) {
-            throw new IllegalArgumentException("Coordenada inválida: " + coord);
-        }
-
-       
-        ResultadoDisparo resultado = oponente.getTableroModel().recibirDisparo(coord);
-
-        
-        Disparo disparo = new Disparo(resultado, coord);
-        if (atacante.equals(jugador1.getJugador())) {
-            jugador1.registrarDisparo(disparo);
-        } else {
-            jugador2.registrarDisparo(disparo);
-        }
-
-
-        if (resultado == ResultadoDisparo.AGUA) {
-            cambiarTurno();
-        }
-
-        return resultado;
+    if (!verificarTurno(atacante)) {
+        throw new IllegalStateException("No es el turno de " + atacante.getNombre());
     }
+
+    TableroModel oponenteTablero = obtenerTableroOponente(atacante);
+
+    if (!oponenteTablero.validarCoordenada(coord)) {
+        throw new IllegalArgumentException("Coordenada inválida: " + coord);
+    }
+
+    ResultadoDisparo resultado = oponenteTablero.recibirDisparo(coord);
+    Disparo disparo = new Disparo(resultado, coord);
+    atacante.agregarDisparo(disparo);
+
+    return resultado;
+}
 
     public boolean partidaFinalizada() {
-        return jugador1.getTableroModel().todasNavesHundidas() ||
-               jugador2.getTableroModel().todasNavesHundidas();
+
+        return tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas();
+
     }
+
+    public Jugador getJugadorEnTurno() {
+        return partida.getJugadorEnTurno();
+    }
+
+    public void setJugadorEnTurno(Jugador jugador) {
+        partida.setJugadorEnTurno(jugador);
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public Jugador getJugador1() {
+        return jugador1;
+    }
+
+    public Jugador getJugador2() {
+        return jugador2;
+    }
+
+    public TableroModel getTableroModel1() {
+        return tableroModel1;
+    }
+
+    public TableroModel getTableroModel2() {
+        return tableroModel2;
+    }
+
 }

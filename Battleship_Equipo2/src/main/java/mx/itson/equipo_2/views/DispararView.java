@@ -10,20 +10,36 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.GroupLayout;
+import java.util.function.Consumer;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
+import mx.itson.equipo_2.models.entitys.Celda;
+import mx.itson.equipo_2.models.entitys.Coordenada;
+import mx.itson.equipo_2.models.entitys.Tablero;
+import mx.itson.equipo_2.models.enums.ResultadoDisparo;
+import static mx.itson.equipo_2.models.enums.ResultadoDisparo.AGUA;
 import mx.itson.equipo_2.patterns.factory.ViewFactory;
 import mx.itson.equipo_2.patterns.mediator.ViewMediator;
 
 /**
  *
- * @author skyro
+ * @author 
+ * Ariel Eduardo Borbon Izaguirre   00000252116
+* Sebastián Bórquez Huerta          00000252115
+* Alberto Jiménez García            00000252595
+* José Eduardo Aguilar García       00000252049
+* José Luis Islas Molina            00000252574
  */
+
 public class DispararView extends javax.swing.JPanel implements ViewFactory {
+
+    private JButton[][] botonesPropio = new JButton[10][10];
+    private JButton[][] botonesEnemigo = new JButton[10][10];
+
+    private Consumer<Coordenada> listenerDisparo;
 
     /**
      * Creates new form DispararView
@@ -42,21 +58,22 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        tableroEnemigo = new JPanel();
+        panelTableroEnemigo = new JPanel();
         btnRendirse = new JButton();
         btnDisparar = new JButton();
-        tableroPropio = new JPanel();
+        panelTableroPropio = new JPanel();
+        lblTimer = new JLabel();
 
         setBackground(new Color(83, 111, 137));
         setPreferredSize(new Dimension(1280, 720));
         setLayout(null);
 
-        tableroEnemigo.setBackground(new Color(82, 113, 177));
-        tableroEnemigo.setMaximumSize(new Dimension(600, 600));
-        tableroEnemigo.setMinimumSize(new Dimension(600, 600));
-        tableroEnemigo.setLayout(new GridLayout(10, 10));
-        add(tableroEnemigo);
-        tableroEnemigo.setBounds(615, 56, 600, 600);
+        panelTableroEnemigo.setBackground(new Color(82, 113, 177));
+        panelTableroEnemigo.setMaximumSize(new Dimension(600, 600));
+        panelTableroEnemigo.setMinimumSize(new Dimension(600, 600));
+        panelTableroEnemigo.setLayout(new GridLayout(10, 10));
+        add(panelTableroEnemigo);
+        panelTableroEnemigo.setBounds(615, 56, 600, 600);
 
         btnRendirse.setBackground(new Color(75, 75, 75));
         btnRendirse.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
@@ -86,17 +103,22 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
         add(btnDisparar);
         btnDisparar.setBounds(260, 650, 156, 41);
 
-        tableroPropio.setBackground(new Color(82, 113, 177));
-        tableroPropio.setMaximumSize(new Dimension(250, 250));
-        tableroPropio.setMinimumSize(new Dimension(250, 250));
-        tableroPropio.setLayout(new GridLayout(10, 10));
-        add(tableroPropio);
-        tableroPropio.setBounds(130, 50, 250, 250);
+        panelTableroPropio.setBackground(new Color(82, 113, 177));
+        panelTableroPropio.setMaximumSize(new Dimension(250, 250));
+        panelTableroPropio.setMinimumSize(new Dimension(250, 250));
+        panelTableroPropio.setLayout(new GridLayout(10, 10));
+        add(panelTableroPropio);
+        panelTableroPropio.setBounds(130, 50, 250, 250);
+
+        lblTimer.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
+        lblTimer.setText("jLabel1");
+        add(lblTimer);
+        lblTimer.setBounds(100, 320, 360, 50);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro que deseas rendirte?", "Confirmación", JOptionPane.YES_NO_OPTION);
-        
+
         if (opcion == JOptionPane.YES_OPTION) {
             System.out.println("El jugador se rindió");
         }
@@ -110,22 +132,73 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnDisparar;
     private JButton btnRendirse;
-    private JPanel tableroEnemigo;
-    private JPanel tableroPropio;
+    private JLabel lblTimer;
+    private JPanel panelTableroEnemigo;
+    private JPanel panelTableroPropio;
     // End of variables declaration//GEN-END:variables
 
     private void crearCeldas() {
-        for (int i = 0; i < 100; i++) {
-            JButton celdaEnemigo = new JButton();
-            celdaEnemigo.setBackground(new Color(50, 70, 100));
-            celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
-            tableroEnemigo.add(celdaEnemigo);
+        botonesEnemigo = new JButton[10][10];
+        botonesPropio = new JButton[10][10];
 
-            JButton celdaPropio = new JButton();
-            celdaPropio.setEnabled(false);
-            celdaPropio.setBackground(new Color(50, 70, 100));
-            celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
-            tableroPropio.add(celdaPropio);
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                // === CELDAS ENEMIGO ===
+                JButton celdaEnemigo = new JButton();
+                celdaEnemigo.setBackground(new Color(50, 70, 100));
+                celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
+
+                final int f = fila;
+                final int c = col;
+                celdaEnemigo.addActionListener(e -> dispararEn(f, c));
+
+                panelTableroEnemigo.add(celdaEnemigo);
+                botonesEnemigo[fila][col] = celdaEnemigo;
+
+                // === CELDAS PROPIO ===
+                JButton celdaPropio = new JButton();
+                celdaPropio.setEnabled(false);
+                celdaPropio.setBackground(new Color(50, 70, 100));
+                celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
+
+                panelTableroPropio.add(celdaPropio);
+                botonesPropio[fila][col] = celdaPropio;
+            }
+        }
+    }
+
+    private void dispararEn(int fila, int col) {
+        if (listenerDisparo != null) {
+            listenerDisparo.accept(new Coordenada(fila, col));
+            System.out.println("Disparo en: (" + fila + "," + col + ")");
+        }
+    }
+
+    public void setListenerDisparo(Consumer<Coordenada> listener) {
+        this.listenerDisparo = listener;
+    }
+
+    public void actualizarCeldaEnemigo(int fila, int col, ResultadoDisparo resultado) {
+        JButton boton = botonesEnemigo[fila][col];
+        switch (resultado) {
+            case AGUA ->
+                boton.setBackground(Color.BLUE);
+            case IMPACTO_SIN_HUNDIMIENTO ->
+                boton.setBackground(Color.ORANGE);
+            case IMPACTO_CON_HUNDIMIENTO ->
+                boton.setBackground(Color.RED);
+        }
+    }
+
+    public void actualizarCeldaPropia(int fila, int col, ResultadoDisparo resultado) {
+        JButton boton = botonesPropio[fila][col];
+        switch (resultado) {
+            case AGUA ->
+                boton.setBackground(Color.CYAN);
+            case IMPACTO_SIN_HUNDIMIENTO ->
+                boton.setBackground(Color.MAGENTA);
+            case IMPACTO_CON_HUNDIMIENTO ->
+                boton.setBackground(Color.BLACK);
         }
     }
 
@@ -133,4 +206,31 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     public JPanel crear(ViewMediator control) {
         return this;
     }
+    
+    
+
+    /**
+     * Muestra el estado inicial del tablero del jugador, pintando las celdas
+     * donde se encuentran sus naves.
+     *
+     * @param tablero El tablero del jugador.
+     */
+    public void mostrarTableroPropio(Tablero tablero) {
+        for (int fila = 0; fila < Tablero.TAMANIO; fila++) {
+            for (int col = 0; col < Tablero.TAMANIO; col++) {
+                Celda celda = tablero.getCelda(fila, col);
+                if (celda.getNave() != null) {
+                    // Pinta las celdas con naves de un color distintivo (ej. GRIS)
+                    botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
+                }
+            }
+        }
+
+    }
+    
+    public void actualizarTimer(int segundosRestantes, String jugador) {
+        lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
+    }
+    
+
 }

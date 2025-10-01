@@ -9,6 +9,7 @@ import java.util.List;
 /**
  *
  * @author skyro
+ * @author sonic
  */
 public class TableroDTO {
 
