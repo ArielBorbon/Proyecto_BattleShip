@@ -1,23 +1,12 @@
-///*
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-//<<<<<<< HEAD
- //* Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
-// */
-//package mx.itson.equipo_2.patterns.observer;
-//
-//import mx.itson.equipo_2.dto.TableroDTO;
-//
-///**
-// *
- //* @author skyro
-// */
-//public interface TableroObserver {
- //   void update(TableroDTO t);
-//=======
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package mx.itson.equipo_2.patterns.observer;
 
+import mx.itson.equipo_2.dto.DisparoDTO;
 import mx.itson.equipo_2.models.TableroModel;
+import mx.itson.equipo_2.models.entitys.Disparo;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 
 /**
@@ -31,13 +20,6 @@ import mx.itson.equipo_2.models.enums.ResultadoDisparo;
  */
 
 public interface TableroObserver {
-    /**
-     * Notifica que una celda ha sido disparada en un tablero específico.
-     *
-     * @param tableroAfectado El modelo del tablero que recibió el disparo.
-     * @param fila            La fila de la celda afectada.
-     * @param columna         La columna de la celda afectada.
-     * @param resultado       El resultado del disparo.
-     */
-    void onCeldaDisparada(TableroModel tableroAfectado, int fila, int columna, ResultadoDisparo resultado);
+
+    void onDisparo(TableroModel model, DisparoDTO disparo);
 }

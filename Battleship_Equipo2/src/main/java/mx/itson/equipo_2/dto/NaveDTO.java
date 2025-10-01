@@ -11,7 +11,6 @@ import mx.itson.equipo_2.models.enums.TipoNave;
 
 /**
  *
- * @author skyro
  * @author sonic
  */
 public class NaveDTO {

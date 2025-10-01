@@ -6,7 +6,6 @@ package mx.itson.equipo_2.dto;
 
 /**
  *
- * @author skyro
  * @author sonic
  */
 public class CoordenadaDTO {

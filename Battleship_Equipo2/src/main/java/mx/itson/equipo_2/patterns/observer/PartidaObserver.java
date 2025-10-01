@@ -4,12 +4,14 @@
  */
 package mx.itson.equipo_2.patterns.observer;
 
+import mx.itson.equipo_2.models.PartidaModel;
+
 /**
  *
  * @author skyro
  */
-public interface Subject<T> {
-    void addObserver(T observer);
-    void removeObserver(T observer);
-    void notifyObservers();
+public interface PartidaObserver {
+    
+    void onChange(PartidaModel model);
+    
 }

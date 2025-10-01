@@ -19,13 +19,13 @@ import mx.itson.equipo_2.patterns.factory.ViewFactory;
 * José Eduardo Aguilar García       00000252049
 * José Luis Islas Molina            00000252574
  */
-public class ViewMediator implements ViewManager {
+public class ViewController implements ViewManager {
     
     private JFrame frame;
     private Map<String, ViewFactory> factories;
     private Map<String, JPanel> pantallas;
 
-    public ViewMediator() {
+    public ViewController() {
         frame = new JFrame("App con Mediator");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,6 +58,7 @@ public class ViewMediator implements ViewManager {
         frame.setContentPane(panel);
         frame.revalidate();
         frame.repaint();
+        frame.pack();
     }
     
 }

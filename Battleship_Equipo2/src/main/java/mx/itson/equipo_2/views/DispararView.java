@@ -16,36 +16,51 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import mx.itson.equipo_2.controllers.PartidaController;
+import mx.itson.equipo_2.dto.CoordenadaDTO;
+import mx.itson.equipo_2.dto.DisparoDTO;
+import mx.itson.equipo_2.models.PartidaModel;
+import mx.itson.equipo_2.models.TableroModel;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
+import mx.itson.equipo_2.models.entitys.Disparo;
+import mx.itson.equipo_2.models.entitys.Jugador;
 import mx.itson.equipo_2.models.entitys.Tablero;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 import static mx.itson.equipo_2.models.enums.ResultadoDisparo.AGUA;
 import mx.itson.equipo_2.patterns.factory.ViewFactory;
-import mx.itson.equipo_2.patterns.mediator.ViewMediator;
+import mx.itson.equipo_2.patterns.mediator.ViewController;
+import mx.itson.equipo_2.patterns.observer.PartidaObserver;
+import mx.itson.equipo_2.patterns.observer.TableroObserver;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
-
-public class DispararView extends javax.swing.JPanel implements ViewFactory {
+public class DispararView extends javax.swing.JPanel implements ViewFactory, TableroObserver, PartidaObserver {
 
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];
 
+    private TableroModel tableroModel;
+
+    private CoordenadaDTO coordSeleccionada;
+    private JButton ultimaSeleccionada;
+    private Color colorOriginalUltima;
+
+    private Jugador jugador;
+
     private Consumer<Coordenada> listenerDisparo;
+    private PartidaController controller;
 
     /**
      * Creates new form DispararView
      */
-    public DispararView() {
+    public DispararView(PartidaController controller) {
         initComponents();
+        this.controller = controller;
         crearCeldas();
     }
 
@@ -125,7 +140,12 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     }//GEN-LAST:event_btnRendirseActionPerformed
 
     private void btnDispararActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
-        // TODO add your handling code here:
+        if (coordSeleccionada == null) {
+            JOptionPane.showMessageDialog(this, "Debes seleccionar una casilla para disparar.");
+            return;
+        }
+
+        dispararEn(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
     }//GEN-LAST:event_btnDispararActionPerformed
 
 
@@ -150,7 +170,22 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
 
                 final int f = fila;
                 final int c = col;
-                celdaEnemigo.addActionListener(e -> dispararEn(f, c));
+                //celdaEnemigo.addActionListener(e -> dispararEn(f, c));
+                celdaEnemigo.addActionListener(e -> {
+                    // Restaurar el color anterior de la última seleccionada
+                    if (ultimaSeleccionada != null) {
+                        ultimaSeleccionada.setBackground(colorOriginalUltima);
+                    }
+
+                    // Guardar el color actual de la celda (para restaurarlo después)
+                    colorOriginalUltima = celdaEnemigo.getBackground();
+
+                    // Pintar la nueva selección en gris
+                    celdaEnemigo.setBackground(Color.GRAY);
+
+                    coordSeleccionada = new CoordenadaDTO(f, c);
+                    ultimaSeleccionada = celdaEnemigo;
+                });
 
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
@@ -168,31 +203,47 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     }
 
     private void dispararEn(int fila, int col) {
-        if (listenerDisparo != null) {
-            listenerDisparo.accept(new Coordenada(fila, col));
-            System.out.println("Disparo en: (" + fila + "," + col + ")");
+        try {
+            controller.realizarDisparo(this.jugador, new CoordenadaDTO(fila, col));
+
+        } catch (IllegalStateException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return;
         }
+        System.out.println("Disparo en: (" + fila + "," + col + ")");
+//        if (listenerDisparo != null) {
+//            listenerDisparo.accept(new Coordenada(fila, col));
+//        }
     }
 
     public void setListenerDisparo(Consumer<Coordenada> listener) {
         this.listenerDisparo = listener;
     }
 
-    public void actualizarCeldaEnemigo(int fila, int col, ResultadoDisparo resultado) {
-        JButton boton = botonesEnemigo[fila][col];
-        switch (resultado) {
+    public void actualizarCeldaEnemigo(DisparoDTO dto) {
+        CoordenadaDTO c = dto.getCoordenada();
+        JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
+        Color nuevoColor = switch (dto.getResultado()) {
             case AGUA ->
-                boton.setBackground(Color.BLUE);
+                Color.BLUE;
             case IMPACTO_SIN_HUNDIMIENTO ->
-                boton.setBackground(Color.ORANGE);
+                Color.ORANGE;
             case IMPACTO_CON_HUNDIMIENTO ->
-                boton.setBackground(Color.RED);
+                Color.RED;
+        };
+
+        boton.setBackground(nuevoColor);
+
+        // 👇 Si justo es la última seleccionada, actualiza el "color real"
+        if (boton == ultimaSeleccionada) {
+            colorOriginalUltima = nuevoColor;
         }
     }
 
-    public void actualizarCeldaPropia(int fila, int col, ResultadoDisparo resultado) {
-        JButton boton = botonesPropio[fila][col];
-        switch (resultado) {
+    public void actualizarCeldaPropia(DisparoDTO dto) {
+        CoordenadaDTO c = dto.getCoordenada();
+        JButton boton = botonesPropio[c.getFila()][c.getColumna()];
+        switch (dto.getResultado()) {
             case AGUA ->
                 boton.setBackground(Color.CYAN);
             case IMPACTO_SIN_HUNDIMIENTO ->
@@ -203,11 +254,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
     }
 
     @Override
-    public JPanel crear(ViewMediator control) {
+    public JPanel crear(ViewController control) {
         return this;
     }
-    
-    
 
     /**
      * Muestra el estado inicial del tablero del jugador, pintando las celdas
@@ -225,12 +274,35 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory {
                 }
             }
         }
-
     }
-    
+
     public void actualizarTimer(int segundosRestantes, String jugador) {
         lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
     }
-    
 
+    @Override
+    public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
+        if (tableroAfectado == this.tableroModel) {
+            // Me dispararon a mi
+            actualizarCeldaPropia(disparo);
+            System.out.println("a");
+        } else {
+            // Dispararon al rival
+            actualizarCeldaEnemigo(disparo);
+            System.out.println("b");
+        }
+    }
+
+    @Override
+    public void onChange(PartidaModel model) {
+        System.out.println("");
+    }
+
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    public void setTableroModel(TableroModel tableroModel) {
+        this.tableroModel = tableroModel;
+    }
 }

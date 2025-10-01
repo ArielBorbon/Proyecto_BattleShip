@@ -8,7 +8,6 @@ import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Jugador;
 import mx.itson.equipo_2.models.entitys.Nave;
-import mx.itson.equipo_2.models.enums.EstadoNave;
 import mx.itson.equipo_2.models.enums.OrientacionNave;
 import mx.itson.equipo_2.models.enums.TipoNave;
 import mx.itson.equipo_2.patterns.mediator.ViewController;
@@ -29,37 +28,40 @@ import mx.itson.equipo_2.models.enums.EstadoPartida;
 
 public class Main {
 
-
     public static void main(String[] args) {
         // SwingUtilities.invokeLater garantiza que si se cree la interfaz grafica
         SwingUtilities.invokeLater(() -> {
 
-            // creamos los jugadores
+            // 1️⃣ Crear jugadores
             Jugador jugador1 = new Jugador("Ariel");
             Jugador jugador2 = new Jugador("IA");
 
-            //metemos unas naves de prueba
-            // (fase de colocacion)
+            // 2️⃣ Colocar naves de prueba
             colocarNavesDePrueba(jugador1);
             colocarNavesDePrueba(jugador2);
 
+            // 3️⃣ Crear modelo de partida
             PartidaModel partidaModel = new PartidaModel(jugador1, jugador2);
-            // comenzamos partida
-            partidaModel.getPartida().setEstado(EstadoPartida.EN_BATALLA); // Necesitarás un setter en Partida
+            partidaModel.getPartida().setEstado(EstadoPartida.EN_BATALLA);
 
-            // creamos vista y controlador
-            DispararView dispararView = new DispararView();
+            // 4️⃣ Crear controlador
+            PartidaController partidaController = new PartidaController(partidaModel);
 
-            // conectamos modelo y vista con controlador
-            // ya con todo conectado todo lo movemos con el controlador
-            PartidaController partidaController = new PartidaController(partidaModel, dispararView, jugador1, jugador2);
-            
-            partidaController.iniciarPartida(); //iniciar partida despues de crear el controlador
+            // 5️⃣ Crear vista y asignar jugador y tablero
+            DispararView dispararView = new DispararView(partidaController);
+            dispararView.setJugador(jugador1);
+            dispararView.setTableroModel(partidaModel.getTableroModel1());
 
-            // sacamos el gestionador de pantallas
+            // 6️⃣ Registrar vista como observadora
+            partidaModel.addObserver(dispararView);
+            partidaModel.getTableroModel1().addObserver(dispararView);
+            partidaModel.getTableroModel2().addObserver(dispararView);
+
+            // 7️⃣ Iniciar partida desde el controlador
+            partidaController.iniciarPartida();
+
+            // 8️⃣ Registrar pantalla y mostrar
             ViewController viewController = new ViewController();
-
-            // factorizamos la pantalla de disparo.
             viewController.registrarPantalla("disparar", (vc) -> dispararView);
             viewController.cambiarPantalla("disparar");
 
@@ -69,7 +71,6 @@ public class Main {
                 JOptionPane.showMessageDialog(null, "¡Partida terminada! Ganador: " + partidaModel.getJugadorEnTurno().getNombre());
                 System.out.println("GANADOR: " + partidaModel.getJugadorEnTurno().getNombre());
             }
-
         });
     }
 

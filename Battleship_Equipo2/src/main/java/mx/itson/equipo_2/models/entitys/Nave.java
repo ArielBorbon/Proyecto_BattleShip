@@ -27,15 +27,14 @@ public class Nave {
 
     public Nave() {
     }
+    
 
-    public Nave(TipoNave tipo, EstadoNave estado, List<Coordenada> coordenadas, OrientacionNave orientacion) {
+    public Nave(TipoNave tipo, List<Coordenada> coordenadas, OrientacionNave orientacion) {
         this.tipo = tipo;
-        this.estado = estado;
         this.coordenadas = coordenadas;
         this.orientacion = orientacion;
+        this.estado = EstadoNave.SIN_DANIOS;
     }
-    
-    
 
     public Nave(TipoNave tipo, EstadoNave estado, List<Coordenada> coordenadas, OrientacionNave orientacion) {
         this.tipo = tipo;

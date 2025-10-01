@@ -6,7 +6,8 @@ package mx.itson.equipo_2.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import mx.itson.equipo_2.mapper.TableroMapper;
+import mx.itson.equipo_2.dto.CoordenadaDTO;
+import mx.itson.equipo_2.dto.DisparoDTO;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Nave;
@@ -14,26 +15,14 @@ import mx.itson.equipo_2.models.entitys.Tablero;
 import mx.itson.equipo_2.models.enums.EstadoCelda;
 import mx.itson.equipo_2.models.enums.EstadoNave;
 import mx.itson.equipo_2.models.enums.ResultadoDisparo;
-import mx.itson.equipo_2.patterns.observer.Subject;
 import mx.itson.equipo_2.patterns.observer.TableroObserver;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
-//<<<<<<< HEAD
-//public class TableroModel implements Subject<TableroObserver>{
-    
-  //  private final Tablero tablero;
-   //  
-  //  public List<TableroObserver> observadores;
- //   
-//=======
 public class TableroModel {
 
     private final Tablero tablero;
@@ -41,23 +30,21 @@ public class TableroModel {
 
     public TableroModel(Tablero tablero) {
         this.tablero = tablero;
-        this.observadores = new ArrayList<>();
     }
 
     // --- NUEVO: Método para agregar observadores ---
+
     public void addObserver(TableroObserver observer) {
         this.observers.add(observer);
     }
-    
-        public void removeObserver(TableroObserver observer) {
+
+    public void removeObserver(TableroObserver observer) {
         observers.remove(observer);
     }
 
-
-    private void notifyObservers(int fila, int columna, ResultadoDisparo resultado) {
-        for (TableroObserver observer : observers) {
-            // Pasamos 'this' para que el observador sepa qué tablero cambió
-            observer.onCeldaDisparada(this, fila, columna, resultado);
+    public void notifyObservers(DisparoDTO disparo) {
+        for (TableroObserver to : observers) {
+            to.onDisparo(this, disparo);
         }
     }
 
@@ -73,7 +60,7 @@ public class TableroModel {
         return tablero.getCelda(c.getFila(), c.getColumna());
     }
 
-    public ResultadoDisparo recibirDisparo(Coordenada c) {
+    public ResultadoDisparo recibirDisparo(Coordenada c) throws IllegalStateException {
         Celda celda = obtenerCelda(c);
 
         // 1. Validación: Lanzar excepción si la celda ya fue disparada.
@@ -107,45 +94,26 @@ public class TableroModel {
 
         // 3. Notificación: Informar a todos los observadores sobre el cambio.
         // Esta es la parte clave del patrón Observer.
-        notifyObservers(c.getFila(), c.getColumna(), resultado);
+        DisparoDTO dto = new DisparoDTO(resultado, new CoordenadaDTO(c.getFila(), c.getColumna()));
+        notifyObservers(dto);
 
         // 4. Devolver el resultado.
         return resultado;
     }
 
-    private ResultadoDisparo determinarResultadoAnterior(Celda celda) {
-        if (celda.getNave() == null) {
-            return ResultadoDisparo.AGUA;
-        } else {
-            return celda.getNave().getEstado() == EstadoNave.HUNDIDO
-                    ? ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO
-                    : ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
-        }
-    }
+//    private ResultadoDisparo determinarResultadoAnterior(Celda celda) {
+//        if (celda.getNave() == null) {
+//            return ResultadoDisparo.AGUA;
+//        } else {
+//            return celda.getNave().getEstado() == EstadoNave.HUNDIDO
+//                    ? ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO
+//                    : ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
+//        }
+//    }
 
     public boolean todasNavesHundidas() {
         return tablero.getNaves().stream().allMatch(n -> n.getEstado() == EstadoNave.HUNDIDO);
     }
-
-//<<<<<<< HEAD
- //   @Override
-  //  public void addObserver(TableroObserver observer) {
-   //     observadores.add(observer);
-  //  }
-//
- //   @Override
-  //  public void removeObserver(TableroObserver observer) {
-   //     observadores.remove(observer);
-   // }
-
-    //@Override
-    //public void notifyObservers() {
-    //    for(TableroObserver o : observadores) {
-      //      o.update(TableroMapper.toDTO(this.tablero));
-        //}
-    //}
-//=======
-
 
     public Tablero getTablero() {
         return tablero;

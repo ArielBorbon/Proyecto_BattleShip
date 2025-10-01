@@ -11,7 +11,6 @@ import mx.itson.equipo_2.models.entitys.Coordenada;
 
 /**
  *
- * @author skyro
  * @author sonic
  */
 public class CeldaMapper {
@@ -19,8 +18,6 @@ public class CeldaMapper {
     public static Celda toEntity(CeldaDTO dto) {
         return new Celda(
                 dto.getEstado(),
-
-           //     new Coordenada(dto.getCoordenada().getFila(), dto.getCoordenada().getFila()),
                 new Coordenada(dto.getCoordenada().getFila(), dto.getCoordenada().getColumna()),
                 NaveMapper.toEntity(dto.getNave())
         );

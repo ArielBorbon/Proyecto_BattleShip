@@ -5,7 +5,7 @@
 package mx.itson.equipo_2.patterns.factory;
 
 import javax.swing.JPanel;
-import mx.itson.equipo_2.patterns.mediator.ViewMediator;
+import mx.itson.equipo_2.patterns.mediator.ViewController;
 
 /**
  *
@@ -17,5 +17,5 @@ import mx.itson.equipo_2.patterns.mediator.ViewMediator;
 * José Luis Islas Molina            00000252574
  */
 public interface ViewFactory {
-    JPanel crear(ViewMediator control);
+    JPanel crear(ViewController control);
 }

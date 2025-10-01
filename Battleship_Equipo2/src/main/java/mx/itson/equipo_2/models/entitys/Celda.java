@@ -23,11 +23,12 @@ public class Celda {
 
     public Celda() {
     }
+    
 
-    public Celda(EstadoCelda estado, Coordenada coordenada, Nave nave) {
-        this.estado = estado;
+    public Celda(Coordenada coordenada) {
         this.coordenada = coordenada;
-        this.nave = nave;
+        this.estado = EstadoCelda.NO_DISPARADA;
+        this.nave = null;
     }
 
     public Celda(EstadoCelda estado, Coordenada coordenada, Nave nave) {

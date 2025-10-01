@@ -17,9 +17,6 @@ import java.util.List;
 * José Eduardo Aguilar García       00000252049
 * José Luis Islas Molina            00000252574
  */
-import java.util.ArrayList;
-import java.util.List;
-import mx.itson.equipo_2.models.enums.EstadoCelda;
 
 public class Tablero {
 
@@ -43,11 +40,13 @@ public class Tablero {
         this.celdas = celdas;
         this.naves = naves;
     }
+    
+    
 
     private void inicializarCeldas() {
         for (int fila = 0; fila < TAMANIO; fila++) {
             for (int col = 0; col < TAMANIO; col++) {
-                celdas[fila][col] = new Celda(EstadoCelda.NO_DISPARADA, new Coordenada(fila, col), null);
+                celdas[fila][col] = new Celda(new Coordenada(fila, col));
             }
         }
     }

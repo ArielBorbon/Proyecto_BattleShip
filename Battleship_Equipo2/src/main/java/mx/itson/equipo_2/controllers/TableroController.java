@@ -8,11 +8,6 @@ package mx.itson.equipo_2.controllers;
  *
  * @author skyro
  */
-public class DisparoController {
+public class TableroController {
     
-    
-    public void realizarDisparo(int fila, int columna) {
-        
-        
-    }
 }
