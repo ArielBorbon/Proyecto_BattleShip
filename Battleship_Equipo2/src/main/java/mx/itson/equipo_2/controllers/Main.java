@@ -12,6 +12,13 @@ import mx.itson.equipo_2.models.enums.OrientacionNave;
 import mx.itson.equipo_2.models.enums.TipoNave;
 import mx.itson.equipo_2.patterns.mediator.ViewController;
 import mx.itson.equipo_2.views.DispararView;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import mx.itson.equipo_2.models.entitys.Tablero;
+import mx.itson.equipo_2.patterns.Strategy.StrategyTurnoHumano;
+import mx.itson.equipo_2.patterns.Strategy.StrategyTurnoIA;
+import mx.itson.equipo_2.patterns.mediator.GameMediator;
 
 /**
  *
@@ -19,84 +26,78 @@ import mx.itson.equipo_2.views.DispararView;
  * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
  * 00000252049 José Luis Islas Molina 00000252574
  */
-import javax.swing.SwingUtilities;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JOptionPane;
-import mx.itson.equipo_2.models.entitys.Tablero;
-import mx.itson.equipo_2.models.enums.EstadoPartida;
-
 public class Main {
 
     public static void main(String[] args) {
-        // SwingUtilities.invokeLater garantiza que si se cree la interfaz grafica
         SwingUtilities.invokeLater(() -> {
 
-            // 1️⃣ Crear jugadores
-            Jugador jugador1 = new Jugador("Ariel");
+            // 1️⃣ PRIMERO: Crear los jugadores.
+            Jugador jugador1 = new Jugador("Humano");
             Jugador jugador2 = new Jugador("IA");
 
-            // 2️⃣ Colocar naves de prueba
+            // 2️⃣ SEGUNDO: Configurar COMPLETAMENTE a los jugadores con sus barcos.
             colocarNavesDePrueba(jugador1);
             colocarNavesDePrueba(jugador2);
 
-            // 3️⃣ Crear modelo de partida
+            // 3️⃣ TERCERO: Crear el Modelo de la Partida, AHORA que los jugadores están listos.
             PartidaModel partidaModel = new PartidaModel(jugador1, jugador2);
-            partidaModel.getPartida().setEstado(EstadoPartida.EN_BATALLA);
+            GameMediator mediator = new GameMediator();
 
-            // 4️⃣ Crear controlador
-            PartidaController partidaController = new PartidaController(partidaModel);
+            // 4. Crear Controlador (solo ve al Modelo y al Mediador)
+            PartidaController partidaController = new PartidaController(partidaModel, mediator);
+            // 5. Crear Vista
+            DispararView dispararView = new DispararView();
 
-            // 5️⃣ Crear vista y asignar jugador y tablero
-            DispararView dispararView = new DispararView(partidaController);
+            // 6. Conectar todas las piezas
+            dispararView.setMediator(mediator);
             dispararView.setJugador(jugador1);
-            dispararView.setTableroModel(partidaModel.getTableroModel1());
+            // La vista recibe los modelos de tablero que ya tienen los barcos dentro
+            dispararView.setTableros(partidaModel.getTableroModel1(), partidaModel.getTableroModel2());
 
-            // 6️⃣ Registrar vista como observadora
+            // Suscribir la Vista a los cambios del Modelo
             partidaModel.addObserver(dispararView);
             partidaModel.getTableroModel1().addObserver(dispararView);
             partidaModel.getTableroModel2().addObserver(dispararView);
 
-            // 7️⃣ Iniciar partida desde el controlador
-            partidaController.iniciarPartida();
+            // 7. Crear y registrar Estrategias en el Controlador
+            partidaController.registrarEstrategia(jugador1, new StrategyTurnoHumano());
+            partidaController.registrarEstrategia(jugador2, new StrategyTurnoIA(jugador2));
 
-            // 8️⃣ Registrar pantalla y mostrar
+            // 8. Mostrar la UI
             ViewController viewController = new ViewController();
             viewController.registrarPantalla("disparar", (vc) -> dispararView);
             viewController.cambiarPantalla("disparar");
 
-            System.out.println("¡Partida iniciada! Turno de: " + partidaModel.getJugadorEnTurno().getNombre());
-
-            if (partidaModel.partidaFinalizada()) {
-                JOptionPane.showMessageDialog(null, "¡Partida terminada! Ganador: " + partidaModel.getJugadorEnTurno().getNombre());
-                System.out.println("GANADOR: " + partidaModel.getJugadorEnTurno().getNombre());
-            }
+            // 9. Iniciar el juego
+            partidaController.iniciarPartida();
         });
     }
 
-    /**
-     * Metodo para poner unas naves de prueba en el main que tenemos orita
-     */
     private static void colocarNavesDePrueba(Jugador jugador) {
         Tablero tablero = jugador.getTablero();
 
-        //metemos barcos de diferentes tamaños
+        // Barco 1
         List<Coordenada> coordsBarco1 = new ArrayList<>();
         coordsBarco1.add(new Coordenada(0, 0));
         coordsBarco1.add(new Coordenada(0, 1));
         tablero.agregarNave(new Nave(TipoNave.BARCO, coordsBarco1, OrientacionNave.HORIZONTAL));
 
+        // Barco 2
         List<Coordenada> coordsBarco2 = new ArrayList<>();
         coordsBarco2.add(new Coordenada(2, 3));
         coordsBarco2.add(new Coordenada(3, 3));
         coordsBarco2.add(new Coordenada(4, 3));
         tablero.agregarNave(new Nave(TipoNave.SUBMARINO, coordsBarco2, OrientacionNave.VERTICAL));
 
+        // Barco 3
         List<Coordenada> coordsBarco3 = new ArrayList<>();
         coordsBarco3.add(new Coordenada(5, 5));
         coordsBarco3.add(new Coordenada(5, 6));
         coordsBarco3.add(new Coordenada(5, 7));
         coordsBarco3.add(new Coordenada(5, 8));
         tablero.agregarNave(new Nave(TipoNave.CRUCERO, coordsBarco3, OrientacionNave.HORIZONTAL));
+
+        // Añadimos un 'println' para depurar y confirmar que los barcos se añaden
+        System.out.println("Barcos añadidos al jugador " + jugador.getNombre() + ". Total: " + tablero.getNaves().size());
     }
 }

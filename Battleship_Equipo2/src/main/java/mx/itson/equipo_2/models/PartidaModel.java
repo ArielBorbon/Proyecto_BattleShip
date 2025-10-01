@@ -28,9 +28,11 @@ public class PartidaModel {
     private final TableroModel tableroModel1;
     private final TableroModel tableroModel2;
 
+    private String ultimoError;
+
     private Timer turnoTimer;
     private int tiempoRestante;
-    private final int DURACION_TURNO = 31;
+    private final int DURACION_TURNO = 30;
 
     private List<PartidaObserver> observers;
 
@@ -42,7 +44,7 @@ public class PartidaModel {
         this.jugador2 = j2;
         this.tableroModel1 = new TableroModel(j1.getTablero());
         this.tableroModel2 = new TableroModel(j2.getTablero());
-        
+
         this.observers = new ArrayList<>();
     }
 
@@ -182,8 +184,15 @@ public class PartidaModel {
 
     public boolean partidaFinalizada() {
 
-        return tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas();
-
+        if (tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas()) {
+            turnoTimer.stop();
+            return true;
+        }else{
+            return false;
+        }
+        
+        
+        
     }
 
     public Jugador getJugadorEnTurno() {
@@ -221,5 +230,31 @@ public class PartidaModel {
     public int getTiempoRestante() {
         return tiempoRestante;
     }
+
+    // Getter
+    public String getUltimoError() {
+        String error = ultimoError;
+        ultimoError = null; // El error se consume al leerlo
+        return error;
+    }
+
+// Setter que también notifica
+    public void setUltimoError(String mensaje) {
+        this.ultimoError = mensaje;
+        notifyObservers(); // Notifica a la vista que hay un nuevo estado (un error)
+    }
+
+    public void setTiempoRestante(int tiempoRestante) {
+        this.tiempoRestante = tiempoRestante;
+    }
+
+    public void setTurnoTimer(Timer turnoTimer) {
+        this.turnoTimer = turnoTimer;
+    }
+    
+    
+    
+    
+    
 
 }

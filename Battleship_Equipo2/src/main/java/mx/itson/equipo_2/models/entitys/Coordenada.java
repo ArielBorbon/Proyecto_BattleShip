@@ -4,6 +4,8 @@
  */
 package mx.itson.equipo_2.models.entitys;
 
+import java.util.Objects;
+
 /**
  *
  * @author 
@@ -42,10 +44,32 @@ public class Coordenada {
     public void setColumna(int columna) {
         this.columna = columna;
     }
+    
+        @Override
+    public boolean equals(Object o) {
+        // 1. Comprueba si es el mismo objeto en memoria
+        if (this == o) return true;
+        // 2. Comprueba si el otro objeto es nulo o de una clase diferente
+        if (o == null || getClass() != o.getClass()) return false;
+        // 3. Convierte el objeto y compara los campos
+        Coordenada that = (Coordenada) o;
+        return fila == that.fila && columna == that.columna;
+    }
+    
+        @Override
+    public int hashCode() {
+        // Genera un número único basado en los valores de fila y columna
+        return Objects.hash(fila, columna);
+    }
+    
+    
 
     @Override
     public String toString() {
         return "(" + fila + "," + columna + ")";
     }
+    
+    
+    
 }
 

@@ -15,20 +15,20 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.LineBorder;
-import mx.itson.equipo_2.controllers.PartidaController;
 import mx.itson.equipo_2.dto.CoordenadaDTO;
 import mx.itson.equipo_2.dto.DisparoDTO;
+import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.TableroModel;
 import mx.itson.equipo_2.models.entitys.Celda;
 import mx.itson.equipo_2.models.entitys.Coordenada;
-import mx.itson.equipo_2.models.entitys.Disparo;
 import mx.itson.equipo_2.models.entitys.Jugador;
 import mx.itson.equipo_2.models.entitys.Tablero;
-import mx.itson.equipo_2.models.enums.ResultadoDisparo;
 import static mx.itson.equipo_2.models.enums.ResultadoDisparo.AGUA;
 import mx.itson.equipo_2.patterns.factory.ViewFactory;
+import mx.itson.equipo_2.patterns.mediator.GameMediator;
 import mx.itson.equipo_2.patterns.mediator.ViewController;
 import mx.itson.equipo_2.patterns.observer.PartidaObserver;
 import mx.itson.equipo_2.patterns.observer.TableroObserver;
@@ -44,23 +44,24 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];
 
-    private TableroModel tableroModel;
-
+    // private TableroModel tableroModel; // <-- ¡Bien! Lo quitaste.
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
     private Color colorOriginalUltima;
 
+    private TableroModel miTablero;
+    private TableroModel tableroEnemigo;
+
     private Jugador jugador;
+    private GameMediator mediator;
 
     private Consumer<Coordenada> listenerDisparo;
-    private PartidaController controller;
 
     /**
      * Creates new form DispararView
      */
-    public DispararView(PartidaController controller) {
+    public DispararView() {
         initComponents();
-        this.controller = controller;
         crearCeldas();
     }
 
@@ -126,7 +127,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         panelTableroPropio.setBounds(130, 50, 250, 250);
 
         lblTimer.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
-        lblTimer.setText("jLabel1");
+        lblTimer.setText("...");
         add(lblTimer);
         lblTimer.setBounds(100, 320, 360, 50);
     }// </editor-fold>//GEN-END:initComponents
@@ -141,11 +142,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     private void btnDispararActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
         if (coordSeleccionada == null) {
-            JOptionPane.showMessageDialog(this, "Debes seleccionar una casilla para disparar.");
+            mostrarError("Debes seleccionar una casilla para disparar.");
             return;
         }
-
-        dispararEn(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
+        if (mediator != null) {
+            // Correcto: Notifica al mediador
+            mediator.notificarDisparo(this.jugador, CoordenadaMapper.toEntity(coordSeleccionada));
+        }
     }//GEN-LAST:event_btnDispararActionPerformed
 
 
@@ -199,20 +202,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 botonesPropio[fila][col] = celdaPropio;
             }
         }
-    }
-
-    private void dispararEn(int fila, int col) {
-        try {
-            controller.realizarDisparo(this.jugador, new CoordenadaDTO(fila, col));
-
-        } catch (IllegalStateException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
-            return;
-        }
-        System.out.println("Disparo en: (" + fila + "," + col + ")");
-//        if (listenerDisparo != null) {
-//            listenerDisparo.accept(new Coordenada(fila, col));
-//        }
     }
 
     public void setListenerDisparo(Consumer<Coordenada> listener) {
@@ -279,29 +268,58 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
     }
 
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    // AÑADE este método para mostrar errores
+    public void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
+    }
+
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
-        if (tableroAfectado == this.tableroModel) {
-            // Me dispararon a mi
-            actualizarCeldaPropia(disparo);
-            System.out.println("a");
-        } else {
-            // Dispararon al rival
+        // Tu lógica aquí es 100% correcta
+        if (tableroAfectado == this.tableroEnemigo) {
             actualizarCeldaEnemigo(disparo);
-            System.out.println("b");
+        } else if (tableroAfectado == this.miTablero) {
+            actualizarCeldaPropia(disparo);
         }
     }
 
     @Override
     public void onChange(PartidaModel model) {
-        System.out.println("");
+        // Tu lógica de observador de la partida es perfecta
+        actualizarTimer(model.getTiempoRestante(), model.getJugadorEnTurno().getNombre());
+        String error = model.getUltimoError();
+        if (error != null) {
+            mostrarError(error);
+        }
+        if (model.partidaFinalizada()) {
+            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getJugadorEnTurno().getNombre());
+            
+        }
     }
 
-    public void setJugador(Jugador jugador) {
-        this.jugador = jugador;
+    public GameMediator getMediator() {
+        return mediator;
     }
 
-    public void setTableroModel(TableroModel tableroModel) {
-        this.tableroModel = tableroModel;
+    public void setMediator(GameMediator mediator) {
+        this.mediator = mediator;
     }
+
+    // --- MÉTODO NUEVO A AÑADIR ---
+    /**
+     * Establece las referencias a los modelos de tablero para que la vista sepa
+     * a quién pertenece cada uno. Es crucial para la lógica del observador.
+     */
+    public void setTableros(TableroModel miTablero, TableroModel tableroEnemigo) {
+        this.miTablero = miTablero;
+        this.tableroEnemigo = tableroEnemigo;
+
+        // ¡Arregla el bug de que no se veían las naves!
+        mostrarTableroPropio(miTablero.getTablero());
+    }
+
 }
