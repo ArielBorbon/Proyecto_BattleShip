@@ -1,8 +1,10 @@
-package mx.itson.equipo_2.controllers;
+package mx.itson.equipo_2.controller;
 
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Timer;
+import mx.itson.equipo_2.dto.CoordenadaDTO;
+import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.entitys.Coordenada;
 import mx.itson.equipo_2.models.entitys.Jugador;
@@ -23,10 +25,9 @@ public class PartidaController {
     private final Map<Jugador, StrategyTurno> estrategias;
     private Timer turnoTimer;
 
-    public PartidaController(PartidaModel partidaModel, GameMediator mediator) {
+    public PartidaController(PartidaModel partidaModel) {
         this.partidaModel = partidaModel;
         this.estrategias = new HashMap<>();
-        mediator.setController(this);
     }
 
     public void registrarEstrategia(Jugador jugador, StrategyTurno estrategia) {
@@ -69,24 +70,28 @@ public class PartidaController {
         }
     }
 
-    public void solicitarDisparo(Jugador jugador, Coordenada coordenada) {
+    public void disparar(Jugador jugador, CoordenadaDTO coordenada) {
+        
         if (turnoTimer != null) {
             turnoTimer.stop();
         }
 
         try {
-            ResultadoDisparo resultado = partidaModel.realizarDisparo(jugador, coordenada);
+            ResultadoDisparo resultado = partidaModel.realizarDisparo(jugador, CoordenadaMapper.toEntity(coordenada));
 
+            // Si ya se hundieron todas las naves
             if (partidaModel.partidaFinalizada()) {
                 partidaModel.notifyObservers();
                 return;
             }
-            
+
+            // Si el disparo va a una celda ya disparada            
             if (jugador.getTablero().getCelda(coordenada.getFila(), coordenada.getColumna()).getEstado() == EstadoCelda.DISPARADA) {
                 turnoTimer.start();
                 return;
             }
 
+            // Resultados
             if (resultado == ResultadoDisparo.AGUA) {
                 partidaModel.pasarTurno();
             } else {

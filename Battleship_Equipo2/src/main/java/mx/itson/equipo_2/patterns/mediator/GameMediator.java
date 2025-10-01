@@ -1,8 +1,9 @@
 
 package mx.itson.equipo_2.patterns.mediator;
 
-import mx.itson.equipo_2.controllers.PartidaController;
-import mx.itson.equipo_2.models.entitys.Coordenada;
+import mx.itson.equipo_2.controller.PartidaController;
+import mx.itson.equipo_2.dto.CoordenadaDTO;
+import mx.itson.equipo_2.exception.DisparoException;
 import mx.itson.equipo_2.models.entitys.Jugador;
 
 /**
@@ -11,15 +12,15 @@ import mx.itson.equipo_2.models.entitys.Jugador;
  */
 public class GameMediator {
 
-    private PartidaController controller;
+    private PartidaController partidaController;
 
-    public void setController(PartidaController controller) {
-        this.controller = controller;
+    public void setPartidaController(PartidaController controller) {
+        this.partidaController = controller;
     }
-
-    public void notificarDisparo(Jugador jugador, Coordenada coordenada) {
-        if (controller != null) {
-            controller.solicitarDisparo(jugador, coordenada);
+    
+    public void disparar(Jugador jugador, CoordenadaDTO coord) throws DisparoException {
+        if (partidaController != null) {
+            partidaController.disparar(jugador, coord);
         }
     }
 }

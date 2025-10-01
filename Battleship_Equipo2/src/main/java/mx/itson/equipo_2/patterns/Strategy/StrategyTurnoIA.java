@@ -3,7 +3,7 @@ package mx.itson.equipo_2.patterns.Strategy;
 
 import java.util.Random;
 import javax.swing.Timer;
-import mx.itson.equipo_2.controllers.PartidaController;
+import mx.itson.equipo_2.controller.PartidaController;
 import mx.itson.equipo_2.dto.CoordenadaDTO;
 import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.PartidaModel;
@@ -30,25 +30,27 @@ public class StrategyTurnoIA implements StrategyTurno {
                 return;
             }
 
-            Coordenada coordDisparoIA;
+            CoordenadaDTO coordDisparoIA;
             do {
                 int fila = random.nextInt(10);
                 int col = random.nextInt(10);
-                coordDisparoIA = new Coordenada(fila, col);
-            } while (haSidoDisparadaPorIA(partidaModel, coordDisparoIA));
+                coordDisparoIA = new CoordenadaDTO(fila, col);
+            } while (haSidoDisparadaPorIA(coordDisparoIA));
 
             System.out.println("IA dispara en: (" + coordDisparoIA.getFila() + ", " + coordDisparoIA.getColumna() + ")");
             
-            partidaController.solicitarDisparo(jugadorAI, coordDisparoIA);
+            partidaController.disparar(jugadorAI, coordDisparoIA);
         });
 
         timer.setRepeats(false);
         timer.start();
     }
 
-    private boolean haSidoDisparadaPorIA(PartidaModel model, Coordenada c) {
+    private boolean haSidoDisparadaPorIA(CoordenadaDTO c) {
         
         return this.jugadorAI.getDisparos().stream()
-                .anyMatch(disparo -> disparo.getCoordenada().equals(c));
+                .anyMatch(disparo -> 
+                        disparo.getCoordenada().getFila() == c.getFila() &&
+                                disparo.getCoordenada().getColumna() == c.getColumna() );
     }
 }

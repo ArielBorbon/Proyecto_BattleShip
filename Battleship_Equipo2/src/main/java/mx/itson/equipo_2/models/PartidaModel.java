@@ -115,16 +115,7 @@ public class PartidaModel {
 
 
     public boolean partidaFinalizada() {
-
-        if (tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas()) {
-            
-            return true;
-        }else{
-            return false;
-        }
-        
-        
-        
+        return tableroModel1.todasNavesHundidas() || tableroModel2.todasNavesHundidas();
     }
 
     public Jugador getJugadorEnTurno() {

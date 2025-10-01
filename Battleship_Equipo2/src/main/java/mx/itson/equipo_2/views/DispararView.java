@@ -16,6 +16,7 @@ import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.dto.CoordenadaDTO;
 import mx.itson.equipo_2.dto.DisparoDTO;
+import mx.itson.equipo_2.exception.DisparoException;
 import mx.itson.equipo_2.mapper.CoordenadaMapper;
 import mx.itson.equipo_2.models.PartidaModel;
 import mx.itson.equipo_2.models.TableroModel;
@@ -142,8 +143,12 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             return;
         }
         if (mediator != null) {
-           
-            mediator.notificarDisparo(this.jugador, CoordenadaMapper.toEntity(coordSeleccionada));
+            
+            try {
+                mediator.disparar(this.jugador, coordSeleccionada);
+            } catch (DisparoException ex) {
+                mostrarError(ex.getMessage());
+            }
         }
     }//GEN-LAST:event_btnDispararActionPerformed
 
