@@ -5,6 +5,7 @@
 package mx.itson.equipo_2.common.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -12,4 +13,35 @@ import java.io.Serializable;
  */
 public class TableroDTO implements Serializable {
     
+    private CeldaDTO[][] celdas;
+    private List<NaveDTO> naves;
+
+    public TableroDTO() {
+    }
+
+    public TableroDTO(CeldaDTO[][] celdas, List<NaveDTO> naves) {
+        this.celdas = celdas;
+        this.naves = naves;
+    }
+
+    public CeldaDTO[][] getCeldas() {
+        return celdas;
+    }
+
+    public void setCeldas(CeldaDTO[][] celdas) {
+        this.celdas = celdas;
+    }
+
+    public List<NaveDTO> getNaves() {
+        return naves;
+    }
+
+    public void setNaves(List<NaveDTO> naves) {
+        this.naves = naves;
+    }
+
+    @Override
+    public String toString() {
+        return "TableroDTO{" + "celdas=" + celdas + ", naves=" + naves + '}';
+    }
 }
