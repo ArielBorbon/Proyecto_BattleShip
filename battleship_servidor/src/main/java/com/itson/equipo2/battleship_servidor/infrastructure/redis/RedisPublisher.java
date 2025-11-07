@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_servidor.infrastructure.redis;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.domain.broker.IMessagePublisher;
+import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.message.EventMessage;
 import redis.clients.jedis.Jedis;
 

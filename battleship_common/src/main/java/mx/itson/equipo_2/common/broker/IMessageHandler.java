@@ -4,11 +4,13 @@
  */
 package mx.itson.equipo_2.common.broker;
 
+import mx.itson.equipo_2.common.message.EventMessage;
+
 /**
  *
  * @author skyro
  */
 public interface IMessageHandler {
     
-    void onMessage(String canal, String msj);
+    void onMessage(EventMessage message);
 }

@@ -4,9 +4,12 @@
  */
 package com.itson.equipo2.battleship_servidor.infrastructure.redis;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.itson.equipo2.battleship_servidor.application.PartidaApplicationService;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
 import mx.itson.equipo_2.common.broker.IMessageSubscriber;
+import mx.itson.equipo_2.common.message.EventMessage;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
@@ -19,16 +22,13 @@ public class RedisSubscriber implements IMessageSubscriber{
     
     private Jedis jedis;
     private JedisPubSub jedisPubSub;
+    private final Gson gson = new Gson(); 
 
-    
     public RedisSubscriber() {
-
     }
 
-   
     @Override
     public void subscribe(String channel, IMessageHandler handler) {
-        
         new Thread(() -> {
             try {
                 jedis = new Jedis(RedisConfig.REDIS_HOST, RedisConfig.REDIS_PORT);
@@ -37,9 +37,16 @@ public class RedisSubscriber implements IMessageSubscriber{
                     @Override
                     public void onMessage(String channel, String message) {
                         System.out.println("Comando recibido en canal '" + channel + "': " + message);
-                        
-                     
-                        handler.onMessage(channel, message);
+                        try {
+                      
+                            EventMessage eventMessage = gson.fromJson(message, EventMessage.class);
+                            handler.onMessage(eventMessage);
+                        } catch (JsonSyntaxException e) {
+                            System.err.println("Error al parsear mensaje JSON: " + e.getMessage());
+                        } catch (Exception e) {
+                            System.err.println("Error inesperado al manejar mensaje: " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
                 };
 

@@ -6,9 +6,9 @@ package com.itson.equipo2.battleship_servidor.application;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.itson.equipo2.battleship_servidor.domain.broker.IMessagePublisher;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
+import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.message.EventMessage;
 
 /**
@@ -16,7 +16,7 @@ import mx.itson.equipo_2.common.message.EventMessage;
  * @author Cricri
  */
 public class PartidaApplicationService implements IMessageHandler {
-   private final IPartidaRepository partidaRepository;
+    private final IPartidaRepository partidaRepository;
     private final IMessagePublisher eventPublisher;
     private final Gson gson; 
 
@@ -27,14 +27,12 @@ public class PartidaApplicationService implements IMessageHandler {
     }
 
     @Override
-    public void onMessage(String canal, String msj) {
+    public void onMessage(EventMessage eventMessage) {
         try {
-         
-            EventMessage eventMessage = gson.fromJson(msj, EventMessage.class);
             String tipo = eventMessage.getEventType(); 
             
             if (tipo == null) {
-                System.err.println("Comando inválido, no contiene 'type': " + msj);
+                System.err.println("Comando inválido, no contiene 'type': " + eventMessage);
                 return;
             }
             
@@ -57,8 +55,6 @@ public class PartidaApplicationService implements IMessageHandler {
                     System.err.println("Tipo de comando desconocido: " + tipo);
             }
 
-        } catch (JsonSyntaxException e) {
-            System.err.println("Error al parsear el comando JSON: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error inesperado al manejar comando: " + e.getMessage());
             e.printStackTrace();
