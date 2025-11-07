@@ -1,7 +1,11 @@
-package mx.itson.equipo_2.dto;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package mx.itson.equipo_2.common.dto;
 
 import java.util.List;
-import mx.itson.equipo_2.models.enums.ResultadoDisparo;
+import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
  *
@@ -57,5 +61,4 @@ public class DisparoDTO {
     public void setCoordenadasBarcoHundido(List<CoordenadaDTO> coordenadasBarcoHundido) {
         this.coordenadasBarcoHundido = coordenadasBarcoHundido;
     }
-
 }
