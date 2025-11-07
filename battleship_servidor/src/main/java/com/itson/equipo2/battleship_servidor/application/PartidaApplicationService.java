@@ -4,10 +4,64 @@
  */
 package com.itson.equipo2.battleship_servidor.application;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.itson.equipo2.battleship_servidor.domain.broker.IMessagePublisher;
+import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
+import mx.itson.equipo_2.common.broker.IMessageHandler;
+import mx.itson.equipo_2.common.message.EventMessage;
+
 /**
  *
  * @author Cricri
  */
-public class PartidaApplicationService {
-    
+public class PartidaApplicationService implements IMessageHandler {
+   private final IPartidaRepository partidaRepository;
+    private final IMessagePublisher eventPublisher;
+    private final Gson gson; 
+
+    public PartidaApplicationService(IPartidaRepository partidaRepository, IMessagePublisher eventPublisher, Gson gson) {
+        this.partidaRepository = partidaRepository;
+        this.eventPublisher = eventPublisher;
+        this.gson = gson;
+    }
+
+    @Override
+    public void onMessage(String canal, String msj) {
+        try {
+         
+            EventMessage eventMessage = gson.fromJson(msj, EventMessage.class);
+            String tipo = eventMessage.getEventType(); 
+            
+            if (tipo == null) {
+                System.err.println("Comando inválido, no contiene 'type': " + msj);
+                return;
+            }
+            
+            System.out.println("Procesando comando tipo: " + tipo);
+
+            switch (tipo) {
+                case "RegistrarJugador":
+                    System.out.println("Lógica de 'RegistrarJugador' iría aquí.");
+                    break;
+
+                case "RealizarDisparo":
+                    System.out.println("Lógica de 'RealizarDisparo' iría aquí.");
+                    break;
+                
+                case "PosicionarNave":
+                    System.out.println("Lógica de 'PosicionarNave' iría aquí.");
+                    break;
+                
+                default:
+                    System.err.println("Tipo de comando desconocido: " + tipo);
+            }
+
+        } catch (JsonSyntaxException e) {
+            System.err.println("Error al parsear el comando JSON: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperado al manejar comando: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
