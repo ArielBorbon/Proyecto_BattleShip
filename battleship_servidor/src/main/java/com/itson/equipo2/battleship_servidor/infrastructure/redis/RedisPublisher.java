@@ -4,11 +4,48 @@
  */
 package com.itson.equipo2.battleship_servidor.infrastructure.redis;
 
+import com.google.gson.Gson;
+import com.itson.equipo2.battleship_servidor.domain.broker.IMessagePublisher;
+import mx.itson.equipo_2.common.message.EventMessage;
+import redis.clients.jedis.Jedis;
+
 
 /**
  *
  * @author Cricri
  */
-public class RedisPublisher {
-   
+public class RedisPublisher implements IMessagePublisher{
+  private final String channel;
+    private final Gson gson;
+    private final Jedis jedis;
+
+    public RedisPublisher(String channel, Gson gson) {
+        this.channel = channel;
+        this.gson = gson;
+       
+        this.jedis = new Jedis(RedisConfig.REDIS_HOST, RedisConfig.REDIS_PORT);
+    }
+
+    @Override
+    public void publish(EventMessage message) {
+        try {
+          
+            String jsonMessage = gson.toJson(message);
+            
+            System.out.println("Publicando evento en canal '" + channel + "': " + jsonMessage);
+            
+        
+            jedis.publish(channel, jsonMessage);
+            
+        } catch (Exception e) {
+            System.err.println("Error al publicar en Redis: " + e.getMessage());
+        }
+    }
+    
+  
+    public void close() {
+        if (jedis != null) {
+            jedis.close();
+        }
+    }
 }

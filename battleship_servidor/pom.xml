@@ -7,7 +7,24 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <exec.mainClass>com.itson.equipo2.battleship_servidor.Battleship_servidor</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>5.2.0</version>
+</dependency>
+<dependency>
+    <groupId>mx.itson.equipo_2</groupId>
+    <artifactId>battleship_common</artifactId>
+    <version>1.0</version>
+</dependency>
+    </dependencies>
 </project>
