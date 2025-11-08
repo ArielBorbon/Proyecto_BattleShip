@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_cliente.communication;
+package com.itson.equipo2.battleship_servidor.infrastructure.redis;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
