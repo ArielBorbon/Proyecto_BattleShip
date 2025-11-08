@@ -13,7 +13,7 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
-import com.itson.equipo2.battleship_cliente.service.TableroService;
+import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.views.DispararView;
 import com.itson.equipo2.battleship_cliente.views.MainFrameView;
 import java.awt.Color;
@@ -50,7 +50,7 @@ public class TestMainDisparo_ConRedis {
         }
 
         RedisPublisher publisher = new RedisPublisher(jedisPool);
-        TableroService ts = new TableroService(publisher, new JugadorModel("1", "Pepe", true, new TableroModel(new CeldaModel[10][10]), new ArrayList<>()));
+        RealizarDisparoService ts = new RealizarDisparoService(publisher, new JugadorModel("1", "Pepe", true, new TableroModel(new CeldaModel[10][10]), new ArrayList<>()));
         DisparoController dc = new DisparoController(ts);
         GameMediator gm = new GameMediator();
         gm.setPartidaController(dc);

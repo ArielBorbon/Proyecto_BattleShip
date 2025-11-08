@@ -1,4 +1,3 @@
-
 package com.itson.equipo2.battleship_cliente.controllers;
 
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
@@ -6,19 +5,17 @@ import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewManager;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
  *
- * @author 
- * Ariel Eduardo Borbon Izaguirre   00000252116
-* Sebastián Bórquez Huerta          00000252115
-* Alberto Jiménez García            00000252595
-* José Eduardo Aguilar García       00000252049
-* José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
+ * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
+ * 00000252049 José Luis Islas Molina 00000252574
  */
 public class ViewController implements ViewManager {
-    
+
     private JFrame frame;
     private Map<String, ViewFactory> factories;
     private Map<String, JPanel> pantallas;
@@ -34,7 +31,7 @@ public class ViewController implements ViewManager {
 
         frame.setVisible(true);
     }
-    
+
     @Override
     public void registrarPantalla(String nombre, ViewFactory factory) {
         factories.put(nombre, factory);
@@ -58,5 +55,17 @@ public class ViewController implements ViewManager {
         frame.repaint();
         frame.pack();
     }
-    
+
+    public void mostrarError(String message) {
+        if (frame != null) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    message,
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } else {
+            System.err.println("Error: " + message);
+        }
+    }
 }

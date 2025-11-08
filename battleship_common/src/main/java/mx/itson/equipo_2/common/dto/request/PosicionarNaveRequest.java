@@ -13,15 +13,25 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  */
 public class PosicionarNaveRequest {
 
+    private String jugadorId;
     private CoordenadaDTO[] coordenadas;
     private TipoNave tipoNave;
 
     public PosicionarNaveRequest() {
     }
 
-    public PosicionarNaveRequest(CoordenadaDTO[] coordenadas, TipoNave tipoNave) {
+    public PosicionarNaveRequest(String jugadorId, CoordenadaDTO[] coordenadas, TipoNave tipoNave) {
+        this.jugadorId = jugadorId;
         this.coordenadas = coordenadas;
         this.tipoNave = tipoNave;
+    }
+
+    public String getJugadorId() {
+        return jugadorId;
+    }
+
+    public void setJugadorId(String jugadorId) {
+        this.jugadorId = jugadorId;
     }
 
     public CoordenadaDTO[] getCoordenadas() {
@@ -42,7 +52,7 @@ public class PosicionarNaveRequest {
 
     @Override
     public String toString() {
-        return "PosicionarNaveRequest{" + "coordenadas=" + coordenadas + ", tipoNave=" + tipoNave + '}';
+        return "PosicionarNaveRequest{" + "jugadorId=" + jugadorId + ", coordenadas=" + coordenadas + ", tipoNave=" + tipoNave + '}';
     }
 
 }

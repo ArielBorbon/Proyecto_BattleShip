@@ -58,7 +58,9 @@ public class RedisSubscriber implements IMessageSubscriber {
                 System.out.println("Comando recibido en canal '" + channel + "': " + message);
                 try {
                     EventMessage eventMessage = gson.fromJson(message, EventMessage.class);
-                    handler.onMessage(eventMessage);
+                    if (handler.canHandle(eventMessage)) {
+                        handler.onMessage(eventMessage);
+                    }
                 } catch (JsonSyntaxException e) {
                     System.err.println("Error al parsear mensaje JSON: " + e.getMessage());
                 } catch (Exception e) {
