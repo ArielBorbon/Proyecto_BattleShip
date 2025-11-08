@@ -4,42 +4,52 @@
  */
 package mx.itson.equipo_2.common.dto.request;
 
+import java.io.Serializable;
+import java.util.UUID;
+import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+
 /**
  *
  * @author CISCO
  */
-public class RealizarDisparoRequest {
+public class RealizarDisparoRequest  implements Serializable{
 
-    private int columna;
-    private int fila;
+    private UUID partidaId;
+    private UUID jugadorId;
+    private CoordenadaDTO coordenada;
 
     public RealizarDisparoRequest() {
     }
 
-    public RealizarDisparoRequest(int columna, int fila) {
-        this.columna = columna;
-        this.fila = fila;
+    public RealizarDisparoRequest(UUID partidaId, UUID jugadorId, CoordenadaDTO coordenada) {
+        this.partidaId = partidaId;
+        this.jugadorId = jugadorId;
+        this.coordenada = coordenada;
     }
 
-    public int getColumna() {
-        return columna;
+    
+    public UUID getPartidaId() {
+        return partidaId;
     }
 
-    public void setColumna(int columna) {
-        this.columna = columna;
+    public void setPartidaId(UUID partidaId) {
+        this.partidaId = partidaId;
     }
 
-    public int getFila() {
-        return fila;
+    public UUID getJugadorId() {
+        return jugadorId;
     }
 
-    public void setFila(int fila) {
-        this.fila = fila;
+    public void setJugadorId(UUID jugadorId) {
+        this.jugadorId = jugadorId;
     }
 
-    @Override
-    public String toString() {
-        return "RealizarDisparoRequest{" + "columna=" + columna + ", fila=" + fila + '}';
+    public CoordenadaDTO getCoordenada() {
+        return coordenada;
+    }
+
+    public void setCoordenada(CoordenadaDTO coordenada) {
+        this.coordenada = coordenada;
     }
 
 }
