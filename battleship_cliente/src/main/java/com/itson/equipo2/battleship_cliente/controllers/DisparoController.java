@@ -30,6 +30,7 @@ public class DisparoController {
 
     public void disparar(int columna, int fila) {
         tableroService.disparar(columna, fila);
+        System.out.println("3");
     }
 //    public void iniciarPartida() {
 //        gestionarSiguienteTurno();

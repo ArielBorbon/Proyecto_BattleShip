@@ -15,14 +15,14 @@ public class Subscriber {
     public static void main(String[] args) {
         try (Jedis jedis = new Jedis("localhost", 6379)) {
             System.out.println("🔵 Subscriber conectado a Redis");
-            System.out.println("Esperando mensajes del canal 'canal_prueba'...");
+            System.out.println("Esperando mensajes del canal 'battleship'...");
 
             jedis.subscribe(new JedisPubSub() {
                 @Override
                 public void onMessage(String channel, String message) {
                     System.out.println("📩 Mensaje recibido en canal [" + channel + "]: " + message);
                 }
-            }, "canal_eventos");
+            }, "battleship");
         }
     }
 }

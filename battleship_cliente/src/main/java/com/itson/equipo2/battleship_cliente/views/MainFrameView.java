@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package mx.itson.equipo_2.views;
+package com.itson.equipo2.battleship_cliente.views;
 
 import javax.swing.GroupLayout;
 import javax.swing.WindowConstants;

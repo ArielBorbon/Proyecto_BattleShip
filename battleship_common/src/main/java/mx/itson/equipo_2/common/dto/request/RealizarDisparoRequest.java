@@ -12,35 +12,24 @@ import mx.itson.equipo_2.common.dto.CoordenadaDTO;
  *
  * @author CISCO
  */
-public class RealizarDisparoRequest  implements Serializable{
+public class RealizarDisparoRequest implements Serializable {
 
-    private UUID partidaId;
-    private UUID jugadorId;
+    private String jugadorId;
     private CoordenadaDTO coordenada;
 
     public RealizarDisparoRequest() {
     }
 
-    public RealizarDisparoRequest(UUID partidaId, UUID jugadorId, CoordenadaDTO coordenada) {
-        this.partidaId = partidaId;
+    public RealizarDisparoRequest(String jugadorId, CoordenadaDTO coordenada) {
         this.jugadorId = jugadorId;
         this.coordenada = coordenada;
     }
 
-    
-    public UUID getPartidaId() {
-        return partidaId;
-    }
-
-    public void setPartidaId(UUID partidaId) {
-        this.partidaId = partidaId;
-    }
-
-    public UUID getJugadorId() {
+    public String getJugadorId() {
         return jugadorId;
     }
 
-    public void setJugadorId(UUID jugadorId) {
+    public void setJugadorId(String jugadorId) {
         this.jugadorId = jugadorId;
     }
 
@@ -50,6 +39,11 @@ public class RealizarDisparoRequest  implements Serializable{
 
     public void setCoordenada(CoordenadaDTO coordenada) {
         this.coordenada = coordenada;
+    }
+
+    @Override
+    public String toString() {
+        return "RealizarDisparoRequest{" + "jugadorId=" + jugadorId + ", coordenada=" + coordenada + '}';
     }
 
 }

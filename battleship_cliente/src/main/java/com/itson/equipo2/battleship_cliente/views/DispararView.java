@@ -136,6 +136,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         }
         if (mediator != null) {
             mediator.disparar(coordSeleccionada.getColumna(), coordSeleccionada.getFila());
+            System.out.println("1");
         }
     }//GEN-LAST:event_btnDispararActionPerformed
 
