@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_servidor.domain.model;
 
-import java.util.UUID;
+
 
 /**
  *
@@ -12,19 +12,19 @@ import java.util.UUID;
  */
 public class Jugador {
     
-    private final UUID id;
+    private final String id;
     
    
     private String nombre;
 
     
-    public Jugador(UUID id, String nombre) {
+    public Jugador(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 

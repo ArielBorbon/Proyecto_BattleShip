@@ -17,13 +17,13 @@ public class ResultadoDisparoDTO implements Serializable{
  
     private CoordenadaDTO coordenada;
     private ResultadoDisparo resultado;
-    private UUID jugadorId; // El jugador que realizó el disparo
+    private String jugadorId; // El jugador que realizó el disparo
 
    
     public ResultadoDisparoDTO() {
     }
 
-    public ResultadoDisparoDTO(CoordenadaDTO coordenada, ResultadoDisparo resultado, UUID jugadorId) {
+    public ResultadoDisparoDTO(CoordenadaDTO coordenada, ResultadoDisparo resultado, String jugadorId) {
         this.coordenada = coordenada;
         this.resultado = resultado;
         this.jugadorId = jugadorId;
@@ -46,11 +46,11 @@ public class ResultadoDisparoDTO implements Serializable{
         this.resultado = resultado;
     }
 
-    public UUID getJugadorId() {
+    public String getJugadorId() {
         return jugadorId;
     }
 
-    public void setJugadorId(UUID jugadorId) {
+    public void setJugadorId(String jugadorId) {
         this.jugadorId = jugadorId;
     }
 }

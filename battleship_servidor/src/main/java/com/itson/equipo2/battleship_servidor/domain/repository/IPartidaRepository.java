@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_servidor.domain.repository;
 
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import java.util.UUID;
+
 
 /**
  *
@@ -13,12 +13,12 @@ import java.util.UUID;
  */
 public interface IPartidaRepository {
    
-    Partida buscarPorId(UUID id);
-
-   
-    void guardar(Partida partida);
+    Partida getPartida();
 
     
-    void eliminar(UUID id);
+    void guardar(Partida partida);
+
+  
+    void eliminar();
 }
 

@@ -9,7 +9,6 @@ import com.google.gson.JsonSyntaxException;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
-import java.util.UUID;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
 import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
@@ -73,27 +72,27 @@ public class PartidaApplicationService implements IMessageHandler {
         }
     }
 
-    private void procesarDisparo(RealizarDisparoRequest request) {
+   private void procesarDisparo(RealizarDisparoRequest request) {
         try {
-
-            UUID partidaId = request.getPartidaId();
-            Partida partida = partidaRepository.buscarPorId(partidaId);
+            // --- 1. OBTENER DATOS ---
+            // (Usando la versión de "una sola partida")
+            Partida partida = partidaRepository.getPartida();
 
             if (partida == null) {
-                System.err.println("Error: No se encontró la partida con ID: " + partidaId);
+                System.err.println("Error: No se encontró la partida en el repositorio.");
                 return;
             }
 
-          
+            // --- 2. DELEGAR AL DOMINIO ---
             ResultadoDisparo resultado = partida.realizarDisparo(
                     request.getJugadorId(),
                     request.getCoordenada()
             );
 
-            
+            // --- 3. GUARDAR ESTADO ---
             partidaRepository.guardar(partida);
 
-           
+            
             ResultadoDisparoDTO resultadoDTO = new ResultadoDisparoDTO(
                     request.getCoordenada(),
                     resultado,
@@ -107,7 +106,7 @@ public class PartidaApplicationService implements IMessageHandler {
 
             eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, eventoResultado);
 
-            System.out.println("Disparo procesado. Partida: " + partidaId + ". Resultado: " + resultado);
+            System.out.println("Disparo procesado. Resultado: " + resultado);
 
         } catch (Exception e) { 
             System.err.println("Error procesando el disparo: " + e.getMessage());
