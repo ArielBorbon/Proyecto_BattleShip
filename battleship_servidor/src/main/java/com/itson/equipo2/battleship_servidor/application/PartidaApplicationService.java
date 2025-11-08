@@ -12,7 +12,7 @@ import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
 import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
-import mx.itson.equipo_2.common.dto.response.ResultadoDisparoDTO;
+import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import mx.itson.equipo_2.common.message.EventMessage;
 
@@ -93,7 +93,7 @@ public class PartidaApplicationService implements IMessageHandler {
             partidaRepository.guardar(partida);
 
             
-            ResultadoDisparoDTO resultadoDTO = new ResultadoDisparoDTO(
+            ResultadoDisparoReponse resultadoDTO = new ResultadoDisparoReponse(
                     request.getCoordenada(),
                     resultado,
                     request.getJugadorId()

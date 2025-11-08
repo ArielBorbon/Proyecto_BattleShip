@@ -13,17 +13,17 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  *
  * @author CISCO
  */
-public class ResultadoDisparoDTO implements Serializable{
+public class ResultadoDisparoReponse implements Serializable{
  
     private CoordenadaDTO coordenada;
     private ResultadoDisparo resultado;
     private String jugadorId; // El jugador que realizó el disparo
 
    
-    public ResultadoDisparoDTO() {
+    public ResultadoDisparoReponse() {
     }
 
-    public ResultadoDisparoDTO(CoordenadaDTO coordenada, ResultadoDisparo resultado, String jugadorId) {
+    public ResultadoDisparoReponse(CoordenadaDTO coordenada, ResultadoDisparo resultado, String jugadorId) {
         this.coordenada = coordenada;
         this.resultado = resultado;
         this.jugadorId = jugadorId;

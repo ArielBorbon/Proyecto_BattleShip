@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_servidor.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.infrastructure.service.RealizarDisparoService;
+import com.itson.equipo2.battleship_servidor.domain.service.RealizarDisparoService;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
 import mx.itson.equipo_2.common.message.EventMessage;
