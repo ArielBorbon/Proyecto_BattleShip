@@ -1,7 +1,6 @@
 package com.itson.equipo2.battleship_cliente.pattern.mediator;
 
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
-import com.itson.equipo2.battleship_cliente.exception.DisparoException;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 /**
@@ -16,9 +15,9 @@ public class GameMediator {
         this.partidaController = controller;
     }
     
-    public void disparar(JugadorModel jugador, CoordenadaDTO coord) {
+    public void disparar(int columna, int fila) {
         if (partidaController != null) {
-            partidaController.disparar(jugador, coord);
+            partidaController.disparar(columna, fila);
         }
     }
 }

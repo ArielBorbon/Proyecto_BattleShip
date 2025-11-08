@@ -1,0 +1,70 @@
+Listado de rutas de carpetas
+El número de serie del volumen es 5E4D-5145
+C:.
+|   estructura.txt
+|   pom.xml
+|   
++---.idea
+|       discord.xml
+|       vcs.xml
+|       workspace.xml
+|       
+\---src
+    +---main
+    |   \---java
+    |       +---com
+    |       |   \---itson
+    |       |       \---equipo2
+    |       |           \---battleship_cliente
+    |       |               |   Battleship_cliente.java
+    |       |               |   
+    |       |               +---communication
+    |       |               |       RedisConfig.java
+    |       |               |       RedisConnection.java
+    |       |               |       RedisPublisher.java
+    |       |               |       RedisSubscriber.java
+    |       |               |       
+    |       |               +---controllers
+    |       |               |       DisparoController.java
+    |       |               |       ViewController.java
+    |       |               |       
+    |       |               +---exception
+    |       |               |       DisparoException.java
+    |       |               |       
+    |       |               +---models
+    |       |               |       CeldaModel.java
+    |       |               |       JugadorModel.java
+    |       |               |       PartidaModel.java
+    |       |               |       TableroModel.java
+    |       |               |       
+    |       |               +---pattern
+    |       |               |   +---factory
+    |       |               |   |       ViewFactory.java
+    |       |               |   |       
+    |       |               |   +---mediator
+    |       |               |   |       GameMediator.java
+    |       |               |   |       ViewManager.java
+    |       |               |   |       
+    |       |               |   +---observer
+    |       |               |   |       PartidaObserver.java
+    |       |               |   |       TableroObserver.java
+    |       |               |   |       
+    |       |               |   \---strategy
+    |       |               |           StrategyTurno.java
+    |       |               |           StrategyTurnoHumano.java
+    |       |               |           StrategyTurnoIA.java
+    |       |               |           
+    |       |               +---service
+    |       |               |       TableroService.java
+    |       |               |       
+    |       |               \---views
+    |       |                       DispararView.form
+    |       |                       DispararView.java
+    |       |                       LobbyView.java
+    |       |                       MainFrameView.form
+    |       |                       MainFrameView.java
+    |       |                       
+    |       \---mx
+    |           \---itson
+    \---test
+        \---java

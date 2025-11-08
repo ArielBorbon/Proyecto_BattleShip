@@ -6,7 +6,7 @@ import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
-import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import com.itson.equipo2.battleship_cliente.pattern.observer.TableroObserver;
 import java.awt.Color;
@@ -135,7 +135,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             return;
         }
         if (mediator != null) {
-            mediator.disparar(this.jugador, coordSeleccionada);
+            mediator.disparar(coordSeleccionada.getColumna(), coordSeleccionada.getFila());
         }
     }//GEN-LAST:event_btnDispararActionPerformed
 

@@ -1,6 +1,6 @@
 package com.itson.equipo2.battleship_cliente.pattern.factory;
 
-import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import javax.swing.JPanel;
 
 /**

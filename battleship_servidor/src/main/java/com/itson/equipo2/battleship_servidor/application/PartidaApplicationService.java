@@ -61,4 +61,10 @@ public class PartidaApplicationService implements IMessageHandler {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean canHandle(EventMessage message) {
+        // POR CAMBIAR, ESTO ESTÁ MAL
+        return true;
+    }
 }

@@ -12,5 +12,6 @@ import mx.itson.equipo_2.common.message.EventMessage;
  */
 public interface IMessageHandler {
     
+    boolean canHandle(EventMessage message);
     void onMessage(EventMessage message);
 }

@@ -2,6 +2,7 @@ package com.itson.equipo2.battleship_cliente.controllers;
 
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.pattern.strategy.StrategyTurno;
+import com.itson.equipo2.battleship_cliente.service.TableroService;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Timer;
@@ -15,12 +16,11 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
  */
 public class DisparoController {
 
-    private final PartidaModel partidaModel;
+    private final TableroService tableroService;
     private final Map<JugadorDTO, StrategyTurno> estrategias;
-    private Timer turnoTimer;
 
-    public DisparoController(PartidaModel partidaModel) {
-        this.partidaModel = partidaModel;
+    public DisparoController(TableroService tableroService) {
+        this.tableroService = tableroService;
         this.estrategias = new HashMap<>();
     }
 
@@ -28,6 +28,9 @@ public class DisparoController {
         estrategias.put(jugador, estrategia);
     }
 
+    public void disparar(int columna, int fila) {
+        tableroService.disparar(columna, fila);
+    }
 //    public void iniciarPartida() {
 //        gestionarSiguienteTurno();
 //    }

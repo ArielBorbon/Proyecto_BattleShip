@@ -1,7 +1,8 @@
 
-package com.itson.equipo2.battleship_cliente.pattern.mediator;
+package com.itson.equipo2.battleship_cliente.controllers;
 
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewManager;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
