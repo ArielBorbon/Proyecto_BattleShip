@@ -16,6 +16,7 @@ import mx.itson.equipo_2.common.message.EventMessage;
  * @author Cricri
  */
 public class PartidaApplicationService implements IMessageHandler {
+    
     private final IPartidaRepository partidaRepository;
     private final IMessagePublisher eventPublisher;
     private final Gson gson; 

@@ -12,6 +12,6 @@ import mx.itson.equipo_2.common.message.EventMessage;
  */
 public interface IMessagePublisher {
     
-    void publish(EventMessage message);
+    void publish(String channel, EventMessage message);
     
 }

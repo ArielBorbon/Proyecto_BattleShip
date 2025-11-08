@@ -14,20 +14,19 @@ import redis.clients.jedis.Jedis;
  *
  * @author Cricri
  */
-public class RedisPublisher implements IMessagePublisher{
-  private final String channel;
+public class RedisPublisher implements IMessagePublisher {
+
     private final Gson gson;
     private final Jedis jedis;
 
-    public RedisPublisher(String channel, Gson gson) {
-        this.channel = channel;
+    public RedisPublisher(Gson gson) {
         this.gson = gson;
        
         this.jedis = new Jedis(RedisConfig.REDIS_HOST, RedisConfig.REDIS_PORT);
     }
 
     @Override
-    public void publish(EventMessage message) {
+    public void publish(String channel, EventMessage message) {
         try {
           
             String jsonMessage = gson.toJson(message);

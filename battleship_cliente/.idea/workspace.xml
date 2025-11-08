@@ -2,17 +2,48 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3808bcca-c6c5-47b0-b471-d56b2aa23fe9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/controllers/DisparoController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/exception/DisparoException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/Strategy/StrategyTurno.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/Strategy/StrategyTurnoHumano.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/Strategy/StrategyTurnoIA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/factory/ViewFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/mediator/GameMediator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/mediator/ViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/mediator/ViewManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/observer/PartidaObserver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/pattern/observer/TableroObserver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/views/DispararView.form" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/views/DispararView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/views/MainFrameView.form" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/views/MainFrameView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Battleship_Equipo2/src/main/java/mx/itson/equipo_2/views/DispararView.form" beforeDir="false" afterPath="$PROJECT_DIR$/../Battleship_Equipo2/src/main/java/mx/itson/equipo_2/views/DispararView.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Battleship_Equipo2/src/main/java/mx/itson/equipo_2/views/DispararView.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Battleship_Equipo2/src/main/java/mx/itson/equipo_2/views/DispararView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/controllers/RegistroController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/dtos/JugadorRegistrado.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/models/GameState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/itson/equipo2/battleship_cliente/services/RedisService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_common/src/main/java/mx/itson/equipo_2/common/broker/IMessagePublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_common/src/main/java/mx/itson/equipo_2/common/broker/IMessagePublisher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_common/target/battleship_common-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_common/target/battleship_common-1.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_common/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_common/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_common/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_common/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_servidor/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_servidor/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_servidor/src/main/java/com/itson/equipo2/battleship_servidor/application/PartidaApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_servidor/src/main/java/com/itson/equipo2/battleship_servidor/application/PartidaApplicationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../battleship_servidor/src/main/java/com/itson/equipo2/battleship_servidor/infrastructure/redis/RedisPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../battleship_servidor/src/main/java/com/itson/equipo2/battleship_servidor/infrastructure/redis/RedisPublisher.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="358PGPMVsyVBxK0qgpId1JdyuFl" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -24,6 +55,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "nodejs_package_manager_path": "npm",
     "to.speed.mode.migration.done": "true",
@@ -46,7 +78,11 @@
       <option name="presentableId" value="Default" />
       <updated>1762488634262</updated>
       <workItem from="1762488649793" duration="13000" />
+      <workItem from="1762579283014" duration="26000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>

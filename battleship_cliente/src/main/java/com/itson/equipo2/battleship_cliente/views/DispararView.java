@@ -1,35 +1,29 @@
+package com.itson.equipo2.battleship_cliente.views;
 
-package mx.itson.equipo_2.views;
-
+import com.itson.equipo2.battleship_cliente.models.CeldaModel;
+import com.itson.equipo2.battleship_cliente.models.JugadorModel;
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
+import com.itson.equipo2.battleship_cliente.models.TableroModel;
+import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
+import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewController;
+import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
+import com.itson.equipo2.battleship_cliente.pattern.observer.TableroObserver;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.border.LineBorder;
-import mx.itson.equipo_2.dto.CoordenadaDTO;
-import mx.itson.equipo_2.dto.DisparoDTO;
-import mx.itson.equipo_2.exception.DisparoException;
-import mx.itson.equipo_2.mapper.CoordenadaMapper;
-import mx.itson.equipo_2.models.PartidaModel;
-import mx.itson.equipo_2.models.TableroModel;
-import mx.itson.equipo_2.models.entitys.Celda;
-import mx.itson.equipo_2.models.entitys.Coordenada;
-import mx.itson.equipo_2.models.entitys.Jugador;
-import mx.itson.equipo_2.models.entitys.Tablero;
-import static mx.itson.equipo_2.models.enums.ResultadoDisparo.AGUA;
-import mx.itson.equipo_2.patterns.factory.ViewFactory;
-import mx.itson.equipo_2.patterns.mediator.GameMediator;
-import mx.itson.equipo_2.patterns.mediator.ViewController;
-import mx.itson.equipo_2.patterns.observer.PartidaObserver;
-import mx.itson.equipo_2.patterns.observer.TableroObserver;
+import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.dto.DisparoDTO;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
+import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
  *
@@ -49,7 +43,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
 
-    private Jugador jugador;
+    private JugadorModel jugador;
     private GameMediator mediator;
 
     /**
@@ -141,12 +135,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             return;
         }
         if (mediator != null) {
-            
-            try {
-                mediator.disparar(this.jugador, coordSeleccionada);
-            } catch (DisparoException ex) {
-                mostrarError(ex.getMessage());
-            }
+            mediator.disparar(this.jugador, coordSeleccionada);
         }
     }//GEN-LAST:event_btnDispararActionPerformed
 
@@ -165,21 +154,20 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
-              
+
                 JButton celdaEnemigo = new JButton();
                 celdaEnemigo.setBackground(new Color(50, 70, 100));
                 celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
 
                 final int f = fila;
                 final int c = col;
-              
+
                 celdaEnemigo.addActionListener(e -> {
-                 
+
                     if (ultimaSeleccionada != null) {
-                        ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1)); 
+                        ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
                     }
 
-                
                     ultimaSeleccionada = celdaEnemigo;
 
                     celdaEnemigo.setBorder(new LineBorder(Color.GRAY, 3));
@@ -190,7 +178,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
 
-            
                 JButton celdaPropio = new JButton();
                 celdaPropio.setEnabled(false);
                 celdaPropio.setBackground(new Color(50, 70, 100));
@@ -204,17 +191,15 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     public void actualizarCeldaEnemigo(DisparoDTO dto) {
 
-      
-        if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+        if (dto.getResultado() == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
 
-          
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
             }
 
         } else {
-           
+
             CoordenadaDTO c = dto.getCoordenada();
             JButton boton = botonesEnemigo[c.getFila()][c.getColumna()];
             Color nuevoColor = switch (dto.getResultado()) {
@@ -230,8 +215,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     }
 
     public void actualizarCeldaPropia(DisparoDTO dto) {
-       
-        if (dto.getResultado() == mx.itson.equipo_2.models.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+
+        if (dto.getResultado() == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
 
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesPropio[coord.getFila()][coord.getColumna()];
@@ -255,13 +240,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         return this;
     }
 
-
-    public void mostrarTableroPropio(Tablero tablero) {
-        for (int fila = 0; fila < Tablero.TAMANIO; fila++) {
-            for (int col = 0; col < Tablero.TAMANIO; col++) {
-                Celda celda = tablero.getCelda(fila, col);
-                if (celda.getNave() != null) {
-                    
+    public void mostrarTableroPropio(TableroModel tablero) {
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                CeldaModel celda = tablero.getCelda(fila, col);
+                if (!celda.isTieneNave()) {
                     botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
                 }
             }
@@ -272,18 +255,17 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
     }
 
-    public void setJugador(Jugador jugador) {
+    public void setJugador(JugadorModel jugador) {
         this.jugador = jugador;
     }
 
-   
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
-       
+
         if (tableroAfectado == this.tableroEnemigo) {
             actualizarCeldaEnemigo(disparo);
             JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
@@ -294,14 +276,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     @Override
     public void onChange(PartidaModel model) {
-       
-        actualizarTimer(model.getTiempoRestante(), model.getJugadorEnTurno().getNombre());
-        String error = model.getUltimoError();
-        if (error != null) {
-            mostrarError(error);
-        }
-        if (model.partidaFinalizada()) {
-            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getJugadorEnTurno().getNombre());
+
+        actualizarTimer(model.getSegundosRestantes(), model.getTurnoDe());
+
+        if (model.getEstado() == EstadoPartida.FINALIZADA) {
+            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getTurnoDe());
 
         }
     }
@@ -314,13 +293,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.mediator = mediator;
     }
 
-
     public void setTableros(TableroModel miTablero, TableroModel tableroEnemigo) {
         this.miTablero = miTablero;
         this.tableroEnemigo = tableroEnemigo;
 
-       
-        mostrarTableroPropio(miTablero.getTablero());
+        mostrarTableroPropio(miTablero);
     }
 
 }
