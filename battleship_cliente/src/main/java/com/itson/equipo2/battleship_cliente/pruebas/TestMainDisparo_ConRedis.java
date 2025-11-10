@@ -14,8 +14,9 @@ import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
-import com.itson.equipo2.battleship_cliente.views.DispararView;
-import com.itson.equipo2.battleship_cliente.views.MainFrameView;
+import com.itson.equipo2.battleship_cliente.view.DispararView;
+import com.itson.equipo2.battleship_cliente.view.MainFrameView;
+import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import java.awt.Color;
 import java.util.ArrayList;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
@@ -57,11 +58,13 @@ public class TestMainDisparo_ConRedis {
         // --- 2. Iniciar Componentes MVC ---
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gm);
+        PosicionarNaveVista view = new PosicionarNaveVista();
         
         PartidaModel partidaModel = new PartidaModel();
         MainFrameView mainFrame = new MainFrameView();
         ViewController viewController = new ViewController();
         viewController.registrarPantalla("disparo", dispararView);
+        viewController.registrarPantalla("posicionar", view);
 
         // --- 3. Mockear el Estado de la Partida ---
         // (Este paso sigue siendo vital para saltar a la pantalla correcta)
@@ -83,7 +86,6 @@ public class TestMainDisparo_ConRedis {
 //        partidaModelactualizarDesdeDTO(partidaDTO);
 
         // --- 4. Mostrar la Vista de Disparo ---
-        System.out.println("Mostrando vista de disparo. Haz clic en el tablero enemigo.");
-        viewController.cambiarPantalla("disparo");
+        viewController.cambiarPantalla("posicionar");
     }
 }

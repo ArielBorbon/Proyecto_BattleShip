@@ -43,6 +43,7 @@ public class Partida {
     }
 
     public ResultadoDisparo realizarDisparo(String jugadorId, CoordenadaDTO coordenada) { 
+        
         if (this.estado != EstadoPartida.EN_BATALLA) {
             throw new IllegalStateException("No se puede disparar en una partida que no está 'EN_BATALLA'. Estado actual: " + this.estado);
         }
@@ -53,7 +54,6 @@ public class Partida {
         }
 
         Tablero tableroOponente;
-
 
         if (jugadorId.equals(jugador1.getId())) {
             tableroOponente = this.tableroJugador2;
@@ -83,7 +83,6 @@ public class Partida {
         }
         System.out.println("Turno cambiado a: " + this.turnoActual);
     }
-
    
     public UUID getId() {
         return id;

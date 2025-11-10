@@ -1,4 +1,4 @@
-package com.itson.equipo2.battleship_cliente.views;
+package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.models.CeldaModel;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
@@ -70,13 +70,15 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         lblTimer = new JLabel();
 
         setBackground(new Color(83, 111, 137));
+        setMaximumSize(new Dimension(1280, 720));
+        setMinimumSize(new Dimension(1280, 720));
         setPreferredSize(new Dimension(1280, 720));
         setLayout(null);
 
         panelTableroEnemigo.setBackground(new Color(82, 113, 177));
         panelTableroEnemigo.setMaximumSize(new Dimension(600, 600));
         panelTableroEnemigo.setMinimumSize(new Dimension(600, 600));
-        panelTableroEnemigo.setLayout(new GridLayout(10, 10));
+        panelTableroEnemigo.setLayout(new GridLayout(1, 0));
         add(panelTableroEnemigo);
         panelTableroEnemigo.setBounds(615, 56, 600, 600);
 

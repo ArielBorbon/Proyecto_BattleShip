@@ -11,9 +11,10 @@ mx\itson\equipo_2\common\enums\EstadoPartida.class
 mx\itson\equipo_2\common\enums\ResultadoDisparo.class
 mx\itson\equipo_2\common\broker\IMessageSubscriber.class
 mx\itson\equipo_2\common\dto\CeldaDTO.class
+mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.class
 mx\itson\equipo_2\common\enums\EstadoNave.class
 mx\itson\equipo_2\common\broker\IMessagePublisher.class
-mx\itson\equipo_2\common\dto\response\ResultadoDisparoDTO.class
+mx\itson\equipo_2\common\dto\response\ErrorResponse.class
 mx\itson\equipo_2\common\dto\DisparoDTO.class
 mx\itson\equipo_2\common\dto\CoordenadaDTO.class
 mx\itson\equipo_2\common\dto\PartidaDTO.class
