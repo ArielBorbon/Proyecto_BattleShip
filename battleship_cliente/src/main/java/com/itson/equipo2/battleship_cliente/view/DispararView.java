@@ -78,7 +78,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         panelTableroEnemigo.setBackground(new Color(82, 113, 177));
         panelTableroEnemigo.setMaximumSize(new Dimension(600, 600));
         panelTableroEnemigo.setMinimumSize(new Dimension(600, 600));
-        panelTableroEnemigo.setLayout(new GridLayout(1, 0));
+        panelTableroEnemigo.setLayout(new GridLayout());
+        panelTableroEnemigo.setLayout(new GridLayout(10, 10));
         add(panelTableroEnemigo);
         panelTableroEnemigo.setBounds(615, 56, 600, 600);
 

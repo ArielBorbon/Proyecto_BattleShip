@@ -86,6 +86,6 @@ public class TestMainDisparo_ConRedis {
 //        partidaModelactualizarDesdeDTO(partidaDTO);
 
         // --- 4. Mostrar la Vista de Disparo ---
-        viewController.cambiarPantalla("posicionar");
+        viewController.cambiarPantalla("disparo");
     }
 }
