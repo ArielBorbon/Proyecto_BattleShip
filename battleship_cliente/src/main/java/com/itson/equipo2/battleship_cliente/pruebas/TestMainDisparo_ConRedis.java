@@ -19,6 +19,7 @@ import com.itson.equipo2.battleship_cliente.view.MainFrameView;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.UUID;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.PartidaDTO;
 import mx.itson.equipo_2.common.dto.TableroDTO;
@@ -26,17 +27,31 @@ import mx.itson.equipo_2.common.enums.EstadoPartida;
 import redis.clients.jedis.JedisPool;
 
 /**
- * Main de prueba para testear el envío del evento "RealizarDisparo"
- * USANDO UNA CONEXIÓN REAL DE REDIS.
+ * Main de prueba para testear el envío del evento "RealizarDisparo" USANDO UNA
+ * CONEXIÓN REAL DE REDIS.
  *
- * REQUISITOS PREVIOS:
- * 1. Un servidor Redis debe estar corriendo en localhost:6379.
- * 2. El Servidor.jar (DDD) debe estar corriendo y suscrito a los canales.
+ * REQUISITOS PREVIOS: 1. Un servidor Redis debe estar corriendo en
+ * localhost:6379. 2. El Servidor.jar (DDD) debe estar corriendo y suscrito a
+ * los canales.
  */
 public class TestMainDisparo_ConRedis {
 
     public static void main(String[] args) {
         System.out.println("Iniciando Main de Prueba (Integración con Redis)...");
+
+        // --- 3. Mockear el Estado de la Partida ---
+        // (Este paso sigue siendo vital para saltar a la pantalla correcta)
+        System.out.println("Mockeando el estado de la partida...");
+
+        String JUGADOR_LOCAL_ID = "JUGADOR-REAL-1"; // (Usa un ID que tu servidor reconozca si es necesario)
+        String JUGADOR_OPONENTE_ID = "JUGADOR-REAL-2";
+
+        JugadorModel jm1 = new JugadorModel(JUGADOR_LOCAL_ID, "Juan", true, new TableroModel(new CeldaModel[10][10]),
+                new ArrayList<>());
+        JugadorModel jm2 = new JugadorModel(JUGADOR_OPONENTE_ID, "John", true, new TableroModel(new CeldaModel[10][10]),
+                new ArrayList<>());
+
+        PartidaModel partidaModel = new PartidaModel(UUID.randomUUID().toString(), jm1, jm2, true, JUGADOR_LOCAL_ID, 30, EstadoPartida.EN_BATALLA);
 
         JedisPool jedisPool = null;
         // --- 1. Iniciar Conexión REAL a Redis ---
@@ -59,33 +74,16 @@ public class TestMainDisparo_ConRedis {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gm);
         PosicionarNaveVista view = new PosicionarNaveVista();
-        
-        PartidaModel partidaModel = new PartidaModel();
+
         MainFrameView mainFrame = new MainFrameView();
         ViewController viewController = new ViewController();
         viewController.registrarPantalla("disparo", dispararView);
         viewController.registrarPantalla("posicionar", view);
-
-        // --- 3. Mockear el Estado de la Partida ---
-        // (Este paso sigue siendo vital para saltar a la pantalla correcta)
-        System.out.println("Mockeando el estado de la partida...");
         
-        String JUGADOR_LOCAL_ID = "JUGADOR-REAL-1"; // (Usa un ID que tu servidor reconozca si es necesario)
-        String JUGADOR_OPONENTE_ID = "JUGADOR-REAL-2";
         
-        JugadorDTO jugadorLocalDTO = new JugadorDTO("Jugador Local (Test)", Color.BLUE, new TableroDTO(), new ArrayList<>());
-        JugadorDTO jugadorOponenteDTO = new JugadorDTO("Oponente (Test)", Color.RED, new TableroDTO(), new ArrayList<>());
-
-        PartidaDTO partidaDTO = new PartidaDTO(
-                jugadorLocalDTO,
-                jugadorLocalDTO,
-                jugadorOponenteDTO,
-                EstadoPartida.EN_BATALLA
-        );
-
 //        partidaModelactualizarDesdeDTO(partidaDTO);
-
         // --- 4. Mostrar la Vista de Disparo ---
-        viewController.cambiarPantalla("disparo");
+        viewController.cambiarPantalla("posicionar");
+//        viewController.cambiarPantalla("disparo");
     }
 }

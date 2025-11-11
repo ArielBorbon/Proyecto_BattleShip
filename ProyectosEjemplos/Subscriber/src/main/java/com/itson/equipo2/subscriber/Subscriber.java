@@ -12,6 +12,7 @@ import redis.clients.jedis.JedisPubSub;
  * @author skyro
  */
 public class Subscriber {
+    
     public static void main(String[] args) {
         try (Jedis jedis = new Jedis("localhost", 6379)) {
             System.out.println("🔵 Subscriber conectado a Redis");
