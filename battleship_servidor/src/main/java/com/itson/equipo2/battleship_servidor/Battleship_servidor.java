@@ -4,19 +4,20 @@
 package com.itson.equipo2.battleship_servidor;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.application.PartidaApplicationService;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.domain.repository.PartidaRepository;
+import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
+import com.itson.equipo2.battleship_servidor.domain.service.CrearPartidaVsIAService;
+import com.itson.equipo2.battleship_servidor.domain.service.PartidaTimerService;
 import com.itson.equipo2.battleship_servidor.domain.service.RealizarDisparoService;
-import com.itson.equipo2.battleship_servidor.handler.RealizarDisparoHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.EventDispatcher;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConnection;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisPublisher;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisSubscriber;
-import com.itson.equipo2.battleship_servidor.infrastructure.service.AIService;
+import com.itson.equipo2.battleship_servidor.domain.service.AIService;
 import java.util.concurrent.ExecutorService;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
 import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.broker.IMessageSubscriber;
 import redis.clients.jedis.JedisPool;
@@ -43,15 +44,42 @@ public class Battleship_servidor {
         // 3. Crear el Dispatcher (El "Router" de eventos)
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         
-        // 4. Crear el Servicio de Aplicación (que registra los handlers)
-        // Esta llamada "conecta" todo
-        new PartidaApplicationService(
-                partidaRepository,
-                publisher,
-                gson,
-                aiService,
-                eventDispatcher
+        PartidaTimerService timerService = new PartidaTimerService();
+        
+        // 2. Crear el Servicio de "Realizar Disparo"
+        RealizarDisparoService disparoService = new RealizarDisparoService(
+                partidaRepository, 
+                publisher, 
+                timerService
         );
+        
+        // 3. Crear el Servicio de "Crear Partida"
+        CrearPartidaVsIAService crearPartidaService = new CrearPartidaVsIAService(
+                partidaRepository, 
+                publisher, 
+                timerService, 
+                gson
+        );
+        
+        // --- REGISTRAR LOS HANDLERS EN EL DISPATCHER ---
+        // (Como te dijo tu compañero, "registrarlos")
+        
+        // Cuando llegue un evento "RealizarDisparo", 
+        // el dispatcher llamará a este handler
+        eventDispatcher.subscribe(
+                "RealizarDisparo", 
+                new RealizarDisparoHandler(disparoService)
+        );
+
+        // Cuando llegue un evento "CrearPartidaVsIA",
+        // el dispatcher llamará a este handler
+        eventDispatcher.subscribe(
+                "CrearPartidaVsIA", 
+                new CrearPartidaVsIAHandler(crearPartidaService)
+        );
+        
+        // Registrar el AIService para que escuche eventos
+        eventDispatcher.subscribe("TurnoTick", aiService);
 
         // 5. Iniciar el Suscriptor de Comandos del Cliente
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);

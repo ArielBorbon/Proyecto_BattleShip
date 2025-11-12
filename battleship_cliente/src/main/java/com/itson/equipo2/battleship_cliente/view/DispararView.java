@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.DisparoDTO;
@@ -44,10 +45,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
-    
+
     private PartidaModel partidaModel; // refeerencia local
-    
-    
+
+    private Timer timerNotificacion;
 
     private JugadorModel jugador;
     private GameMediator mediator;
@@ -55,13 +56,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     /**
      * Creates new form DispararView
      */
-   // public DispararView() {
-      //  initComponents();
-     //   crearCeldas();
+    // public DispararView() {
+    //  initComponents();
+    //   crearCeldas();
     //}
-    
-    
-    
     public DispararView() {
         initComponents();
         crearCeldas();
@@ -87,22 +85,26 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 //            mostrarError("Error al iniciar la vista de juego.");
 //        }
     }
-    
+
     public void setModels(PartidaModel partidaModel, TableroModel miTablero, TableroModel tableroEnemigo) {
         this.partidaModel = partidaModel;
         this.miTablero = miTablero;
         this.tableroEnemigo = tableroEnemigo;
-        
+
         // Registrar esta VISTA como observadora de los MODELOS
         this.partidaModel.addObserver(this);
         this.miTablero.addObserver(this);
         this.tableroEnemigo.addObserver(this);
-        
+
         System.out.println("DispararView: Modelos inyectados y observando.");
         actualizarLabelTurno(); // Actualizar estado inicial
-        
+
         // Mostrar el tablero propio mockeado
-         mostrarTableroPropio(this.miTablero);  //////////////////////////////////////////////////
+        mostrarTableroPropio(this.miTablero);
+
+    
+
+    //////////////////////////////////////////////////
     }
     
     
@@ -112,31 +114,30 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     public void onChange(PartidaModel model) {
         System.out.println("Observer notificado: Repintando vista.");
         this.partidaModel = model; // Asegurarse de tener el modelo más reciente
-        
+
         // Actualizar el label de turno
         actualizarLabelTurno();
         actualizarLabelTimer(model.getSegundosRestantes()); // <-- AÑADIR
-        
+
         // Repintar ambos tableros
         repaint();
-        
+
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
             JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getTurnoDe());
             btnDisparar.setEnabled(false);
             btnRendirse.setEnabled(false);
         }
     }
-    
-    
+
     // --- NUEVO MÉTODO ---
     private void actualizarLabelTurno() {
-        if (partidaModel == null || partidaModel.getTurnoDe() == null || partidaModel.getYo()== null) {
+        if (partidaModel == null || partidaModel.getTurnoDe() == null || partidaModel.getYo() == null) {
             lblTurno.setText("Cargando partida...");
             return;
         }
 
         boolean esMiTurno = partidaModel.getTurnoDe().equals(partidaModel.getYo().getId());
-        
+
         if (esMiTurno) {
             lblTurno.setText("¡ES TU TURNO!");
             lblTurno.setForeground(Color.GREEN);
@@ -147,9 +148,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             btnDisparar.setEnabled(false);
         }
     }
-    
-    
-   private void actualizarLabelTimer(Integer segundos) {
+
+    private void actualizarLabelTimer(Integer segundos) {
         if (segundos != null) {
             lblTimer.setText(segundos + "s");
             // Cambiar color si queda poco tiempo
@@ -163,12 +163,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             lblTimer.setText(30 + "s");
             lblTimer.setForeground(Color.BLACK);
         }
-    }        
-
-    
-
-    
-    
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -185,6 +180,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         panelTableroPropio = new JPanel();
         lblTurno = new JLabel();
         lblTimer = new JLabel();
+        btnMarcador = new JButton();
+        lblResultado = new JLabel();
 
         setBackground(new Color(83, 111, 137));
         setMaximumSize(new Dimension(1280, 720));
@@ -245,6 +242,26 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         lblTimer.setText("...");
         add(lblTimer);
         lblTimer.setBounds(130, 400, 250, 30);
+
+        btnMarcador.setBackground(new Color(75, 75, 75));
+        btnMarcador.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
+        btnMarcador.setForeground(new Color(255, 255, 255));
+        btnMarcador.setText("MARCADOR");
+        btnMarcador.setBorder(null);
+        btnMarcador.setFocusPainted(false);
+        btnMarcador.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnMarcadorActionPerformed(evt);
+            }
+        });
+        add(btnMarcador);
+        btnMarcador.setBounds(180, 480, 156, 41);
+
+        lblResultado.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
+        lblResultado.setHorizontalAlignment(SwingConstants.CENTER);
+        lblResultado.setText("...");
+        add(lblResultado);
+        lblResultado.setBounds(100, 550, 330, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
@@ -264,30 +281,34 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             mediator.disparar(coordSeleccionada.getColumna(), coordSeleccionada.getFila());
             System.out.println("1");
         }
-        
-        // --- INICIO DE LA CORRECCIÓN ---
-            // Una vez que el disparo es enviado, reseteamos la selección
-            // para que no se pueda volver a presionar "Disparar" con la misma coordenada.
-            
-            // 1. Limpiar la coordenada guardada
-            this.coordSeleccionada = null; 
 
-            // 2. Limpiar la referencia al botón y quitarle el borde
-            if (this.ultimaSeleccionada != null) {
-                // Restaurar el borde original (negro)
-                this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
-                this.ultimaSeleccionada = null;
-            }
-            // --- FIN DE LA CORRECCIÓN ---
-        
-        
-        
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Una vez que el disparo es enviado, reseteamos la selección
+        // para que no se pueda volver a presionar "Disparar" con la misma coordenada.
+        // 1. Limpiar la coordenada guardada
+        this.coordSeleccionada = null;
+
+        // 2. Limpiar la referencia al botón y quitarle el borde
+        if (this.ultimaSeleccionada != null) {
+            // Restaurar el borde original (negro)
+            this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
+            this.ultimaSeleccionada = null;
+        }
+        // --- FIN DE LA CORRECCIÓN ---
+
+
     }//GEN-LAST:event_btnDispararActionPerformed
+
+    private void btnMarcadorActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnMarcadorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMarcadorActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnDisparar;
+    private JButton btnMarcador;
     private JButton btnRendirse;
+    private JLabel lblResultado;
     private JLabel lblTimer;
     private JLabel lblTurno;
     private JPanel panelTableroEnemigo;
@@ -309,10 +330,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 final int c = col;
 
                 celdaEnemigo.addActionListener(e -> {
-                    
-                    
-                    
-                    
+
                     // --- INICIO DE CORRECCIÓN 1 ---
                     // 1. Validar si la celda ya fue disparada ANTES de seleccionarla
                     if (tableroEnemigo != null) {
@@ -323,8 +341,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                         }
                     }
                     // --- FIN DE CORRECCIÓN 1 ---
-                    
-                    
 
                     if (ultimaSeleccionada != null) {
                         ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
@@ -359,7 +375,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
                 boton.setEnabled(false); // <-- CORRECCIÓN 1.A: Deshabilitar botón
-                
+
             }
 
         } else {
@@ -397,7 +413,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                     boton.setBackground(Color.CYAN);
                 case IMPACTO_SIN_HUNDIMIENTO ->
                     boton.setBackground(Color.MAGENTA);
-                    
+
             }
             // boton.setEnabled(false);
         }
@@ -412,7 +428,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
                 CeldaModel celda = tablero.getCelda(fila, col);
-                
+
                 if (celda.isTieneNave()) {
                     botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
                 }
@@ -437,20 +453,32 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
         // La lógica del handler ya actualizó el modelo.
         // El handler llamó a tablero.actualizarCelda(), que llamó a this.onDisparo
-        
+
         // Ahora, actualizamos la VISTA (los botones)
-        
         if (tableroAfectado == this.tableroEnemigo) {
             System.out.println("Repintando celda enemiga");
             actualizarCeldaEnemigo(disparo);
-             JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
+
+            String msg = "Resultado: " + disparo.getResultado();
+            Color color = Color.WHITE;
+            Color fondo = new Color(0, 0, 0, 150); // Negro semitransparente
+
+            if (disparo.getResultado() == ResultadoDisparo.AGUA) {
+                msg = "¡AGUA! Fallaste el tiro.";
+                fondo = new Color(0, 0, 255, 150);
+            } else {
+                msg = "¡IMPACTO! Diste en el blanco.";
+                fondo = new Color(255, 0, 0, 150);
+            }
+
+            mostrarNotificacion(msg, color, fondo);
+//            JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
         } else if (tableroAfectado == this.miTablero) {
             System.out.println("Repintando celda propia");
             actualizarCeldaPropia(disparo);
+            mostrarNotificacion("¡Te han disparado!", Color.YELLOW, Color.RED);
         }
     }
-
-
 
     public GameMediator getMediator() {
         return mediator;
@@ -465,6 +493,29 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.tableroEnemigo = tableroEnemigo;
 
         mostrarTableroPropio(miTablero);
+    }
+
+    public void mostrarNotificacion(String mensaje, Color colorTexto, Color colorFondo) {
+        // 1. Configurar el mensaje
+        lblResultado.setText(mensaje);
+        lblResultado.setForeground(colorTexto);
+        lblResultado.setBackground(colorFondo);
+        lblResultado.setVisible(true);
+
+        // 2. Si ya había un timer corriendo, lo reiniciamos
+        if (timerNotificacion != null && timerNotificacion.isRunning()) {
+            timerNotificacion.stop();
+        }
+
+        // 3. Crear un timer para borrar el mensaje en 3 segundos (3000 ms)
+        timerNotificacion = new javax.swing.Timer(3000, e -> {
+            lblResultado.setText("");
+            lblResultado.setBackground(new Color(0, 0, 0, 0)); // Hacer transparente
+            lblResultado.setVisible(false);
+        });
+
+        timerNotificacion.setRepeats(false); // Solo se ejecuta una vez
+        timerNotificacion.start();
     }
 
 }

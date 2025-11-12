@@ -7,7 +7,7 @@ package com.itson.equipo2.battleship_servidor.domain.service;
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.domain.repository.PartidaRepository;
+import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;

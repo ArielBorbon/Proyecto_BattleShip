@@ -47,54 +47,16 @@ public class Battleship_cliente {
         RedisPublisher publisher = new RedisPublisher(pool);
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         RedisSubscriber subscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        
-        eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler());
-
         // 2. Configurar Vistas y ViewController
         ViewController viewController = new ViewController();
 
         // 3. Inicializar AppContext
         // Inyectamos el publisher y el viewController
         AppContext.initialize(publisher, viewController, JUGADOR_HUMANO_ID, "Humano");
-
-        // 4. Configurar Handlers de Eventos
-        List<IMessageHandler> handlers = new ArrayList<>();
-        handlers.add(new ExceptionHandler(AppContext.getViewController()));
         
-        // Los handlers ahora obtienen sus dependencias de AppContext
-        handlers.add(new PartidaIniciadaHandler(
-                AppContext.getViewController(), 
-                AppContext.getPartidaModel(), 
-                AppContext.getTableroPropio(), 
-                AppContext.getTableroEnemigo()
-        ));
-        
-        // CORRECCIÓN 3: DisparoRealizadoHandler usa un constructor vacío
-        handlers.add(new DisparoRealizadoHandler());
-        handlers.add(new TurnoTickHandler()); // <-- AÑADIR NUEVO HANDLER
-
-
-        // ... (El resto del rootHandler sigue igual)
-        IMessageHandler rootHandler = new IMessageHandler() {
-            @Override
-            public boolean canHandle(EventMessage message) {
-                return handlers.stream().anyMatch(h -> h.canHandle(message));
-            }
-            @Override
-            public void onMessage(EventMessage message) {
-                for (IMessageHandler handler : handlers) {
-                    if (handler.canHandle(message)) {
-                        try {
-                            handler.onMessage(message);
-                        } catch (Exception e) {
-                            System.err.println("Error en handler " + handler.getClass().getSimpleName() + ": " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        };
-
+        eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler());
+        eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler());
+        eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, AppContext.getPartidaModel(), AppContext.getTableroPropio(), AppContext.getTableroEnemigo()));
 
         // 6. Suscribirse
         subscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);
