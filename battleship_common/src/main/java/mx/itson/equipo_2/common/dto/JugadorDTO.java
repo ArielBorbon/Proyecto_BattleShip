@@ -4,7 +4,8 @@
  */
 package mx.itson.equipo_2.common.dto;
 
-import java.awt.Color;
+//import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,17 +14,49 @@ import java.util.List;
  */
 public class JugadorDTO {
     
+    private String id;
     private String nombre;
-    private Color color;
+  //  private Color color;
     private TableroDTO tablero;
     private List<DisparoDTO> disparos;
 
     public JugadorDTO() {
     }
 
-    public JugadorDTO(String nombre, Color color, TableroDTO tablero, List<DisparoDTO> disparos) {
+    public JugadorDTO(String id, String nombre, TableroDTO tablero) {
+        this.id = id;
         this.nombre = nombre;
-        this.color = color;
+        this.tablero = tablero;
+        this.disparos = new ArrayList<>();
+    }
+    
+    
+    
+    
+
+    public JugadorDTO(String id, String nombre, TableroDTO tablero, List<DisparoDTO> disparos) {
+        this.id = id;
+        this.nombre = nombre;
+     //   this.color = color;
+        this.tablero = tablero;
+        this.disparos = disparos;
+    }
+    
+    
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    
+
+    public JugadorDTO(String nombre, TableroDTO tablero, List<DisparoDTO> disparos) {
+        this.nombre = nombre;
+       // this.color = color;
         this.tablero = tablero;
         this.disparos = disparos;
     }
@@ -36,13 +69,13 @@ public class JugadorDTO {
         this.nombre = nombre;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
+//    public Color getColor() {
+//        return color;
+//    }
+//
+//    public void setColor(Color color) {
+//        this.color = color;
+//    }
 
     public TableroDTO getTablero() {
         return tablero;
@@ -62,6 +95,8 @@ public class JugadorDTO {
 
     @Override
     public String toString() {
-        return "JugadorDTO{" + "nombre=" + nombre + ", color=" + color + ", tablero=" + tablero + ", disparos=" + disparos + '}';
+        return "JugadorDTO{" + "id=" + id + ", nombre=" + nombre + ", tablero=" + tablero + ", disparos=" + disparos + '}';
     }
+
+
 }

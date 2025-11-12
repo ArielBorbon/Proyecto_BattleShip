@@ -5,8 +5,9 @@
 package mx.itson.equipo_2.common.dto.response;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
@@ -18,8 +19,24 @@ public class ResultadoDisparoReponse implements Serializable{
     private CoordenadaDTO coordenada;
     private ResultadoDisparo resultado;
     private String jugadorId; // El jugador que realizó el disparo
+    
+    private List<CoordenadaDTO> coordenadasBarcoHundido; // Añadir si no está
+    private String turnoActual; 
+    private EstadoPartida estadoPartida;
+
+    public ResultadoDisparoReponse(CoordenadaDTO coordenada, ResultadoDisparo resultado, String jugadorId, List<CoordenadaDTO> coordenadasBarcoHundido, String turnoActual, EstadoPartida estadoPartida) {
+        this.coordenada = coordenada;
+        this.resultado = resultado;
+        this.jugadorId = jugadorId;
+        this.coordenadasBarcoHundido = coordenadasBarcoHundido;
+        this.turnoActual = turnoActual;
+        this.estadoPartida = estadoPartida;
+    }
 
    
+    
+    
+    
     public ResultadoDisparoReponse() {
     }
 
@@ -28,6 +45,33 @@ public class ResultadoDisparoReponse implements Serializable{
         this.resultado = resultado;
         this.jugadorId = jugadorId;
     }
+
+    public List<CoordenadaDTO> getCoordenadasBarcoHundido() {
+        return coordenadasBarcoHundido;
+    }
+
+    public void setCoordenadasBarcoHundido(List<CoordenadaDTO> coordenadasBarcoHundido) {
+        this.coordenadasBarcoHundido = coordenadasBarcoHundido;
+    }
+
+    public String getTurnoActual() {
+        return turnoActual;
+    }
+
+    public void setTurnoActual(String turnoActual) {
+        this.turnoActual = turnoActual;
+    }
+
+    public EstadoPartida getEstadoPartida() {
+        return estadoPartida;
+    }
+
+    public void setEstadoPartida(EstadoPartida estadoPartida) {
+        this.estadoPartida = estadoPartida;
+    }
+    
+    
+    
 
   
     public CoordenadaDTO getCoordenada() {

@@ -70,6 +70,20 @@ public class Tablero {
             return ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
         }
     }
+    
+    
+    public void posicionarNave(Nave nave) {
+        this.naves.add(nave);
+        for (CoordenadaDTO coord : nave.getCoordenadas()) {
+            Celda celda = getCelda(coord.getFila(), coord.getColumna());
+            if (celda != null) {
+                celda.setNave(nave);
+            }
+        }
+    }
+    
+    
+    
 
     public Celda getCelda(int fila, int col) {
         if (fila >= 0 && fila < FILAS && col >= 0 && col < COLUMNAS) {

@@ -7,7 +7,7 @@ package com.itson.equipo2.battleship_servidor.domain.service;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.PartidaRepository;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
-import mx.itson.equipo_2.common.enums.ResultadoDisparo;
+import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 
 /**
  *
@@ -23,7 +23,7 @@ public class RealizarDisparoService {
     
     public void realizarDisparo(RealizarDisparoRequest req) {
         Partida partida = repo.getPartida();
-        ResultadoDisparo resultado = partida.realizarDisparo(req.getJugadorId(), req.getCoordenada());
+        ResultadoDisparoReponse resultado = partida.realizarDisparo(req.getJugadorId(), req.getCoordenada());
         repo.guardar(partida);
     }
     

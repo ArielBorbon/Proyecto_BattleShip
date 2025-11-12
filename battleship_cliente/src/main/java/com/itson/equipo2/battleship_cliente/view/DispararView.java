@@ -42,6 +42,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
+    
+    private PartidaModel partidaModel; // refeerencia local
+    
+    
 
     private JugadorModel jugador;
     private GameMediator mediator;
@@ -49,10 +53,101 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     /**
      * Creates new form DispararView
      */
+   // public DispararView() {
+      //  initComponents();
+     //   crearCeldas();
+    //}
+    
+    
+    
     public DispararView() {
         initComponents();
         crearCeldas();
+//        
+//        // Conectar esta vista a los modelos (Singleton)
+//        try {
+//            this.partidaModel = PartidaModel.getInstance();
+//            this.partidaModel.addObserver(this);            //PROBBLEMA
+//            
+//            // Asignar tableros
+//            this.miTablero = partidaModel.getEnemigo().getTablero();
+//            this.tableroEnemigo = partidaModel.getEnemigo().getTablero();
+//            
+//            if (this.miTablero != null) this.miTablero.addObserver(this);
+//            if (this.tableroEnemigo != null) this.tableroEnemigo.addObserver(this);
+//
+//            System.out.println("DispararView conectada y observando modelos.");
+//            actualizarLabelTurno(); // Actualizar estado inicial
+//            
+//        } catch (Exception e) {
+//            System.err.println("Error fatal al conectar DispararView: " + e.getMessage());
+//            e.printStackTrace();
+//            mostrarError("Error al iniciar la vista de juego.");
+//        }
     }
+    
+    public void setModels(PartidaModel partidaModel, TableroModel miTablero, TableroModel tableroEnemigo) {
+        this.partidaModel = partidaModel;
+        this.miTablero = miTablero;
+        this.tableroEnemigo = tableroEnemigo;
+        
+        // Registrar esta VISTA como observadora de los MODELOS
+        this.partidaModel.addObserver(this);
+        this.miTablero.addObserver(this);
+        this.tableroEnemigo.addObserver(this);
+        
+        System.out.println("DispararView: Modelos inyectados y observando.");
+        actualizarLabelTurno(); // Actualizar estado inicial
+        
+        // Mostrar el tablero propio mockeado
+         mostrarTableroPropio(this.miTablero);  //////////////////////////////////////////////////
+    }
+    
+    
+    
+    // --- MÉTODO CLAVE DEL OBSERVADOR DE PARTIDA ---
+    @Override
+    public void onChange(PartidaModel model) {
+        System.out.println("Observer notificado: Repintando vista.");
+        this.partidaModel = model; // Asegurarse de tener el modelo más reciente
+        
+        // Actualizar el label de turno
+        actualizarLabelTurno();
+        
+        // Repintar ambos tableros
+        repaint();
+        
+        if (model.getEstado() == EstadoPartida.FINALIZADA) {
+            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getTurnoDe());
+            btnDisparar.setEnabled(false);
+            btnRendirse.setEnabled(false);
+        }
+    }
+    
+    
+    // --- NUEVO MÉTODO ---
+    private void actualizarLabelTurno() {
+        if (partidaModel == null || partidaModel.getTurnoDe() == null || partidaModel.getYo()== null) {
+            lblTimer.setText("Cargando partida...");
+            return;
+        }
+
+        boolean esMiTurno = partidaModel.getTurnoDe().equals(partidaModel.getYo().getId());
+        
+        if (esMiTurno) {
+            lblTimer.setText("¡ES TU TURNO!");
+            lblTimer.setForeground(Color.GREEN);
+            btnDisparar.setEnabled(true);
+        } else {
+            lblTimer.setText("Turno del enemigo...");
+            lblTimer.setForeground(Color.RED);
+            btnDisparar.setEnabled(false);
+        }
+    }
+    
+
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -267,27 +362,25 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
+// --- MÉTODO CLAVE DEL OBSERVADOR DE TABLERO ---
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
-
+        // La lógica del handler ya actualizó el modelo.
+        // El handler llamó a tablero.actualizarCelda(), que llamó a this.onDisparo
+        
+        // Ahora, actualizamos la VISTA (los botones)
+        
         if (tableroAfectado == this.tableroEnemigo) {
+            System.out.println("Repintando celda enemiga");
             actualizarCeldaEnemigo(disparo);
-            JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
+             JOptionPane.showMessageDialog(this, "Resultado del disparo: " + disparo.getResultado());
         } else if (tableroAfectado == this.miTablero) {
+            System.out.println("Repintando celda propia");
             actualizarCeldaPropia(disparo);
         }
     }
 
-    @Override
-    public void onChange(PartidaModel model) {
 
-        actualizarTimer(model.getSegundosRestantes(), model.getTurnoDe());
-
-        if (model.getEstado() == EstadoPartida.FINALIZADA) {
-            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getTurnoDe());
-
-        }
-    }
 
     public GameMediator getMediator() {
         return mediator;

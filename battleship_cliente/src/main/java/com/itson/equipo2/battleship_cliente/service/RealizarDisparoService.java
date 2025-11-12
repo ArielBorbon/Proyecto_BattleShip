@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_cliente.service;
 
 import com.google.gson.Gson;
+import com.itson.equipo2.battleship_cliente.communication.RedisConfig;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import mx.itson.equipo_2.common.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
@@ -28,7 +29,7 @@ public class RealizarDisparoService {
 
     public void disparar(int columna, int fila) {
 
-        CoordenadaDTO coordenada = new CoordenadaDTO(columna, fila);
+        CoordenadaDTO coordenada = new CoordenadaDTO(fila, columna);
 
         RealizarDisparoRequest req = new RealizarDisparoRequest(jugadorModel.getId(), coordenada);
 
@@ -36,7 +37,7 @@ public class RealizarDisparoService {
 
         EventMessage message = new EventMessage("RealizarDisparo", payload);
 
-        publisher.publish("battleship", message);
+        publisher.publish(RedisConfig.CHANNEL_COMANDOS, message);
     }
 
     

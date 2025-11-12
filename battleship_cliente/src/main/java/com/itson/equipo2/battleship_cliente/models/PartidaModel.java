@@ -4,6 +4,9 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
+import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
+import java.util.ArrayList;
+import java.util.List;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
@@ -19,7 +22,39 @@ public class PartidaModel {
     private String turnoDe; // id del jugador con turno actual
     private Integer segundosRestantes;
     private EstadoPartida estado;
+    
+    
+    private final transient List<PartidaObserver> observers = new ArrayList<>();
 
+    public void addObserver(PartidaObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    public void removeObserver(PartidaObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers() {
+        System.out.println("PartidaModel notificando a " + observers.size() + " observadores...");
+        // Notificar en el hilo de Swing para seguridad de la UI
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            for (PartidaObserver observer : new ArrayList<>(observers)) {
+                observer.onChange(this);
+            }
+        });
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public PartidaModel() {
     }
 

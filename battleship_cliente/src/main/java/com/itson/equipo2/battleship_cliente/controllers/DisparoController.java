@@ -24,6 +24,14 @@ public class DisparoController {
         this.estrategias = new HashMap<>();
     }
 
+    public DisparoController(RealizarDisparoService tableroService, Map<JugadorDTO, StrategyTurno> estrategias) {
+        this.tableroService = tableroService;
+        this.estrategias = estrategias;
+    }
+    
+    
+    
+
     public void registrarEstrategia(JugadorDTO jugador, StrategyTurno estrategia) {
         estrategias.put(jugador, estrategia);
     }

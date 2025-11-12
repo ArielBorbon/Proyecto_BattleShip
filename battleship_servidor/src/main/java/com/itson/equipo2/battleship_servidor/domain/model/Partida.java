@@ -4,8 +4,11 @@
  */
 package com.itson.equipo2.battleship_servidor.domain.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
@@ -24,12 +27,19 @@ public class Partida {
 
     private EstadoPartida estado;
     private String turnoActual;  
+    
+    
+    
     public Partida(Jugador jugador1) {
         this.id = UUID.randomUUID();
         this.jugador1 = jugador1;
         this.tableroJugador1 = new Tablero();
         this.estado = EstadoPartida.CONFIGURACION;
     }
+    
+
+    
+    
 
     public void unirseAPartida(Jugador jugador2, String idTurnoInicial) {
         if (this.estado == EstadoPartida.CONFIGURACION) {
@@ -42,19 +52,18 @@ public class Partida {
         }
     }
 
-    public ResultadoDisparo realizarDisparo(String jugadorId, CoordenadaDTO coordenada) { 
+// --- LÓGICA DE DISPARO MODIFICADA ---
+    public ResultadoDisparoReponse realizarDisparo(String jugadorId, CoordenadaDTO coordenada) { 
         
         if (this.estado != EstadoPartida.EN_BATALLA) {
             throw new IllegalStateException("No se puede disparar en una partida que no está 'EN_BATALLA'. Estado actual: " + this.estado);
         }
-
 
         if (!this.turnoActual.equals(jugadorId)) {
             throw new IllegalStateException("No es el turno del jugador " + jugadorId);
         }
 
         Tablero tableroOponente;
-
         if (jugadorId.equals(jugador1.getId())) {
             tableroOponente = this.tableroJugador2;
         } else {
@@ -62,6 +71,12 @@ public class Partida {
         }
 
         ResultadoDisparo resultado = tableroOponente.recibirDisparo(coordenada);
+        List<CoordenadaDTO> coordsHundidas = null;
+
+        if (resultado == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+            Nave naveHundida = tableroOponente.getCelda(coordenada.getFila(), coordenada.getColumna()).getNave();
+            coordsHundidas = (naveHundida != null) ? naveHundida.getCoordenadas() : new ArrayList<>();
+        }
 
         if (resultado == ResultadoDisparo.AGUA) {
             cambiarTurno();
@@ -71,8 +86,17 @@ public class Partida {
             this.estado = EstadoPartida.FINALIZADA;
             System.out.println("¡Partida FINALIZADA! Ganador: " + jugadorId);
         }
+        
+        // Crear la respuesta completa
+        ResultadoDisparoReponse response = new ResultadoDisparoReponse();
+        response.setJugadorId(jugadorId);
+        response.setCoordenada(coordenada);
+        response.setResultado(resultado);
+        response.setCoordenadasBarcoHundido(coordsHundidas);
+        response.setTurnoActual(this.turnoActual);
+        response.setEstadoPartida(this.estado);
 
-        return resultado;
+        return response;
     }
 
     private void cambiarTurno() {
@@ -83,6 +107,19 @@ public class Partida {
         }
         System.out.println("Turno cambiado a: " + this.turnoActual);
     }
+    
+    
+    // --- NUEVO MÉTODO ---
+    public void posicionarNaves(String jugadorId, List<Nave> naves) {
+        Tablero tablero = (jugadorId.equals(jugador1.getId())) ? tableroJugador1 : tableroJugador2;
+        if (tablero == null) return;
+        
+        for (Nave nave : naves) {
+            tablero.posicionarNave(nave);
+        }
+    }
+    
+    
    
     public UUID getId() {
         return id;

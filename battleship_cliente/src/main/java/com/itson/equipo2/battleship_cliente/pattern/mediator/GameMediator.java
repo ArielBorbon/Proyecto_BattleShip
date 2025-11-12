@@ -11,6 +11,14 @@ public class GameMediator {
 
     private DisparoController partidaController;
 
+    public DisparoController getPartidaController() {
+        return partidaController;
+    }
+
+    
+    
+    
+    
     public void setPartidaController(DisparoController controller) {
         this.partidaController = controller;
     }
