@@ -34,40 +34,37 @@ public class Battleship_servidor {
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
 
-        // 2. Inicializar Componentes del Servidor
+        // 2. Inicializar Componentes de Infraestructura
         IMessagePublisher publisher = new RedisPublisher(pool);
-
-        // Creamos el repositorio de partida (Singleton)
-        // Se inicializa con null, la partida se creará con el primer comando.
-        IPartidaRepository partidaRepository = new PartidaRepository(null);
-
+        IPartidaRepository partidaRepository = new PartidaRepository(null); // Repositorio Singleton
         Gson gson = new Gson();
-        AIService aiService = new AIService(partidaRepository, publisher);        // 3. Crear el Servicio de Aplicación (que actúa como nuestro Handler principal)
-        IMessageHandler commandHandler = new PartidaApplicationService(
+        AIService aiService = new AIService(partidaRepository, publisher);
+
+        // 3. Crear el Dispatcher (El "Router" de eventos)
+        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        
+        // 4. Crear el Servicio de Aplicación (que registra los handlers)
+        // Esta llamada "conecta" todo
+        new PartidaApplicationService(
                 partidaRepository,
                 publisher,
                 gson,
-                aiService
+                aiService,
+                eventDispatcher
         );
 
-        RealizarDisparoService rdService = new RealizarDisparoService(partidaRepository);
+        // 5. Iniciar el Suscriptor de Comandos del Cliente
+        IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
+        commandSubscriber.subscribe(RedisConfig.CHANNEL_COMANDOS);// El handler se ignora, usa el dispatcher
         
-        
-// Suscriptor para el CANAL DE COMANDOS (donde el cliente envía acciones)
-        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-        IMessageSubscriber subscriber = new RedisSubscriber(pool, executor, eventDispatcher);
+        // 6. Iniciar el Suscriptor de Eventos (para la IA)
+        IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
+        eventSubscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);// El handler se ignora, usa el dispatcher
 
-        eventDispatcher.subscribe(RedisConfig.CHANNEL_COMANDOS, new RealizarDisparoHandler(rdService)); // <-- DEBE USAR commandHandler
-//        eventDispatcher.subscribe(RedisConfig.CHANNEL_EVENTOS); // <-- aiService escucha eventos
-        
-        
-        // Suscriptor para el CANAL DE EVENTOS (donde la IA escucha los Ticks)
-        
-        // --- FIN DE LA CORRECCIÓN ---
-        
         System.out.println("************************************************************");
         System.out.println("Battleship Servidor listo.");
-        System.out.println("Escuchando comandos en el canal: '" + RedisConfig.CHANNEL_COMANDOS + "'");
+        System.out.println("Escuchando comandos en: '" + RedisConfig.CHANNEL_COMANDOS + "'");
+        System.out.println("Escuchando eventos en:  '" + RedisConfig.CHANNEL_EVENTOS + "'");
         System.out.println("************************************************************");
     }
 }

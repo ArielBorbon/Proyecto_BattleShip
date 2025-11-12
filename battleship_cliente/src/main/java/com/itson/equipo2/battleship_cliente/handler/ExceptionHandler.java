@@ -26,7 +26,7 @@ public class ExceptionHandler implements IMessageHandler {
     @Override
     public void onMessage(EventMessage message) {
         ErrorResponse error = gson.fromJson(message.getPayload(), ErrorResponse.class);
-        ViewController.mostrarError(error.getMessage());
+        ViewController.mostrarError(error.getMensaje());
     }
 
     @Override

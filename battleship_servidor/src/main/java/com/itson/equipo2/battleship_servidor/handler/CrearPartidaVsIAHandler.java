@@ -5,32 +5,28 @@
 package com.itson.equipo2.battleship_servidor.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.domain.service.RealizarDisparoService;
+import com.itson.equipo2.battleship_servidor.domain.service.CrearPartidaVsIAService;
 import mx.itson.equipo_2.common.broker.IMessageHandler;
-import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
+import mx.itson.equipo_2.common.dto.request.CrearPartidaVsIARequest;
 import mx.itson.equipo_2.common.message.EventMessage;
 
-/**
- *
- * @author skyro
- */
-public class RealizarDisparoHandler implements IMessageHandler {
+public class CrearPartidaVsIAHandler implements IMessageHandler {
 
-    private final RealizarDisparoService service;
+    private final CrearPartidaVsIAService service;
     private final Gson gson = new Gson();
 
-    public RealizarDisparoHandler(RealizarDisparoService service) {
+    public CrearPartidaVsIAHandler(CrearPartidaVsIAService service) {
         this.service = service;
     }
 
     @Override
     public boolean canHandle(EventMessage message) {
-        return "RealizarDisparo".equals(message.getEventType());
+        return "CrearPartidaVsIA".equals(message.getEventType());
     }
 
     @Override
     public void onMessage(EventMessage message) {
-        RealizarDisparoRequest req = gson.fromJson(message.getPayload(), RealizarDisparoRequest.class);
-        service.realizarDisparo(req);
+        CrearPartidaVsIARequest req = gson.fromJson(message.getPayload(), CrearPartidaVsIARequest.class);
+        service.execute(req);
     }
 }

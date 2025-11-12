@@ -11,37 +11,28 @@ import java.time.LocalDate;
  * @author skyro
  */
 public class ErrorResponse {
-
-    private String message;
-    private LocalDate timestamp;
+    private String mensaje;
+    private LocalDate fecha;
 
     public ErrorResponse() {
     }
 
-    public ErrorResponse(String message, LocalDate timestamp) {
-        this.message = message;
-        this.timestamp = timestamp;
+    public ErrorResponse(String mensaje) {
+        this.mensaje = mensaje;
+        this.fecha = LocalDate.now();
     }
 
-    public String getMessage() {
-        return message;
+    public ErrorResponse(String mensaje, LocalDate fecha) {
+        this.mensaje = mensaje;
+        this.fecha = fecha;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public String getMensaje() {
+        return mensaje;
     }
 
-    public LocalDate getTimestamp() {
-        return timestamp;
+    public LocalDate getFecha() {
+        return fecha;
     }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorResponse{" + "message=" + message + ", timestamp=" + timestamp + '}';
-    }
-
 }
+
