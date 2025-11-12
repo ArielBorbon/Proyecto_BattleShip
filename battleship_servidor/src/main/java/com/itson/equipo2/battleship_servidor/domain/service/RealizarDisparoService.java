@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_servidor.domain.service;
 
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
+import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.domain.repository.PartidaRepository;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
@@ -15,9 +16,9 @@ import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
  */
 public class RealizarDisparoService {
     
-    private final PartidaRepository repo;
+    private final IPartidaRepository repo;
 
-    public RealizarDisparoService(PartidaRepository repo) {
+    public RealizarDisparoService(IPartidaRepository repo) {
         this.repo = repo;
     }
     

@@ -23,96 +23,64 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 public class RedisSubscriber implements IMessageSubscriber {
 
     private final JedisPool jedisPool;
-    private final ExecutorService executor; // <-- COSA NUEVA: Pool de hilos
+    private final ExecutorService executor;
     private final Gson gson = new Gson();
+    private final EventDispatcher eventDispatcher; // Referencia al Bus
 
-    // volatile para asegurar visibilidad entre hilos
     private volatile JedisPubSub jedisPubSub;
-
-    // Para controlar el estado de forma segura entre hilos
     private final AtomicBoolean isSubscribed = new AtomicBoolean(false);
 
-    /**
-     * Constructor que utiliza Inyección de Dependencias.
-     *
-     * @param jedisPool El pool de conexiones Jedis.
-     * @param executor El servicio ejecutor para correr la tarea de suscripción.
-     */
-    public RedisSubscriber(JedisPool jedisPool, ExecutorService executor) {
+    public RedisSubscriber(JedisPool jedisPool, ExecutorService executor, EventDispatcher eventDispatcher) {
         this.jedisPool = jedisPool;
         this.executor = executor;
+        this.eventDispatcher = eventDispatcher;
     }
 
+    /**
+     * En esta versión "tonta", ignoramos el argumento 'handler' porque
+     * delegaremos TODO al InternalEventBus. Simplemente nos suscribimos al
+     * canal de Redis.
+     */
     @Override
-    public void subscribe(String channel, IMessageHandler handler) {
-        // 1. Control de estado: Evita suscribirse dos veces con la misma instancia.
+    public void subscribe(String channel) { // Nota: Ya no pide IMessageHandler
+
         if (!isSubscribed.compareAndSet(false, true)) {
-            System.err.println("Esta instancia ya está suscrita o en proceso. Cancele la suscripción primero.");
             return;
         }
 
-        // 2. Se crea el manejador de mensajes PubSub
         this.jedisPubSub = new JedisPubSub() {
             @Override
-            public void onMessage(String channel, String message) {
-                System.out.println("Comando recibido en canal '" + channel + "': " + message);
+            public void onMessage(String channel, String messageJson) {
                 try {
-                    EventMessage eventMessage = gson.fromJson(message, EventMessage.class);
-                    if (handler.canHandle(eventMessage)) {
-                        handler.onMessage(eventMessage);
-                    }
+                    // 1. Solo deserializamos el "Sobre"
+                    EventMessage event = gson.fromJson(messageJson, EventMessage.class);
+
+                    // 2. ¡AQUÍ ESTÁ LA CLAVE! 
+                    // El suscriptor no piensa. Solo le grita al Bus: "¡Llegó esto!"
+                    eventDispatcher.dispatch(event);
+
                 } catch (JsonSyntaxException e) {
-                    System.err.println("Error al parsear mensaje JSON: " + e.getMessage());
-                } catch (Exception e) {
-                    System.err.println("Error inesperado al manejar mensaje: " + e.getMessage());
-                    e.printStackTrace();
+                    System.err.println("Error: Mensaje no es un EventMessage válido.");
                 }
             }
         };
 
-        // 3. Se envía la tarea de suscripción (que es bloqueante) al pool de hilos.
+        // Tarea bloqueante en hilo separado
         executor.submit(() -> {
-            // 4. <-- COSA NUEVA: try-with-resources.
-            // Pide una conexión al pool y se asegura de cerrarla (devolverla al pool)
-            // automáticamente cuando el bloque termina.
             try (Jedis jedis = jedisPool.getResource()) {
-
-                System.out.println("Suscribiendo al canal: " + channel);
-                // 5. Esta llamada es BLOQUEANTE. El hilo se quedará aquí
-                // hasta que se llame a jedisPubSub.unsubscribe().
                 jedis.subscribe(jedisPubSub, channel);
-
-            } catch (JedisConnectionException e) {
-                // Captura errores si el pool no puede dar una conexión o si se pierde
-                System.err.println("Error en la conexión con Redis: " + e.getMessage());
             } catch (Exception e) {
-                // Captura otros errores inesperados
-                System.err.println("Error en la tarea de suscripción: " + e.getMessage());
+                e.printStackTrace();
             } finally {
-                // 6. Pase lo que pase, reseteamos el estado para poder reutilizar
-                // o saber que ya no está activo.
                 isSubscribed.set(false);
-                System.out.println("Suscripción al canal " + channel + " finalizada.");
             }
         });
     }
 
     @Override
-    public void unsubscribe(String channel) {
-        // 7. Se comprueba si el PubSub existe y está suscrito.
+    public void unsubscribe() {
         if (jedisPubSub != null && isSubscribed.get()) {
-            try {
-                // 8. Esta llamada es SEGURA.
-                // Le dice al hilo que está en jedis.subscribe() que se detenga.
-                jedisPubSub.unsubscribe();
-            } catch (Exception e) {
-                System.err.println("Error al intentar cancelar la suscripción: " + e.getMessage());
-            }
+            jedisPubSub.unsubscribe();
         }
-
-        // 9. ¡YA NO CERRAMOS LA CONEXIÓN AQUÍ!
-        // El bloque try-with-resources en el hilo de 'subscribe'
-        // se encargará de eso automáticamente cuando 'jedis.subscribe()' termine.
-        // Esto elimina la "race condition".
     }
 }

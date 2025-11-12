@@ -10,7 +10,7 @@ package mx.itson.equipo_2.common.broker;
  */
 public interface IMessageSubscriber {
  
-    void subscribe(String channel, IMessageHandler handler);
+    void subscribe(String channel);
 
-    void unsubscribe(String channel);
+    void unsubscribe();
 }

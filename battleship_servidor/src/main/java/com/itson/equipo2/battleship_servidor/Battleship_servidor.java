@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.application.PartidaApplicationService;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.domain.repository.PartidaRepository;
+import com.itson.equipo2.battleship_servidor.domain.service.RealizarDisparoService;
+import com.itson.equipo2.battleship_servidor.handler.RealizarDisparoHandler;
+import com.itson.equipo2.battleship_servidor.infrastructure.redis.EventDispatcher;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConnection;
 import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisPublisher;
@@ -47,15 +50,18 @@ public class Battleship_servidor {
                 aiService
         );
 
-        // 4. Crear el Suscriptor
+        RealizarDisparoService rdService = new RealizarDisparoService(partidaRepository);
+        
         
 // Suscriptor para el CANAL DE COMANDOS (donde el cliente envía acciones)
-        IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor);
-        commandSubscriber.subscribe(RedisConfig.CHANNEL_COMANDOS, commandHandler); // <-- DEBE USAR commandHandler
+        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        IMessageSubscriber subscriber = new RedisSubscriber(pool, executor, eventDispatcher);
+
+        eventDispatcher.subscribe(RedisConfig.CHANNEL_COMANDOS, new RealizarDisparoHandler(rdService)); // <-- DEBE USAR commandHandler
+//        eventDispatcher.subscribe(RedisConfig.CHANNEL_EVENTOS); // <-- aiService escucha eventos
+        
         
         // Suscriptor para el CANAL DE EVENTOS (donde la IA escucha los Ticks)
-        IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor);
-        eventSubscriber.subscribe(RedisConfig.CHANNEL_EVENTOS, aiService); // <-- aiService escucha eventos
         
         // --- FIN DE LA CORRECCIÓN ---
         

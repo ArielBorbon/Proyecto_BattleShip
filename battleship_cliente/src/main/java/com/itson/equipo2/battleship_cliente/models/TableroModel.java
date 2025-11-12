@@ -19,6 +19,7 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  */
 public class TableroModel {
 
+    private String idJugaodr;
     private CeldaModel[][] celdas;
     private final List<TableroObserver> observers = new ArrayList<>(); // Para el onDisparo
     public static final int TAMANIO = 10;

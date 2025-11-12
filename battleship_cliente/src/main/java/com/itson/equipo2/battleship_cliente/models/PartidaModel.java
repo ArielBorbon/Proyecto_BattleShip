@@ -47,14 +47,6 @@ public class PartidaModel {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
     public PartidaModel() {
     }
 

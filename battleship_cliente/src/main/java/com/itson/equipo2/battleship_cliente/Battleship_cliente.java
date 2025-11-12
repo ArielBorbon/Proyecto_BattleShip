@@ -9,11 +9,12 @@ import com.itson.equipo2.battleship_cliente.communication.RedisConfig;
 import com.itson.equipo2.battleship_cliente.communication.RedisConnection;
 import com.itson.equipo2.battleship_cliente.communication.RedisPublisher;
 import com.itson.equipo2.battleship_cliente.communication.RedisSubscriber;
-import com.itson.equipo2.battleship_cliente.communication.handler.DisparoRealizadoHandler;
-import com.itson.equipo2.battleship_cliente.communication.handler.ExceptionHandler;
-import com.itson.equipo2.battleship_cliente.communication.handler.PartidaIniciadaHandler;
-import com.itson.equipo2.battleship_cliente.communication.handler.TurnoTickHandler;
+import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
+import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
+import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.communication.EventDispatcher;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.utils.AppContext;
 import java.util.ArrayList;
@@ -44,7 +45,10 @@ public class Battleship_cliente {
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
         RedisPublisher publisher = new RedisPublisher(pool);
-        RedisSubscriber subscriber = new RedisSubscriber(pool, executor);
+        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        RedisSubscriber subscriber = new RedisSubscriber(pool, executor, eventDispatcher);
+        
+        eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler());
 
         // 2. Configurar Vistas y ViewController
         ViewController viewController = new ViewController();
@@ -93,7 +97,7 @@ public class Battleship_cliente {
 
 
         // 6. Suscribirse
-        subscriber.subscribe(RedisConfig.CHANNEL_EVENTOS, rootHandler);
+        subscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);
         System.out.println("Suscrito a " + RedisConfig.CHANNEL_EVENTOS);
 
         // 7. Iniciar la partida (enviar comando)
