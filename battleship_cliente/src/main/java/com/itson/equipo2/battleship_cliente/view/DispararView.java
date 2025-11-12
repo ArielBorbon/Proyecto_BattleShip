@@ -343,7 +343,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
                 CeldaModel celda = tablero.getCelda(fila, col);
-                if (!celda.isTieneNave()) {
+                
+                if (celda.isTieneNave()) {
                     botonesPropio[fila][col].setBackground(Color.DARK_GRAY);
                 }
             }

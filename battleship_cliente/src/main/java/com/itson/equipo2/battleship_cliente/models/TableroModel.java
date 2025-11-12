@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.DisparoDTO;
+import mx.itson.equipo_2.common.dto.NaveDTO;
 import mx.itson.equipo_2.common.enums.EstadoCelda;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
@@ -73,6 +74,20 @@ public TableroModel() {
     @Override
     public String toString() {
         return "TableroModel{" + "celdas=" + celdas + '}';
+    }
+    
+    
+    
+    public void posicionarNaves(List<NaveDTO> naves) {
+        for (NaveDTO nave : naves) {
+            for (CoordenadaDTO coord : nave.getCoordenadas()) {
+                CeldaModel celda = this.getCelda(coord.getFila(), coord.getColumna());
+                if (celda != null) {
+                    celda.setTieneNave(true);
+                }
+            }
+        }
+        System.out.println("TableroModel local poblado con " + naves.size() + " naves.");
     }
     
     

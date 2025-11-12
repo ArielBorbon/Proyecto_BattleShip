@@ -13,6 +13,7 @@ import com.itson.equipo2.battleship_cliente.communication.handler.DisparoRealiza
 import com.itson.equipo2.battleship_cliente.communication.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.communication.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.utils.AppContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,15 @@ public class Battleship_cliente {
         
         List<NaveDTO> navesHumano = crearNavesDePrueba();
         List<NaveDTO> navesIA = crearNavesDePrueba(); // La IA usa la misma disposición
+        
+        // --- INICIO DE LA CORRECCIÓN ---
+        // 1. Poblar nuestro modelo local de tablero ANTES de enviar.
+        TableroModel tableroPropio = AppContext.getTableroPropio();
+        tableroPropio.posicionarNaves(navesHumano);
+        // --- FIN DE LA CORRECCIÓN ---
+        
+        
+        
         
         CrearPartidaVsIARequest request = new CrearPartidaVsIARequest(
                 JUGADOR_HUMANO_ID,
