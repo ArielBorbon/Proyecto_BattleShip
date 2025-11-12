@@ -27,7 +27,8 @@ public class Partida {
 
     private EstadoPartida estado;
     private String turnoActual;  
-    
+    public static final int DURACION_TURNO = 30; 
+    private int tiempoRestante;
     
     
     public Partida(Jugador jugador1) {
@@ -47,6 +48,7 @@ public class Partida {
             this.tableroJugador2 = new Tablero();
             this.estado = EstadoPartida.EN_BATALLA;
             this.turnoActual = idTurnoInicial; 
+            iniciarTurno(); // <-- AÑADIR: Inicia el contador por primera vez
         } else {
             throw new IllegalStateException("No se puede unir a una partida que no esté en 'CONFIGURACION'.");
         }
@@ -80,6 +82,9 @@ public class Partida {
 
         if (resultado == ResultadoDisparo.AGUA) {
             cambiarTurno();
+        }else{
+            // Si no es AGUA, el jugador repite. Reiniciamos su tiempo.
+            iniciarTurno(); // <-- AÑADIR
         }
 
         if (tableroOponente.todasNavesHundidas()) {
@@ -99,12 +104,13 @@ public class Partida {
         return response;
     }
 
-    private void cambiarTurno() {
+    public void cambiarTurno() {
         if (this.turnoActual.equals(jugador1.getId())) {
             this.turnoActual = jugador2.getId();
         } else {
             this.turnoActual = jugador1.getId();
         }
+        iniciarTurno(); // <-- AÑADIR: Reinicia el contador para el nuevo jugador
         System.out.println("Turno cambiado a: " + this.turnoActual);
     }
     
@@ -117,6 +123,54 @@ public class Partida {
         for (Nave nave : naves) {
             tablero.posicionarNave(nave);
         }
+    }
+
+    public void setJugador1(Jugador jugador1) {
+        this.jugador1 = jugador1;
+    }
+
+    public void setJugador2(Jugador jugador2) {
+        this.jugador2 = jugador2;
+    }
+
+    public void setTableroJugador1(Tablero tableroJugador1) {
+        this.tableroJugador1 = tableroJugador1;
+    }
+
+    public void setTableroJugador2(Tablero tableroJugador2) {
+        this.tableroJugador2 = tableroJugador2;
+    }
+
+    public void setTiempoRestante(int tiempoRestante) {
+        this.tiempoRestante = tiempoRestante;
+    }
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Reinicia el contador de tiempo a 30 segundos.
+     */
+    public void iniciarTurno() {
+        this.tiempoRestante = DURACION_TURNO;
+    }
+
+    /**
+     * Decrementa el tiempo en 1 segundo y devuelve el valor restante.
+     * @return el tiempo restante.
+     */
+    public int decrementarYObtenerTiempo() {
+        if (this.tiempoRestante > 0) {
+            this.tiempoRestante--;
+        }
+        return this.tiempoRestante;
+    }
+    
+    public int getTiempoRestante(){
+        return this.tiempoRestante;
     }
     
     

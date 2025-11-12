@@ -12,6 +12,7 @@ import com.itson.equipo2.battleship_cliente.communication.RedisSubscriber;
 import com.itson.equipo2.battleship_cliente.communication.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.communication.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.communication.handler.PartidaIniciadaHandler;
+import com.itson.equipo2.battleship_cliente.communication.handler.TurnoTickHandler;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.utils.AppContext;
@@ -66,6 +67,8 @@ public class Battleship_cliente {
         
         // CORRECCIÓN 3: DisparoRealizadoHandler usa un constructor vacío
         handlers.add(new DisparoRealizadoHandler());
+        handlers.add(new TurnoTickHandler()); // <-- AÑADIR NUEVO HANDLER
+
 
         // ... (El resto del rootHandler sigue igual)
         IMessageHandler rootHandler = new IMessageHandler() {

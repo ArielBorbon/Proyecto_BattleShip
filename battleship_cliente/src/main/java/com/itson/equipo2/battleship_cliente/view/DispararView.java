@@ -19,9 +19,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.DisparoDTO;
+import mx.itson.equipo_2.common.enums.EstadoCelda;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
@@ -113,6 +115,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         
         // Actualizar el label de turno
         actualizarLabelTurno();
+        actualizarLabelTimer(model.getSegundosRestantes()); // <-- AÑADIR
         
         // Repintar ambos tableros
         repaint();
@@ -128,22 +131,40 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     // --- NUEVO MÉTODO ---
     private void actualizarLabelTurno() {
         if (partidaModel == null || partidaModel.getTurnoDe() == null || partidaModel.getYo()== null) {
-            lblTimer.setText("Cargando partida...");
+            lblTurno.setText("Cargando partida...");
             return;
         }
 
         boolean esMiTurno = partidaModel.getTurnoDe().equals(partidaModel.getYo().getId());
         
         if (esMiTurno) {
-            lblTimer.setText("¡ES TU TURNO!");
-            lblTimer.setForeground(Color.GREEN);
+            lblTurno.setText("¡ES TU TURNO!");
+            lblTurno.setForeground(Color.GREEN);
             btnDisparar.setEnabled(true);
         } else {
-            lblTimer.setText("Turno del enemigo...");
-            lblTimer.setForeground(Color.RED);
+            lblTurno.setText("Turno del enemigo...");
+            lblTurno.setForeground(Color.RED);
             btnDisparar.setEnabled(false);
         }
     }
+    
+    
+   private void actualizarLabelTimer(Integer segundos) {
+        if (segundos != null) {
+            lblTimer.setText(segundos + "s");
+            // Cambiar color si queda poco tiempo
+            if (segundos <= 10) {
+                lblTimer.setForeground(Color.ORANGE);
+            } else {
+                lblTimer.setForeground(Color.BLACK); // O el color que prefieras
+            }
+        } else {
+            // Estado inicial antes de que llegue el primer tick
+            lblTimer.setText(30 + "s");
+            lblTimer.setForeground(Color.BLACK);
+        }
+    }        
+
     
 
     
@@ -162,6 +183,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         btnRendirse = new JButton();
         btnDisparar = new JButton();
         panelTableroPropio = new JPanel();
+        lblTurno = new JLabel();
         lblTimer = new JLabel();
 
         setBackground(new Color(83, 111, 137));
@@ -173,7 +195,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         panelTableroEnemigo.setBackground(new Color(82, 113, 177));
         panelTableroEnemigo.setMaximumSize(new Dimension(600, 600));
         panelTableroEnemigo.setMinimumSize(new Dimension(600, 600));
-        panelTableroEnemigo.setLayout(new GridLayout());
+        panelTableroEnemigo.setLayout(new GridLayout(1, 0));
         panelTableroEnemigo.setLayout(new GridLayout(10, 10));
         add(panelTableroEnemigo);
         panelTableroEnemigo.setBounds(615, 56, 600, 600);
@@ -213,10 +235,16 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         add(panelTableroPropio);
         panelTableroPropio.setBounds(130, 50, 250, 250);
 
+        lblTurno.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
+        lblTurno.setText("...");
+        add(lblTurno);
+        lblTurno.setBounds(100, 320, 360, 50);
+
         lblTimer.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
+        lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
         lblTimer.setText("...");
         add(lblTimer);
-        lblTimer.setBounds(100, 320, 360, 50);
+        lblTimer.setBounds(130, 400, 250, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
@@ -236,6 +264,24 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             mediator.disparar(coordSeleccionada.getColumna(), coordSeleccionada.getFila());
             System.out.println("1");
         }
+        
+        // --- INICIO DE LA CORRECCIÓN ---
+            // Una vez que el disparo es enviado, reseteamos la selección
+            // para que no se pueda volver a presionar "Disparar" con la misma coordenada.
+            
+            // 1. Limpiar la coordenada guardada
+            this.coordSeleccionada = null; 
+
+            // 2. Limpiar la referencia al botón y quitarle el borde
+            if (this.ultimaSeleccionada != null) {
+                // Restaurar el borde original (negro)
+                this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
+                this.ultimaSeleccionada = null;
+            }
+            // --- FIN DE LA CORRECCIÓN ---
+        
+        
+        
     }//GEN-LAST:event_btnDispararActionPerformed
 
 
@@ -243,6 +289,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     private JButton btnDisparar;
     private JButton btnRendirse;
     private JLabel lblTimer;
+    private JLabel lblTurno;
     private JPanel panelTableroEnemigo;
     private JPanel panelTableroPropio;
     // End of variables declaration//GEN-END:variables
@@ -262,6 +309,22 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 final int c = col;
 
                 celdaEnemigo.addActionListener(e -> {
+                    
+                    
+                    
+                    
+                    // --- INICIO DE CORRECCIÓN 1 ---
+                    // 1. Validar si la celda ya fue disparada ANTES de seleccionarla
+                    if (tableroEnemigo != null) {
+                        CeldaModel celdaModelo = tableroEnemigo.getCelda(f, c);
+                        if (celdaModelo != null && celdaModelo.getEstado() == EstadoCelda.DISPARADA) {
+                            mostrarError("Ya has disparado en esta casilla.");
+                            return; // No permitir seleccionar
+                        }
+                    }
+                    // --- FIN DE CORRECCIÓN 1 ---
+                    
+                    
 
                     if (ultimaSeleccionada != null) {
                         ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
@@ -295,6 +358,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
+                boton.setEnabled(false); // <-- CORRECCIÓN 1.A: Deshabilitar botón
+                
             }
 
         } else {
@@ -310,6 +375,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                     boton.getBackground(); //no deberia pasar pero pues por si acaso
             };
             boton.setBackground(nuevoColor);
+            boton.setEnabled(false); // <-- CORRECCIÓN 1.A: Deshabilitar botón
         }
     }
 
@@ -320,6 +386,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesPropio[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.BLACK);
+                // boton.setEnabled(false);
             }
 
         } else {
@@ -330,7 +397,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                     boton.setBackground(Color.CYAN);
                 case IMPACTO_SIN_HUNDIMIENTO ->
                     boton.setBackground(Color.MAGENTA);
+                    
             }
+            // boton.setEnabled(false);
         }
     }
 
@@ -352,7 +421,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     }
 
     public void actualizarTimer(int segundosRestantes, String jugador) {
-        lblTimer.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
+        lblTurno.setText("Turno de " + jugador + " - Tiempo: " + segundosRestantes + "s");
     }
 
     public void setJugador(JugadorModel jugador) {

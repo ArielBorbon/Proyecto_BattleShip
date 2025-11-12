@@ -41,16 +41,15 @@ public class Tablero {
             throw new IndexOutOfBoundsException("Disparo fuera del tablero: Fila=" + fila + ", Col=" + col);
         }
 
-     
+////         if (celdaAtacada.getEstado() == EstadoCelda.DISPARADA) {
+////            // Si disparas a una celda que ya fue disparada (tenga nave o no),
+////            // se considera AGUA y pierdes el turno.
+////            return ResultadoDisparo.AGUA;
+////        }
+
         if (celdaAtacada.getEstado() == EstadoCelda.DISPARADA) {
-            if (celdaAtacada.getNave() != null) {
-               
-                return ResultadoDisparo.IMPACTO_SIN_HUNDIMIENTO;
-            } else {
-                return ResultadoDisparo.AGUA;
-            }
+            return ResultadoDisparo.AGUA;
         }
-        
 
         celdaAtacada.setEstado(EstadoCelda.DISPARADA);
        
