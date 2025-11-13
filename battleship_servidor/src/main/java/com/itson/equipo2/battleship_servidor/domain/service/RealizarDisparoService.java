@@ -35,25 +35,20 @@ public class RealizarDisparoService {
 
     public void realizarDisparo(RealizarDisparoRequest request) {
         try {
-            // 0. DETENER EL TIMER
             partidaTimerService.cancelCurrentTimer();
             
-            // 1. OBTENER DATOS
-            Partida partida = partidaRepository.getPartida(); // Usando la versión "singleton"
+            Partida partida = partidaRepository.getPartida();
             if (partida == null) {
                 throw new Exception("Error: No se encontró la partida en el repositorio.");
             }
 
-            // 2. DELEGAR AL DOMINIO
             ResultadoDisparoReponse resultadoResponse = partida.realizarDisparo(
                     request.getJugadorId(),
                     request.getCoordenada()
             );
 
-            // 3. GUARDAR ESTADO
             partidaRepository.guardar(partida);
 
-            // 4. PUBLICAR RESPUESTA
             EventMessage eventoResultado = new EventMessage(
                     "DisparoRealizado",
                     gson.toJson(resultadoResponse)
@@ -61,27 +56,21 @@ public class RealizarDisparoService {
             eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, eventoResultado);
             System.out.println("Disparo procesado. Resultado: " + resultadoResponse);
 
-            // 5. REINICIAR EL TIMER
             if (partida.getEstado() == EstadoPartida.EN_BATALLA) {
                  partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
             }
 
         } catch (IllegalStateException e) {
-            // Error esperado (disparo fuera de turno)
             System.out.println("INFO: Disparo rechazado (fuera de turno): " + e.getMessage());
-            // Opcional: publicar un evento de error leve
             ErrorResponse error = new ErrorResponse(e.getMessage());
             eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("ErrorDisparo", gson.toJson(error)));
             
-            // ¡Importante! Reiniciar el timer aunque el disparo haya fallado
-            // para que el turno del jugador actual no se pierda.
              Partida partida = partidaRepository.getPartida();
              if (partida != null && partida.getEstado() == EstadoPartida.EN_BATALLA) {
                  partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
              }
 
         } catch (Exception e) {
-            // Errores inesperados
             System.err.println("Error INESPERADO procesando el disparo: " + e.getMessage());
             e.printStackTrace();
             ErrorResponse error = new ErrorResponse("Error inesperado en el servidor: " + e.getMessage());

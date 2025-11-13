@@ -66,19 +66,15 @@ public class Battleship_cliente {
         iniciarPartidaVsIA(publisher);
     }
     
-    // ... (el resto de la clase, 'iniciarPartidaVsIA' y 'crearNavesDePrueba', sigue igual)
-    // ...
     private static void iniciarPartidaVsIA(IMessagePublisher publisher) {
         System.out.println("Enviando comando para crear partida vs IA...");
         
         List<NaveDTO> navesHumano = crearNavesDePrueba();
         List<NaveDTO> navesIA = crearNavesDePrueba(); // La IA usa la misma disposición
         
-        // --- INICIO DE LA CORRECCIÓN ---
         // 1. Poblar nuestro modelo local de tablero ANTES de enviar.
         TableroModel tableroPropio = AppContext.getTableroPropio();
         tableroPropio.posicionarNaves(navesHumano);
-        // --- FIN DE LA CORRECCIÓN ---
         
         
         

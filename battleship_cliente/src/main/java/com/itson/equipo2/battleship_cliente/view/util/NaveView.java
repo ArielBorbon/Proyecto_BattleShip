@@ -37,7 +37,6 @@ public class NaveView extends JPanel {
     private static final int CELL_SIZE = 57;
 
     public NaveView(TipoNave tipo) {
-        // 🔹 El tamaño real de la nave (horizontal)
         int ancho = (CELL_SIZE * tipo.getTamanio()) - CELL_SIZE;
         int alto = CELL_SIZE;
 
@@ -46,10 +45,8 @@ public class NaveView extends JPanel {
         setBackground(Color.GRAY);
         setOpaque(true);
 
-        // 🔹 Dibujar el borde manualmente para no alterar el tamaño real
         setBorder(null);
 
-        // 🔹 Permitir volver a arrastrar después de haber sido soltada
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -128,7 +125,6 @@ public class NaveView extends JPanel {
         return null;
     }
 
-    // 🔹 Borde visual sin alterar tamaño
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

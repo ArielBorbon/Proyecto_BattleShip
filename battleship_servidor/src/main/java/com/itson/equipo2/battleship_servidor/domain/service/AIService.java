@@ -29,42 +29,34 @@ public class AIService implements IMessageHandler {
 
     private final Random random = new Random();
     private final Gson gson = new Gson();
-    private final IPartidaRepository partidaRepository; // <-- AÑADIR REPOSITORIO
-    private final IMessagePublisher publisher; // <-- AÑADIR PUBLISHER
-    private final String IA_PLAYER_ID = "JUGADOR_IA_01"; // <-- Mover ID aquí
+    private final IPartidaRepository partidaRepository; 
+    private final IMessagePublisher publisher; 
+    private final String IA_PLAYER_ID = "JUGADOR_IA_01"; 
 
     public AIService(IPartidaRepository partidaRepository , IMessagePublisher publisher ) {
         this.partidaRepository = partidaRepository;
-        this.publisher = publisher; // <-- Inyectar publisher
+        this.publisher = publisher; 
     }
 
-// Modificar la firma: ya no necesita la instancia obsoleta de 'partida'
     public void solicitarTurnoIA() {
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
 
-                // --- INICIO DE CORRECCIÓN 2 ---
-                // 1. Obtener el estado FRESCO de la partida desde el repo
                 Partida partidaActual = partidaRepository.getPartida();
                 if (partidaActual == null) {
                     System.err.println("AIService: No se encontró partida.");
                     return;
                 }
 
-                // 2. VERIFICAR si SIGUE siendo el turno de la IA.
-                // Si el jugador humano disparó (y falló) mientras la IA "pensaba",
-                // el turno puede haber cambiado de nuevo al humano.
                 if (partidaActual.getEstado() != EstadoPartida.EN_BATALLA
                         || !partidaActual.getTurnoActual().equals("JUGADOR_IA_01")) { // Usar el ID Fijo
 
                     System.out.println("AIService: El turno cambió o la partida terminó. Abortando disparo de IA.");
-                    return; // No disparar
+                    return;
                 }
-                // --- FIN DE CORRECCIÓN 2 ---
 
-                // Usar la 'partidaActual' fresca de aquí en adelante
                 Tablero tableroEnemigo = (partidaActual.getTurnoActual().equals(partidaActual.getJugador1().getId()))
                         ? partidaActual.getTableroJugador2()
                         : partidaActual.getTableroJugador1();
@@ -72,7 +64,7 @@ public class AIService implements IMessageHandler {
                 CoordenadaDTO coordIA = generarDisparo(tableroEnemigo);
 
                 RealizarDisparoRequest aiRequest = new RealizarDisparoRequest(
-                        partidaActual.getTurnoActual(), // El ID del jugador IA
+                        partidaActual.getTurnoActual(), 
                         coordIA
                 );
 
@@ -81,7 +73,7 @@ public class AIService implements IMessageHandler {
                 EventMessage message = new EventMessage("RealizarDisparo", gson.toJson(aiRequest));
                 publisher.publish(RedisConfig.CHANNEL_COMANDOS, message);
             }
-        }, 2000); // 2 segundos de retraso
+        }, 2000); 
     }
 
     private CoordenadaDTO generarDisparo(Tablero tableroEnemigo) {
@@ -107,10 +99,8 @@ public class AIService implements IMessageHandler {
     public void onMessage(EventMessage message) {
         TurnoTickResponse tick = gson.fromJson(message.getPayload(), TurnoTickResponse.class);
         
-        // Si el tick anuncia que es el turno de la IA, solicitar un turno.
         if (tick.getJugadorEnTurnoId().equals(IA_PLAYER_ID)) {
-            // Solo actuar en el *inicio* del turno (o cerca de él)
-            if (tick.getTiempoRestante() > 28) { // 30 o 29
+            if (tick.getTiempoRestante() > 28) { 
                  System.out.println("AIService (Handler): Detectado inicio de turno de IA. Solicitando disparo...");
                  solicitarTurnoIA();
             }

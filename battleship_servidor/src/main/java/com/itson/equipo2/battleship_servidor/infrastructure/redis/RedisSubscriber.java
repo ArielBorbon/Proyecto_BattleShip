@@ -25,7 +25,7 @@ public class RedisSubscriber implements IMessageSubscriber {
     private final JedisPool jedisPool;
     private final ExecutorService executor;
     private final Gson gson = new Gson();
-    private final EventDispatcher eventDispatcher; // Referencia al Bus
+    private final EventDispatcher eventDispatcher; 
 
     private volatile JedisPubSub jedisPubSub;
     private final AtomicBoolean isSubscribed = new AtomicBoolean(false);
@@ -42,7 +42,7 @@ public class RedisSubscriber implements IMessageSubscriber {
      * canal de Redis.
      */
     @Override
-    public void subscribe(String channel) { // Nota: Ya no pide IMessageHandler
+    public void subscribe(String channel) { 
 
         if (!isSubscribed.compareAndSet(false, true)) {
             return;
@@ -52,11 +52,8 @@ public class RedisSubscriber implements IMessageSubscriber {
             @Override
             public void onMessage(String channel, String messageJson) {
                 try {
-                    // 1. Solo deserializamos el "Sobre"
                     EventMessage event = gson.fromJson(messageJson, EventMessage.class);
 
-                    // 2. ¡AQUÍ ESTÁ LA CLAVE! 
-                    // El suscriptor no piensa. Solo le grita al Bus: "¡Llegó esto!"
                     eventDispatcher.dispatch(event);
 
                 } catch (JsonSyntaxException e) {
@@ -65,7 +62,6 @@ public class RedisSubscriber implements IMessageSubscriber {
             }
         };
 
-        // Tarea bloqueante en hilo separado
         executor.submit(() -> {
             try (Jedis jedis = jedisPool.getResource()) {
                 jedis.subscribe(jedisPubSub, channel);

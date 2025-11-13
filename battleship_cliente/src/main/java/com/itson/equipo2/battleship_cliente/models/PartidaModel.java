@@ -38,7 +38,6 @@ public class PartidaModel {
 
     public void notifyObservers() {
         System.out.println("PartidaModel notificando a " + observers.size() + " observadores...");
-        // Notificar en el hilo de Swing para seguridad de la UI
         javax.swing.SwingUtilities.invokeLater(() -> {
             for (PartidaObserver observer : new ArrayList<>(observers)) {
                 observer.onChange(this);

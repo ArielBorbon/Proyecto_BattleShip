@@ -34,16 +34,13 @@ public class RedisPublisher implements IMessagePublisher {
     public void publish(String channel, EventMessage message) {
         String jsonMessage;
 
-        // 1. Serializar el mensaje
         try {
             jsonMessage = gson.toJson(message);
         } catch (Exception e) {
             System.err.println("Error al serializar mensaje: " + e.getMessage());
-            return; // No se puede publicar si no se puede serializar
+            return; 
         }
 
-        // 2. Usar 'try-with-resources' para tomar y devolver una conexión
-        //    del pool automáticamente.
         try (Jedis jedis = jedisPool.getResource()) {
 
             // 3. Publicar el mensaje
@@ -52,11 +49,8 @@ public class RedisPublisher implements IMessagePublisher {
             System.out.println("Mensaje publicado en '" + channel + "': " + jsonMessage);
 
         } catch (JedisConnectionException e) {
-            // Error común: no se pudo conectar o se perdió la conexión
             System.err.println("Error publicando en Redis (Canal: " + channel + "): " + e.getMessage());
-            // Aquí podrías implementar una lógica de reintento si quisieras
         } catch (Exception e) {
-            // Otro error inesperado
             System.err.println("Error inesperado al publicar mensaje: " + e.getMessage());
             e.printStackTrace();
         }

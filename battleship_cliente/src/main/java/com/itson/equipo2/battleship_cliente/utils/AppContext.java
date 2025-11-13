@@ -21,7 +21,6 @@ import mx.itson.equipo_2.common.broker.IMessagePublisher;
  */
 public class AppContext {
 
-    // Instancias únicas (gestionadas aquí en lugar de Singletons)
     private static PartidaModel partidaModel;
     private static TableroModel tableroPropio;
     private static TableroModel tableroEnemigo;
@@ -32,7 +31,6 @@ public class AppContext {
     private static ViewController viewController;
     private static IMessagePublisher publisher;
 
-    // Previene instanciación
     private AppContext() {}
 
     /**
@@ -45,48 +43,35 @@ public class AppContext {
     public static void initialize(IMessagePublisher pub, ViewController vc, String jugadorId, String nombreJugador) {
         System.out.println("Inicializando AppContext (Contenedor de Dependencias)...");
         
-        // Guardar componentes clave
         publisher = pub;
         viewController = vc;
 
-        // 1. Crear Modelos (Estado centralizado)
+        // 1. Crear Modelos 
         tableroPropio = new TableroModel();
         tableroEnemigo = new TableroModel();
         
-        // Esta es la instancia que debemos pasar al servicio
+        // aqui se hace la instancia que pasa al service
         JugadorModel jugadorLocal = new JugadorModel(jugadorId, nombreJugador, false, tableroPropio, null);
         
-        // PartidaModel ahora es una instancia gestionada, no un singleton
         partidaModel = new PartidaModel();
         partidaModel.setYo(jugadorLocal);
         
         System.out.println("Modelos [CREADOS]");
 
-        // 2. Crear Servicios (CORRECCIÓN 1)
-        // El constructor de RealizarDisparoService espera un JugadorModel, no un PartidaModel.
-        // Le pasamos el jugadorLocal que acabamos de crear.
         realizarDisparoService = new RealizarDisparoService(publisher, jugadorLocal);
         System.out.println("RealizarDisparoService [CREADO]");
 
-        // 3. Crear Controladores (CORRECCIÓN 2)
-        // El constructor de DisparoController (el que tiene sentido usar aquí)
-        // solo espera el servicio, no el modelo.
         disparoController = new DisparoController(realizarDisparoService);
         System.out.println("DisparoController [CREADO]");
         
-        // 4. Crear Mediadores
         gameMediator = new GameMediator();
-        // El mediador llama al controlador de disparos
         gameMediator.setPartidaController(disparoController);
         System.out.println("GameMediator [CREADO]");
 
-        // 5. Registrar Vistas en el ViewController
-        // La fábrica (lambda) ahora obtiene dependencias desde AppContext
         viewController.registrarPantalla("disparar", (v) -> {
             DispararView dv = new DispararView();
-            // Inyectamos dependencias en la vista
             dv.setMediator(AppContext.getGameMediator()); 
-            dv.setModels( // Inyección para cumplir con MVC
+            dv.setModels( //inyeccion para mvc
                 AppContext.getPartidaModel(),
                 AppContext.getTableroPropio(),
                 AppContext.getTableroEnemigo()
@@ -99,7 +84,6 @@ public class AppContext {
         System.out.println("AppContext [LISTO]");
     }
 
-    // Getters para acceder a las instancias gestionadas
     
     private static void checkInitialized() {
         if (partidaModel == null) {

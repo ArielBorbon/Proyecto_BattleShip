@@ -28,7 +28,7 @@ public class PartidaTimerService {
      * Inicia un nuevo temporizador de turno. Cancela cualquier timer anterior.
      */
     public void startTurnoTimer(IPartidaRepository repo, IMessagePublisher publisher) {
-        cancelCurrentTimer(); // Asegura que solo un timer corra a la vez
+        cancelCurrentTimer();
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -37,30 +37,26 @@ public class PartidaTimerService {
                 try {
                     Partida partida = repo.getPartida();
                     if (partida == null || partida.getEstado() != EstadoPartida.EN_BATALLA) {
-                        cancel(); // Detiene el timer si la partida terminó o no existe
+                        cancel(); 
                         return;
                     }
 
                     int tiempo = partida.decrementarYObtenerTiempo();
-                    repo.guardar(partida); // Guarda el nuevo tiempo
+                    repo.guardar(partida); 
 
-                    // Publica el "tick" al cliente
                     TurnoTickResponse tick = new TurnoTickResponse(partida.getTurnoActual(), tiempo);
                     publisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(tick)));
 
-                    // Si el tiempo se acabó
                     if (tiempo <= 0) {
                         System.out.println("¡Tiempo agotado! Forzando cambio de turno.");
-                        cancel(); // Detiene este timer
+                        cancel(); 
 
-                        partida.cambiarTurno(); // El dominio cambia el turno Y reinicia el contador a 30
+                        partida.cambiarTurno(); 
                         repo.guardar(partida);
 
-                        // Notifica al cliente del cambio de turno por timeout
                         TurnoTickResponse timeoutTick = new TurnoTickResponse(partida.getTurnoActual(), partida.getTiempoRestante());
                         publisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(timeoutTick)));
                         
-                        // Inicia el timer para el *siguiente* jugador
                         startTurnoTimer(repo, publisher);
                     }
                 } catch (Exception e) {
@@ -69,7 +65,7 @@ public class PartidaTimerService {
                     cancel();
                 }
             }
-        }, 1000, 1000); // Inicia después de 1s, repite cada 1s
+        }, 1000, 1000);
     }
 
     /**

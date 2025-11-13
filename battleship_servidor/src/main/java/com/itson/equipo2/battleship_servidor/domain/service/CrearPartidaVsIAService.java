@@ -39,14 +39,14 @@ public class CrearPartidaVsIAService {
 
     public void execute(CrearPartidaVsIARequest request) {
         try {
-            // 1. Crear Jugadores
+            //Crear Jugadores
             Jugador jugadorHumano = new Jugador(request.getJugadorHumanoId(), "Humano");
             Jugador jugadorIA = new Jugador(IA_PLAYER_ID, "IA");
 
-            // 2. Crear Partida
+            //Crear Partida
             Partida partida = new Partida(jugadorHumano);
 
-            // 3. Posicionar Naves
+            //Posicionar Naves
             List<Nave> navesHumano = request.getNavesHumano().stream()
                     .map(dto -> new Nave(dto.getTipo(), dto.getCoordenadas(), dto.getOrientacion()))
                     .collect(Collectors.toList());
@@ -56,15 +56,15 @@ public class CrearPartidaVsIAService {
                     .map(dto -> new Nave(dto.getTipo(), dto.getCoordenadas(), dto.getOrientacion()))
                     .collect(Collectors.toList());
 
-            // 4. Unir IA y posicionar sus naves
-            partida.unirseAPartida(jugadorIA, jugadorHumano.getId()); // Inicia el Humano
+            //Unir IA y posicionar sus naves
+            partida.unirseAPartida(jugadorIA, jugadorHumano.getId());
             partida.posicionarNaves(jugadorIA.getId(), navesIA);
 
-            // 5. Guardar
+            //Guardar
             partidaRepository.guardar(partida);
             System.out.println("Partida Vs IA creada. Turno de: " + partida.getTurnoActual());
 
-            // 6. Preparar respuesta
+            //Preparar respuesta
             JugadorDTO j1DTO = new JugadorDTO(jugadorHumano.getId(), "Humano", null, null);
             JugadorDTO j2DTO = new JugadorDTO(jugadorIA.getId(), "IA", null, null);
 
@@ -76,16 +76,13 @@ public class CrearPartidaVsIAService {
                     partida.getTurnoActual()
             );
 
-            // 7. Publicar evento de éxito
             eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS,
                     new EventMessage("PartidaIniciada", gson.toJson(response)));
             
-            // 8. INICIAR EL TIMER POR PRIMERA VEZ
             partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
 
         } catch (Exception e) {
             System.err.println("Error al crear partida vs IA: " + e.getMessage());
-            // Opcional: publicar un evento de error
             EventMessage errorMsg = new EventMessage("ErrorCrearPartida", gson.toJson(e.getMessage()));
             eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, errorMsg);
         }

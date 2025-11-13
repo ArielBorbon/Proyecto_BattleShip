@@ -20,7 +20,7 @@ public class ResultadoDisparoReponse implements Serializable{
     private ResultadoDisparo resultado;
     private String jugadorId; // El jugador que realizó el disparo
     
-    private List<CoordenadaDTO> coordenadasBarcoHundido; // Añadir si no está
+    private List<CoordenadaDTO> coordenadasBarcoHundido; 
     private String turnoActual; 
     private EstadoPartida estadoPartida;
 

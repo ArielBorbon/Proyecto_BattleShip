@@ -16,7 +16,7 @@ public class JugadorModel {
     private String id;
     private String nombre;
     private boolean listo;       // si ya posicionó sus naves
-    private TableroModel tablero; // su tablero propio
+    private TableroModel tablero; // su tablero 
 
     private List<CoordenadaDTO> disparos;
 

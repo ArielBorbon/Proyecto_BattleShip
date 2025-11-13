@@ -48,7 +48,6 @@ public class EventDispatcher {
         if (handlers != null && !handlers.isEmpty()) {
             for (IMessageHandler handler : handlers) {
                 try {
-                    // Entregamos el mensaje al interesado
                     handler.onMessage(event);
                 } catch (Exception e) {
                     System.err.println("Error en handler para " + tipo + ": " + e.getMessage());

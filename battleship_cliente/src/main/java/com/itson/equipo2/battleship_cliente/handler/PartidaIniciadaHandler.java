@@ -26,7 +26,6 @@ public class PartidaIniciadaHandler implements IMessageHandler {
     private final TableroModel tableroEnemigo;
     private final Gson gson = new Gson();
 
-    // Inyectamos todas las dependencias que necesitamos
     public PartidaIniciadaHandler(ViewController viewController, PartidaModel partidaModel, TableroModel tableroPropio, TableroModel tableroEnemigo) {
         this.viewController = viewController;
         this.partidaModel = partidaModel;
@@ -44,10 +43,9 @@ public class PartidaIniciadaHandler implements IMessageHandler {
         System.out.println("Evento PartidaIniciada recibido!");
         PartidaIniciadaResponse response = gson.fromJson(message.getPayload(), PartidaIniciadaResponse.class);
 
-        // Actualizar el PartidaModel (Singleton gestionado) del cliente
         partidaModel.setId(response.getPartidaId());
         
-        // Identificar quién es "yo" y quién es "enemigo"
+        // buscamos y el yo y el enemigo
         JugadorDTO j1 = response.getJugador1();
         JugadorDTO j2 = response.getJugador2();
         JugadorModel yo = partidaModel.getYo(); // Ya tiene el ID y nombre
@@ -64,8 +62,6 @@ public class PartidaIniciadaHandler implements IMessageHandler {
         
         System.out.println("PartidaModel actualizado. cambiando a vista 'disparar'");
         
-        // Cambiar a la vista de disparo
-        // Debe hacerse en el hilo de Swing
         javax.swing.SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("disparar");
         });

@@ -18,18 +18,11 @@ import mx.itson.equipo_2.common.message.EventMessage;
  */
 public class DisparoRealizadoHandler implements IMessageHandler {
 
-    // Ya no se inyectan en el constructor, se obtienen de AppContext
-    // private final PartidaModel partidaModel; 
     private final Gson gson = new Gson();
 
     public DisparoRealizadoHandler() {
-        // Constructor vacío
     }
-    
-    // Constructor anterior (ya no es necesario si se usa AppContext)
-    // public DisparoRealizadoHandler(PartidaModel partidaModel) {
-    //    this.partidaModel = partidaModel;
-    // }
+
     
     @Override
     public boolean canHandle(EventMessage message) {
@@ -51,18 +44,17 @@ public class DisparoRealizadoHandler implements IMessageHandler {
 
         // 1. Determinar qué tablero actualizar
         if (response.getJugadorId().equals(partidaModel.getYo().getId())) {
-            // Fui yo quien disparó -> actualizar tablero enemigo
+            //disparo mio
             System.out.println("Actualizando tablero ENEMIGO.");
             tableroAfectado = tableroEnemigo;
         } else {
-            // Disparó el enemigo -> actualizar mi tablero
+            //disparo enemigo entonces
             System.out.println("Actualizando tablero PROPIO.");
             tableroAfectado = tableroPropio;
         }
 
-        // 2. Actualizar la celda en el modelo de tablero
+        // 2. Actualizar la celda en el modelo
         if (tableroAfectado != null) {
-            // Este método (actualizarCelda) debe notificar a sus propios observadores (la Vista)
             tableroAfectado.actualizarCelda(response.getCoordenada(), response.getResultado(), response.getCoordenadasBarcoHundido());
         } else {
             System.err.println("Error: Tablero afectado es nulo.");
@@ -73,7 +65,6 @@ public class DisparoRealizadoHandler implements IMessageHandler {
         partidaModel.setEstado(response.getEstadoPartida());
         
         // 4. Notificar a los observadores (DispararView)
-        // ¡Esto ahora funciona porque PartidaModel tiene el método! (Problema 4 resuelto)
         partidaModel.notifyObservers();
     }
 }

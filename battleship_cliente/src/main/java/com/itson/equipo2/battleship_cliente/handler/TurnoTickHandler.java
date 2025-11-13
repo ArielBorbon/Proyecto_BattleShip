@@ -30,11 +30,9 @@ public class TurnoTickHandler implements IMessageHandler {
             TurnoTickResponse response = gson.fromJson(message.getPayload(), TurnoTickResponse.class);
             PartidaModel model = AppContext.getPartidaModel();
             
-            // Actualizar el estado local
             model.setTurnoDe(response.getJugadorEnTurnoId());
             model.setSegundosRestantes(response.getTiempoRestante());
             
-            // Notificar a la vista (DispararView) para que se repinte
             model.notifyObservers();
             
         } catch (Exception e) {

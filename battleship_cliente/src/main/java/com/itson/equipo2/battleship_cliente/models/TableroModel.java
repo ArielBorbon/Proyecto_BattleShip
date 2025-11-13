@@ -25,7 +25,6 @@ public class TableroModel {
     public static final int TAMANIO = 10;
 
 public TableroModel() {
-        // Inicializar celdas vacías
         this.celdas = new CeldaModel[TAMANIO][TAMANIO];
         for (int f = 0; f < TAMANIO; f++) {
             for (int c = 0; c < TAMANIO; c++) {
@@ -36,23 +35,16 @@ public TableroModel() {
 
 
 
-// --- MÉTODO LLAMADO POR EL HANDLER ---
     public void actualizarCelda(CoordenadaDTO coord, ResultadoDisparo resultado, List<CoordenadaDTO> coordsHundidas) {
         
         if (resultado == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO && coordsHundidas != null) {
-            // Marcar todas las celdas del barco hundido
             for (CoordenadaDTO c : coordsHundidas) {
                 this.getCelda(c.getFila(), c.getColumna()).setEstado(EstadoCelda.DISPARADA);
-                // (Aquí faltaría la lógica para saber si es AGUA, TOCADO o HUNDIDO)
-                // Por ahora, solo marcamos la celda como disparada.
-                // La vista DispararView se encargará de pintarlo de ROJO/NEGRO
             }
         } else {
-             // Marcar solo la celda disparada
              this.getCelda(coord.getFila(), coord.getColumna()).setEstado(EstadoCelda.DISPARADA);
         }
         
-        // Notificar a la vista (DispararView) que debe repintar esta celda
         DisparoDTO dto = new DisparoDTO(resultado, coord, coordsHundidas);
         notifyObservers(dto);
     }
@@ -93,7 +85,6 @@ public TableroModel() {
     
     
     
-    // --- Lógica de Observador (para DispararView) ---
     public void addObserver(TableroObserver observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);

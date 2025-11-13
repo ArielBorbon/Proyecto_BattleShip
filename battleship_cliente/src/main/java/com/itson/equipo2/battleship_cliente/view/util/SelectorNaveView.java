@@ -50,7 +50,6 @@ public class SelectorNaveView extends JPanel {
         add(lblTitulo, BorderLayout.NORTH);
         add(lblCantidad, BorderLayout.SOUTH);
 
-        // 🔹 Clic en el selector genera una nueva nave y la coloca en el JLayeredPane
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -68,7 +67,7 @@ public class SelectorNaveView extends JPanel {
                 // Crear la nueva nave del tipo correspondiente
                 NaveView nave = new NaveView(tipo);
 
-                // Posición inicial basada en el clic
+                // Posición inicial basada en el clik
                 Point puntoEnLayered = SwingUtilities.convertPoint(SelectorNaveView.this, e.getPoint(), layered);
                 nave.setLocation(puntoEnLayered.x - nave.getWidth() / 2, puntoEnLayered.y - nave.getHeight() / 2);
 

@@ -36,13 +36,9 @@ public class RedisSubscriber implements IMessageSubscriber {
         this.eventDispatcher = eventDispatcher;
     }
 
-    /**
-     * En esta versión "tonta", ignoramos el argumento 'handler' porque
-     * delegaremos TODO al InternalEventBus. Simplemente nos suscribimos al
-     * canal de Redis.
-     */
+
     @Override
-    public void subscribe(String channel) { // Nota: Ya no pide IMessageHandler
+    public void subscribe(String channel) { 
 
         if (!isSubscribed.compareAndSet(false, true)) {
             return;
@@ -52,12 +48,9 @@ public class RedisSubscriber implements IMessageSubscriber {
             @Override
             public void onMessage(String channel, String messageJson) {
                 try {
-                    // 1. Solo deserializamos el "Sobre"
                     EventMessage event = gson.fromJson(messageJson, EventMessage.class);
 
-                    // 2. ¡AQUÍ ESTÁ LA CLAVE! 
-                    // El suscriptor no piensa. Solo le grita al Bus: "¡Llegó esto!"
-                    eventDispatcher.dispatch(event);
+                    eventDispatcher.dispatch(event);        //un grito al bus para que haga sus cambios
 
                 } catch (JsonSyntaxException e) {
                     System.err.println("Error: Mensaje no es un EventMessage válido.");
@@ -65,7 +58,6 @@ public class RedisSubscriber implements IMessageSubscriber {
             }
         };
 
-        // Tarea bloqueante en hilo separado
         executor.submit(() -> {
             try (Jedis jedis = jedisPool.getResource()) {
                 jedis.subscribe(jedisPubSub, channel);

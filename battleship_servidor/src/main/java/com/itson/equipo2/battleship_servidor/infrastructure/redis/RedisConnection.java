@@ -18,7 +18,6 @@ public class RedisConnection {
     private static JedisPool jedisPool;
     private static ExecutorService subscriberExecutor;
 
-    // Constructor privado para evitar que alguien haga 'new RedisConnection()'
     private RedisConnection() {
     }
 
@@ -45,12 +44,10 @@ public class RedisConnection {
         if (jedisPool == null) {
             JedisPoolConfig poolConfig = buildPoolConfig();
 
-            // ¡AQUÍ ESTÁ EL CAMBIO! Lee desde RedisConfig
             jedisPool = new JedisPool(
                     poolConfig,
                     RedisConfig.REDIS_HOST,
                     RedisConfig.REDIS_PORT
-            // , RedisConfig.REDIS_PASSWORD (si tuvieras)
             );
         }
         return jedisPool;

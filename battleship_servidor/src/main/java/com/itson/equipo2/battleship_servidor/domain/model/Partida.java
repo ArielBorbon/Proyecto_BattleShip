@@ -48,13 +48,12 @@ public class Partida {
             this.tableroJugador2 = new Tablero();
             this.estado = EstadoPartida.EN_BATALLA;
             this.turnoActual = idTurnoInicial; 
-            iniciarTurno(); // <-- AÑADIR: Inicia el contador por primera vez
+            iniciarTurno(); 
         } else {
             throw new IllegalStateException("No se puede unir a una partida que no esté en 'CONFIGURACION'.");
         }
     }
 
-// --- LÓGICA DE DISPARO MODIFICADA ---
     public ResultadoDisparoReponse realizarDisparo(String jugadorId, CoordenadaDTO coordenada) { 
         
         if (this.estado != EstadoPartida.EN_BATALLA) {
@@ -83,7 +82,6 @@ public class Partida {
         if (resultado == ResultadoDisparo.AGUA) {
             cambiarTurno();
         }else{
-            // Si no es AGUA, el jugador repite. Reiniciamos su tiempo.
             iniciarTurno(); // <-- AÑADIR
         }
 
@@ -92,7 +90,6 @@ public class Partida {
             System.out.println("¡Partida FINALIZADA! Ganador: " + jugadorId);
         }
         
-        // Crear la respuesta completa
         ResultadoDisparoReponse response = new ResultadoDisparoReponse();
         response.setJugadorId(jugadorId);
         response.setCoordenada(coordenada);
@@ -110,12 +107,11 @@ public class Partida {
         } else {
             this.turnoActual = jugador1.getId();
         }
-        iniciarTurno(); // <-- AÑADIR: Reinicia el contador para el nuevo jugador
+        iniciarTurno();
         System.out.println("Turno cambiado a: " + this.turnoActual);
     }
     
     
-    // --- NUEVO MÉTODO ---
     public void posicionarNaves(String jugadorId, List<Nave> naves) {
         Tablero tablero = (jugadorId.equals(jugador1.getId())) ? tableroJugador1 : tableroJugador2;
         if (tablero == null) return;

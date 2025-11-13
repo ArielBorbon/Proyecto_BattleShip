@@ -31,63 +31,56 @@ public class Battleship_servidor {
     public static void main(String[] args) {
         System.out.println("Iniciando Battleship Servidor...");
 
-        // 1. Inicializar Conexión a Redis
+        //Conexin a Redis
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
 
-        // 2. Inicializar Componentes de Infraestructura
+        //Inicializar Componentes de Infraestructura
         IMessagePublisher publisher = new RedisPublisher(pool);
         IPartidaRepository partidaRepository = new PartidaRepository(null); // Repositorio Singleton
         Gson gson = new Gson();
         AIService aiService = new AIService(partidaRepository, publisher);
 
-        // 3. Crear el Dispatcher (El "Router" de eventos)
+        // crear el router """" de los eventos
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         
         PartidaTimerService timerService = new PartidaTimerService();
         
-        // 2. Crear el Servicio de "Realizar Disparo"
+        // 2. creamos el servicio de los balazos
         RealizarDisparoService disparoService = new RealizarDisparoService(
                 partidaRepository, 
                 publisher, 
                 timerService
         );
         
-        // 3. Crear el Servicio de "Crear Partida"
+        //creamos el evento de la partida como tal
         CrearPartidaVsIAService crearPartidaService = new CrearPartidaVsIAService(
                 partidaRepository, 
                 publisher, 
                 timerService, 
                 gson
         );
-        
-        // --- REGISTRAR LOS HANDLERS EN EL DISPATCHER ---
-        // (Como te dijo tu compañero, "registrarlos")
-        
-        // Cuando llegue un evento "RealizarDisparo", 
-        // el dispatcher llamará a este handler
+                
         eventDispatcher.subscribe(
                 "RealizarDisparo", 
                 new RealizarDisparoHandler(disparoService)
         );
 
-        // Cuando llegue un evento "CrearPartidaVsIA",
-        // el dispatcher llamará a este handler
         eventDispatcher.subscribe(
                 "CrearPartidaVsIA", 
                 new CrearPartidaVsIAHandler(crearPartidaService)
         );
         
-        // Registrar el AIService para que escuche eventos
+        // Registrar el AIService para que escuche los eventos
         eventDispatcher.subscribe("TurnoTick", aiService);
 
-        // 5. Iniciar el Suscriptor de Comandos del Cliente
+        //Iniciar el Suscriptor de Comandos del Cliente
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        commandSubscriber.subscribe(RedisConfig.CHANNEL_COMANDOS);// El handler se ignora, usa el dispatcher
+        commandSubscriber.subscribe(RedisConfig.CHANNEL_COMANDOS);
         
-        // 6. Iniciar el Suscriptor de Eventos (para la IA)
+        //Iniciar el Suscriptor de Eventos (IA)
         IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        eventSubscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);// El handler se ignora, usa el dispatcher
+        eventSubscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);
 
         System.out.println("************************************************************");
         System.out.println("Battleship Servidor listo.");

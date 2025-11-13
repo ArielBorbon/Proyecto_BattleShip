@@ -39,8 +39,6 @@ public class TestMainDisparo_ConRedis {
     public static void main(String[] args) {
         System.out.println("Iniciando Main de Prueba (Integración con Redis)...");
 
-        // --- 3. Mockear el Estado de la Partida ---
-        // (Este paso sigue siendo vital para saltar a la pantalla correcta)
         System.out.println("Mockeando el estado de la partida...");
 
         String JUGADOR_LOCAL_ID = "JUGADOR-REAL-1"; // (Usa un ID que tu servidor reconozca si es necesario)
@@ -54,8 +52,6 @@ public class TestMainDisparo_ConRedis {
         PartidaModel partidaModel = new PartidaModel(UUID.randomUUID().toString(), jm1, jm2, true, JUGADOR_LOCAL_ID, 30, EstadoPartida.EN_BATALLA);
 
         JedisPool jedisPool = null;
-        // --- 1. Iniciar Conexión REAL a Redis ---
-        // Al llamar a getInstance(), se inician el Publisher y Subscriber reales.
         try {
             jedisPool = RedisConnection.getJedisPool();
             System.out.println("Conectado a Redis.");
@@ -81,9 +77,6 @@ public class TestMainDisparo_ConRedis {
         viewController.registrarPantalla("posicionar", view);
         
         
-//        partidaModelactualizarDesdeDTO(partidaDTO);
-        // --- 4. Mostrar la Vista de Disparo ---
         viewController.cambiarPantalla("posicionar");
-//        viewController.cambiarPantalla("disparo");
     }
 }

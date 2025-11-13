@@ -19,7 +19,7 @@ public class Nave {
     private int impactosRecibidos;
     
     
-    private List<CoordenadaDTO> coordenadas; // Guardar las coordenadas
+    private List<CoordenadaDTO> coordenadas; 
     private OrientacionNave orientacion;
 
     public Nave(TipoNave tipo) {
@@ -52,7 +52,6 @@ public class Nave {
     
     
     
-    // Constructor para el posicionamiento
     public Nave(TipoNave tipo, List<CoordenadaDTO> coordenadas, OrientacionNave orientacion) {
         this.tipo = tipo;
         this.longitud = tipo.getTamanio();

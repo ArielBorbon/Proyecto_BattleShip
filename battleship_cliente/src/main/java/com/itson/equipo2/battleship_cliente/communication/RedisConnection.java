@@ -31,7 +31,6 @@ public class RedisConnection {
         poolConfig.setMaxIdle(128);
         poolConfig.setMinIdle(16);
         poolConfig.setTestOnBorrow(true);
-        // ... (resto de tu configuración de pool) ...
         poolConfig.setBlockWhenExhausted(true);
         return poolConfig;
     }
@@ -45,12 +44,10 @@ public class RedisConnection {
         if (jedisPool == null) {
             JedisPoolConfig poolConfig = buildPoolConfig();
 
-            // ¡AQUÍ ESTÁ EL CAMBIO! Lee desde RedisConfig
             jedisPool = new JedisPool(
                     poolConfig,
                     RedisConfig.REDIS_HOST,
                     RedisConfig.REDIS_PORT
-            // , RedisConfig.REDIS_PASSWORD (si tuvieras)
             );
         }
         return jedisPool;
