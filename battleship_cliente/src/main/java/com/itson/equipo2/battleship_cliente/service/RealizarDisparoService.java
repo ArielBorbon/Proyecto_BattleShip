@@ -5,12 +5,13 @@
 package com.itson.equipo2.battleship_cliente.service;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_cliente.communication.RedisConfig;
+import com.itson.equipo2.communication.impl.RedisConfig;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 
 /**
  *
@@ -37,7 +38,7 @@ public class RealizarDisparoService {
 
         EventMessage message = new EventMessage("RealizarDisparo", payload);
 
-        publisher.publish(RedisConfig.CHANNEL_COMANDOS, message);
+        publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
     }
 
     

@@ -13,7 +13,7 @@ import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 
 /**
  *

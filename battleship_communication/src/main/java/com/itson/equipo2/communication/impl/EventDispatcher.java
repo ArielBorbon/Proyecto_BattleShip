@@ -2,14 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.infrastructure.redis;
+package com.itson.equipo2.communication.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.broker.IMessageHandler;
+import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  *
@@ -48,6 +48,8 @@ public class EventDispatcher {
         if (handlers != null && !handlers.isEmpty()) {
             for (IMessageHandler handler : handlers) {
                 try {
+                    
+                    // Entregamos el mensaje al interesado
                     handler.onMessage(event);
                 } catch (Exception e) {
                     System.err.println("Error en handler para " + tipo + ": " + e.getMessage());

@@ -2,15 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.infrastructure.redis;
+package com.itson.equipo2.communication.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
-import mx.itson.equipo_2.common.broker.IMessageSubscriber;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.broker.IMessageHandler;
+import com.itson.equipo2.communication.broker.IMessageSubscriber;
+import com.itson.equipo2.communication.dto.EventMessage;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
@@ -25,7 +25,7 @@ public class RedisSubscriber implements IMessageSubscriber {
     private final JedisPool jedisPool;
     private final ExecutorService executor;
     private final Gson gson = new Gson();
-    private final EventDispatcher eventDispatcher; 
+    private final EventDispatcher eventDispatcher; // Referencia al Bus
 
     private volatile JedisPubSub jedisPubSub;
     private final AtomicBoolean isSubscribed = new AtomicBoolean(false);
@@ -36,11 +36,7 @@ public class RedisSubscriber implements IMessageSubscriber {
         this.eventDispatcher = eventDispatcher;
     }
 
-    /**
-     * En esta versión "tonta", ignoramos el argumento 'handler' porque
-     * delegaremos TODO al InternalEventBus. Simplemente nos suscribimos al
-     * canal de Redis.
-     */
+
     @Override
     public void subscribe(String channel) { 
 
@@ -54,7 +50,7 @@ public class RedisSubscriber implements IMessageSubscriber {
                 try {
                     EventMessage event = gson.fromJson(messageJson, EventMessage.class);
 
-                    eventDispatcher.dispatch(event);
+                    eventDispatcher.dispatch(event);        //un grito al bus para que haga sus cambios
 
                 } catch (JsonSyntaxException e) {
                     System.err.println("Error: Mensaje no es un EventMessage válido.");

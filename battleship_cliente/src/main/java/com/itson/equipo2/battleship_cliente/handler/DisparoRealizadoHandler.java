@@ -8,9 +8,9 @@ import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.utils.AppContext;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
+import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  *

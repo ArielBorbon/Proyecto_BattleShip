@@ -5,10 +5,10 @@
 package com.itson.equipo2.battleship_servidor.application.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.domain.service.CrearPartidaVsIAService;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
+import com.itson.equipo2.battleship_servidor.application.service.CrearPartidaVsIAService;
+import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.request.CrearPartidaVsIARequest;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
 
 public class CrearPartidaVsIAHandler implements IMessageHandler {
 

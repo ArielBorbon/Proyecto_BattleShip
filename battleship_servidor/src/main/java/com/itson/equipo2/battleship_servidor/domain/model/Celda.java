@@ -11,24 +11,38 @@ import mx.itson.equipo_2.common.enums.EstadoCelda;
  * @author Cricri
  */
 public class Celda {
-   private final int fila;
-    private final int columna;
-    private EstadoCelda estado;
-    private Nave nave; 
 
-    public Celda(int fila, int columna) {
-        this.fila = fila;
-        this.columna = columna;
+    private Coordenada coordenada;
+    private EstadoCelda estado;
+    private Nave nave;
+
+    public Celda(Coordenada coordenada) {
+        this.coordenada = coordenada;
         this.estado = EstadoCelda.NO_DISPARADA;
         this.nave = null;
     }
 
-   
-    public int getFila() { return fila; }
-    public int getColumna() { return columna; }
-    public EstadoCelda getEstado() { return estado; }
-    public Nave getNave() { return nave; }
+    public Coordenada getCoordenada() {
+        return coordenada;
+    }
 
-    public void setEstado(EstadoCelda estado) { this.estado = estado; }
-    public void setNave(Nave nave) { this.nave = nave; }
+    public void setCoordenada(Coordenada coordenada) {
+        this.coordenada = coordenada;
+    }
+
+    public EstadoCelda getEstado() {
+        return estado;
+    }
+
+    public Nave getNave() {
+        return nave;
+    }
+
+    public void setEstado(EstadoCelda estado) {
+        this.estado = estado;
+    }
+
+    public void setNave(Nave nave) {
+        this.nave = nave;
+    }
 }

@@ -4,8 +4,8 @@
  */
 package com.itson.equipo2.battleship_cliente.pruebas;
 
-import com.itson.equipo2.battleship_cliente.communication.RedisConnection;
-import com.itson.equipo2.battleship_cliente.communication.RedisPublisher;
+import com.itson.equipo2.communication.impl.RedisConnection;
+import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.models.CeldaModel;

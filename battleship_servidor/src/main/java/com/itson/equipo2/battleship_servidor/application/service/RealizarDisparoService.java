@@ -2,19 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.domain.service;
+package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
 import mx.itson.equipo_2.common.dto.response.ErrorResponse;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
+import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 
 /**
  *
@@ -42,19 +42,27 @@ public class RealizarDisparoService {
                 throw new Exception("Error: No se encontró la partida en el repositorio.");
             }
 
-            ResultadoDisparoReponse resultadoResponse = partida.realizarDisparo(
+            // 2. DELEGAR AL DOMINIO
+            ResultadoDisparoReponse response = partida.realizarDisparo(
                     request.getJugadorId(),
                     request.getCoordenada()
             );
 
+            
+            // Llamar a todas las partes del dominio interesadas en este evento...
+            CoordenadaDTO coordenada = request.getCoordenada();
+            partida.getJugadorById(request.getJugadorId()).addDisparo(coordenada.getColumna(), coordenada.getFila(), response.getResultado());
+            
+            // 3. GUARDAR ESTADO
             partidaRepository.guardar(partida);
-
+            
+            // 4. PUBLICAR RESPUESTA
             EventMessage eventoResultado = new EventMessage(
                     "DisparoRealizado",
-                    gson.toJson(resultadoResponse)
+                    gson.toJson(response)
             );
-            eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, eventoResultado);
-            System.out.println("Disparo procesado. Resultado: " + resultadoResponse);
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, eventoResultado);
+            System.out.println("Disparo procesado. Resultado: " + response);
 
             if (partida.getEstado() == EstadoPartida.EN_BATALLA) {
                  partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
@@ -63,7 +71,7 @@ public class RealizarDisparoService {
         } catch (IllegalStateException e) {
             System.out.println("INFO: Disparo rechazado (fuera de turno): " + e.getMessage());
             ErrorResponse error = new ErrorResponse(e.getMessage());
-            eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("ErrorDisparo", gson.toJson(error)));
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("ErrorDisparo", gson.toJson(error)));
             
              Partida partida = partidaRepository.getPartida();
              if (partida != null && partida.getEstado() == EstadoPartida.EN_BATALLA) {
@@ -74,7 +82,7 @@ public class RealizarDisparoService {
             System.err.println("Error INESPERADO procesando el disparo: " + e.getMessage());
             e.printStackTrace();
             ErrorResponse error = new ErrorResponse("Error inesperado en el servidor: " + e.getMessage());
-            eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("ErrorGrave", gson.toJson(error)));
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("ErrorGrave", gson.toJson(error)));
         }
     }
 }

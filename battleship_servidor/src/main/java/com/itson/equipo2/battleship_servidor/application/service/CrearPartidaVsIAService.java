@@ -2,21 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.domain.service;
+package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Nave;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.request.CrearPartidaVsIARequest;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
 import java.util.List;
 import java.util.stream.Collectors;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 
 /**
  *
@@ -76,7 +76,9 @@ public class CrearPartidaVsIAService {
                     partida.getTurnoActual()
             );
 
-            eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS,
+
+            // 7. Publicar evento de éxito
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS,
                     new EventMessage("PartidaIniciada", gson.toJson(response)));
             
             partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
@@ -84,7 +86,7 @@ public class CrearPartidaVsIAService {
         } catch (Exception e) {
             System.err.println("Error al crear partida vs IA: " + e.getMessage());
             EventMessage errorMsg = new EventMessage("ErrorCrearPartida", gson.toJson(e.getMessage()));
-            eventPublisher.publish(RedisConfig.CHANNEL_EVENTOS, errorMsg);
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, errorMsg);
         }
     }
 }

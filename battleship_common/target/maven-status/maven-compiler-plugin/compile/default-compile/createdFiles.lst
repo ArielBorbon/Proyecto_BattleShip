@@ -1,9 +1,8 @@
 mx\itson\equipo_2\common\dto\JugadorDTO.class
 mx\itson\equipo_2\common\dto\NaveDTO.class
+mx\itson\equipo_2\common\broker\BrokerConfig.class
 mx\itson\equipo_2\common\enums\EstadoCelda.class
 mx\itson\equipo_2\common\enums\OrientacionNave.class
-mx\itson\equipo_2\common\message\EventMessage.class
-mx\itson\equipo_2\common\broker\IMessageHandler.class
 mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.class
 mx\itson\equipo_2\common\dto\request\PosicionarNaveRequest.class
 mx\itson\equipo_2\common\dto\TableroDTO.class
@@ -11,11 +10,9 @@ mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.class
 mx\itson\equipo_2\common\enums\EstadoPartida.class
 mx\itson\equipo_2\common\enums\ResultadoDisparo.class
 mx\itson\equipo_2\common\dto\response\TurnoTickResponse.class
-mx\itson\equipo_2\common\broker\IMessageSubscriber.class
 mx\itson\equipo_2\common\dto\CeldaDTO.class
 mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.class
 mx\itson\equipo_2\common\enums\EstadoNave.class
-mx\itson\equipo_2\common\broker\IMessagePublisher.class
 mx\itson\equipo_2\common\dto\response\ErrorResponse.class
 mx\itson\equipo_2\common\dto\response\PartidaIniciadaResponse.class
 mx\itson\equipo_2\common\dto\DisparoDTO.class

@@ -6,20 +6,21 @@ package com.itson.equipo2.battleship_servidor;
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
-import com.itson.equipo2.battleship_servidor.domain.service.CrearPartidaVsIAService;
-import com.itson.equipo2.battleship_servidor.domain.service.PartidaTimerService;
-import com.itson.equipo2.battleship_servidor.domain.service.RealizarDisparoService;
+import com.itson.equipo2.battleship_servidor.application.service.CrearPartidaVsIAService;
+import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerService;
+import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.EventDispatcher;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConnection;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisPublisher;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisSubscriber;
 import com.itson.equipo2.battleship_servidor.domain.service.AIService;
 import java.util.concurrent.ExecutorService;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
-import mx.itson.equipo_2.common.broker.IMessageSubscriber;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessageSubscriber;
+import com.itson.equipo2.communication.impl.EventDispatcher;
+import com.itson.equipo2.communication.impl.RedisConfig;
+import com.itson.equipo2.communication.impl.RedisConnection;
+import com.itson.equipo2.communication.impl.RedisPublisher;
+import com.itson.equipo2.communication.impl.RedisSubscriber;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -76,16 +77,21 @@ public class Battleship_servidor {
 
         //Iniciar el Suscriptor de Comandos del Cliente
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        commandSubscriber.subscribe(RedisConfig.CHANNEL_COMANDOS);
+
+        commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);// El handler se ignora, usa el dispatcher
+
         
         //Iniciar el Suscriptor de Eventos (IA)
         IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        eventSubscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);
+
+
+        eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);// El handler se ignora, usa el dispatcher
+
 
         System.out.println("************************************************************");
         System.out.println("Battleship Servidor listo.");
-        System.out.println("Escuchando comandos en: '" + RedisConfig.CHANNEL_COMANDOS + "'");
-        System.out.println("Escuchando eventos en:  '" + RedisConfig.CHANNEL_EVENTOS + "'");
+        System.out.println("Escuchando comandos en: '" + BrokerConfig.CHANNEL_COMANDOS + "'");
+        System.out.println("Escuchando eventos en:  '" + BrokerConfig.CHANNEL_EVENTOS + "'");
         System.out.println("************************************************************");
     }
 }

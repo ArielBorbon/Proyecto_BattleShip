@@ -6,9 +6,9 @@ package com.itson.equipo2.battleship_cliente.handler;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
+import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.response.ErrorResponse;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  *

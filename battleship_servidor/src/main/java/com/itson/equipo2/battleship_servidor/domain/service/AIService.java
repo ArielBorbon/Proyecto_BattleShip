@@ -8,18 +8,18 @@ import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.model.Tablero;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessageHandler;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoCelda;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 
 /**
  *
@@ -71,7 +71,7 @@ public class AIService implements IMessageHandler {
                 System.out.println("AIService: IA disparando en: " + coordIA);
 
                 EventMessage message = new EventMessage("RealizarDisparo", gson.toJson(aiRequest));
-                publisher.publish(RedisConfig.CHANNEL_COMANDOS, message);
+                publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
             }
         }, 2000); 
     }

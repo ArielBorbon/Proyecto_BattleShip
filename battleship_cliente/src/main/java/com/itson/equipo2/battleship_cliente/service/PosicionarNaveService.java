@@ -6,11 +6,11 @@ package com.itson.equipo2.battleship_cliente.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.request.PosicionarNaveRequest;
 import mx.itson.equipo_2.common.enums.TipoNave;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  *

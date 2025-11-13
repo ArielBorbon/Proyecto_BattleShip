@@ -5,29 +5,30 @@
 package com.itson.equipo2.battleship_cliente;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_cliente.communication.RedisConfig;
-import com.itson.equipo2.battleship_cliente.communication.RedisConnection;
-import com.itson.equipo2.battleship_cliente.communication.RedisPublisher;
-import com.itson.equipo2.battleship_cliente.communication.RedisSubscriber;
+import com.itson.equipo2.communication.impl.RedisConfig;
+import com.itson.equipo2.communication.impl.RedisConnection;
+import com.itson.equipo2.communication.impl.RedisPublisher;
+import com.itson.equipo2.communication.impl.RedisSubscriber;
 import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
-import com.itson.equipo2.battleship_cliente.communication.EventDispatcher;
+import com.itson.equipo2.communication.impl.EventDispatcher;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.utils.AppContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import mx.itson.equipo_2.common.broker.IMessageHandler;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessageHandler;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.NaveDTO;
 import mx.itson.equipo_2.common.dto.request.CrearPartidaVsIARequest;
 import mx.itson.equipo_2.common.enums.OrientacionNave;
 import mx.itson.equipo_2.common.enums.TipoNave;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -59,8 +60,8 @@ public class Battleship_cliente {
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, AppContext.getPartidaModel(), AppContext.getTableroPropio(), AppContext.getTableroEnemigo()));
 
         // 6. Suscribirse
-        subscriber.subscribe(RedisConfig.CHANNEL_EVENTOS);
-        System.out.println("Suscrito a " + RedisConfig.CHANNEL_EVENTOS);
+        subscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+        System.out.println("Suscrito a " + BrokerConfig.CHANNEL_EVENTOS);
 
         // 7. Iniciar la partida (enviar comando)
         iniciarPartidaVsIA(publisher);
@@ -86,7 +87,7 @@ public class Battleship_cliente {
         );
         
         EventMessage message = new EventMessage("CrearPartidaVsIA", new Gson().toJson(request));
-        publisher.publish(RedisConfig.CHANNEL_COMANDOS, message);
+        publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
     }
     
     private static List<NaveDTO> crearNavesDePrueba() {

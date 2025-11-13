@@ -2,18 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.domain.service;
+package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
-import com.itson.equipo2.battleship_servidor.infrastructure.redis.RedisConfig;
 import java.util.Timer;
 import java.util.TimerTask;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 
 /**
  *
@@ -45,7 +45,7 @@ public class PartidaTimerService {
                     repo.guardar(partida); 
 
                     TurnoTickResponse tick = new TurnoTickResponse(partida.getTurnoActual(), tiempo);
-                    publisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(tick)));
+                    publisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(tick)));
 
                     if (tiempo <= 0) {
                         System.out.println("¡Tiempo agotado! Forzando cambio de turno.");
@@ -55,7 +55,7 @@ public class PartidaTimerService {
                         repo.guardar(partida);
 
                         TurnoTickResponse timeoutTick = new TurnoTickResponse(partida.getTurnoActual(), partida.getTiempoRestante());
-                        publisher.publish(RedisConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(timeoutTick)));
+                        publisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(timeoutTick)));
                         
                         startTurnoTimer(repo, publisher);
                     }

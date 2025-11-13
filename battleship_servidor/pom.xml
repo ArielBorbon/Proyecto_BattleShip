@@ -17,14 +17,14 @@
             <version>2.11.0</version>
         </dependency>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>5.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>mx.itson.equipo_2</groupId>
             <artifactId>battleship_common</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>battleship_communication</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

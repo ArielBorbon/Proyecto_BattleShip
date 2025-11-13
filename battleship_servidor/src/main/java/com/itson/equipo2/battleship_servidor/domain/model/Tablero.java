@@ -27,7 +27,7 @@ public class Tablero {
         
         for (int f = 0; f < FILAS; f++) {
             for (int c = 0; c < COLUMNAS; c++) {
-                this.celdas[f][c] = new Celda(f, c);
+                this.celdas[f][c] = new Celda(new Coordenada(c, f));
             }
         }
     }

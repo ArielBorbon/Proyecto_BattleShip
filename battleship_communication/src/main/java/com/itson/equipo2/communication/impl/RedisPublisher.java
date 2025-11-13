@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.infrastructure.redis;
+package com.itson.equipo2.communication.impl;
 
 import com.google.gson.Gson;
 import java.lang.System.Logger.Level;
-import mx.itson.equipo_2.common.broker.IMessagePublisher;
-import mx.itson.equipo_2.common.message.EventMessage;
+import com.itson.equipo2.communication.broker.IMessagePublisher;
+import com.itson.equipo2.communication.dto.EventMessage;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -38,11 +38,12 @@ public class RedisPublisher implements IMessagePublisher {
             jsonMessage = gson.toJson(message);
         } catch (Exception e) {
             System.err.println("Error al serializar mensaje: " + e.getMessage());
-            return;
+            return; 
         }
 
         try (Jedis jedis = jedisPool.getResource()) {
 
+            // 3. Publicar el mensaje
             jedis.publish(channel, jsonMessage);
 
             System.out.println("Mensaje publicado en '" + channel + "': " + jsonMessage);

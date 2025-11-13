@@ -121,6 +121,9 @@ public class Partida {
         }
     }
 
+    public Jugador getJugadorById(String id) {
+        return this.jugador1.getId().equals(id) ? jugador1 : jugador2;
+    }
     public void setJugador1(Jugador jugador1) {
         this.jugador1 = jugador1;
     }
