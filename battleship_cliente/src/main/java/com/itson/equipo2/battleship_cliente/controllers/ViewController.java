@@ -2,11 +2,14 @@ package com.itson.equipo2.battleship_cliente.controllers;
 
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewManager;
+import com.itson.equipo2.battleship_cliente.view.DispararView;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
  *
@@ -19,6 +22,8 @@ public class ViewController implements ViewManager {
     private JFrame frame;
     private Map<String, ViewFactory> factories;
     private Map<String, JPanel> pantallas;
+
+    private JPanel pantallaActual;
 
     public ViewController() {
         frame = new JFrame("App con Mediator");
@@ -51,6 +56,9 @@ public class ViewController implements ViewManager {
         }
 
         frame.setContentPane(panel);
+
+        this.pantallaActual = panel;
+
         frame.revalidate();
         frame.repaint();
         frame.pack();
@@ -66,6 +74,18 @@ public class ViewController implements ViewManager {
             );
         } else {
             System.err.println("Error: " + message);
+        }
+    }
+
+    public void mostrarResultadoDisparo(ResultadoDisparo resultado) {
+        // Verificamos si la pantalla actual es la que sabe mostrar notificaciones
+        if (pantallaActual instanceof DispararView) {
+
+            // Usamos invokeLater para asegurar que se ejecute en el hilo de Swing
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                DispararView vista = (DispararView) pantallaActual;
+                vista.mostrarNotificacion(resultado);
+            });
         }
     }
 }

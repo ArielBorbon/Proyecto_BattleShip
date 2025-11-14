@@ -46,6 +46,7 @@ import redis.clients.jedis.JedisPool;
 public class Battleship_cliente {
 
     private static final String JUGADOR_HUMANO_ID = "JUGADOR_1";
+    private static final String JUGADOR_IA_ID = "IA-123";
 
     public static void main(String[] args) {
         System.out.println("Iniciando Cliente Battleship (Arquitectura Limpia)...");
@@ -63,11 +64,11 @@ public class Battleship_cliente {
         // Creamos el modelo raíz. Al hacerlo aquí, tú controlas su ciclo de vida.
         PartidaModel partidaModel = new PartidaModel();
         //TableroModel tableroModel = new TableroModel();
-        TableroModel miTablero = new TableroModel(); 
-        TableroModel tableroEnemigo = new TableroModel();
+        TableroModel miTablero = new TableroModel(JUGADOR_HUMANO_ID); 
+        TableroModel tableroEnemigo = new TableroModel(JUGADOR_IA_ID);
         
         JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, miTablero, new ArrayList<>());
-        JugadorModel jugadorModelEnemigo = new JugadorModel("IA-123", "IA", ColorJugador.ROJO, true, tableroEnemigo, new ArrayList<>());
+        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, true, tableroEnemigo, new ArrayList<>());
         
         partidaModel.setYo(jugadorModel);
         partidaModel.setEnemigo(jugadorModelEnemigo);
@@ -99,15 +100,15 @@ public class Battleship_cliente {
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
         partidaModel.addObserver(dispararView);
-        miTablero.addObserver(dispararView);
-        tableroEnemigo.addObserver(dispararView);
+//        miTablero.addObserver(dispararView);
+//        tableroEnemigo.addObserver(dispararView);
         // Inicializamos las vistas específicas e inyectamos sus dependencias
         // NOTA: Aquí ya no usamos AppContext dentro de las vistas.
         // Si DispararView necesita el controlador, se lo pasamos.
         viewController.registrarPantalla("disparar", dispararView);
         
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-        eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(partidaModel));
+        eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));

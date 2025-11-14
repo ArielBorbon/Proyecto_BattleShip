@@ -25,8 +25,10 @@ import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.DisparoDTO;
 import mx.itson.equipo_2.common.enums.EstadoCelda;
+import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
+import static mx.itson.equipo_2.common.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
 
 /**
  *
@@ -34,7 +36,7 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
  * 00000252049 José Luis Islas Molina 00000252574
  */
-public class DispararView extends javax.swing.JPanel implements ViewFactory, TableroObserver, PartidaObserver {
+public class DispararView extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];
@@ -61,12 +63,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         this.miTablero = miTablero;
         this.tableroEnemigo = tableroEnemigo;
 
-        // Registrar esta VISTA como observadora de los MODELOS
-        this.partidaModel.addObserver(this);
-        this.miTablero.addObserver(this);
-        this.tableroEnemigo.addObserver(this);
-
-        System.out.println("DispararView: Modelos inyectados y observando.");
+        System.out.println("DispararView: Modelos inyectados.");
         actualizarLabelTurno();
 
         mostrarTableroPropio(this.miTablero);
@@ -86,6 +83,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         actualizarLabelTurno();
         actualizarLabelTimer(model.getSegundosRestantes());
 
+        if (this.miTablero != null) {
+            repintarPropio(this.miTablero);
+        }
+        if (this.tableroEnemigo != null) {
+            repintarEnemigo(this.tableroEnemigo);
+        }
+        
+        revalidate();
         repaint();
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
@@ -93,6 +98,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             btnDisparar.setEnabled(false);
             btnRendirse.setEnabled(false);
         }
+
     }
 
     private void actualizarLabelTurno() {
@@ -401,33 +407,33 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
-    @Override
-    public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
-
-        //actualizamos botones        
-        if (tableroAfectado == this.tableroEnemigo) {
-            System.out.println("Repintando celda enemiga");
-            actualizarCeldaEnemigo(disparo);
-
-            String msg = "Resultado: " + disparo.getResultado();
-            Color color = Color.WHITE;
-            Color fondo = new Color(0, 0, 0, 150);
-
-            if (disparo.getResultado() == ResultadoDisparo.AGUA) {
-                msg = "¡AGUA! Fallaste el tiro.";
-                fondo = new Color(0, 0, 255, 150);
-            } else {
-                msg = "¡IMPACTO! Diste en el blanco.";
-                fondo = new Color(255, 0, 0, 150);
-            }
-
-            mostrarNotificacion(msg, color, fondo);
-        } else if (tableroAfectado == this.miTablero) {
-            System.out.println("Repintando celda propia");
-            actualizarCeldaPropia(disparo);
-            mostrarNotificacion("¡Te han disparado!", Color.YELLOW, Color.RED);
-        }
-    }
+//    @Override
+//    public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
+//
+//        //actualizamos botones        
+//        if (tableroAfectado == this.tableroEnemigo) {
+//            System.out.println("Repintando celda enemiga");
+//            actualizarCeldaEnemigo(disparo);
+//
+//            String msg = "Resultado: " + disparo.getResultado();
+//            Color color = Color.WHITE;
+//            Color fondo = new Color(0, 0, 0, 150);
+//
+//            if (disparo.getResultado() == ResultadoDisparo.AGUA) {
+//                msg = "¡AGUA! Fallaste el tiro.";
+//                fondo = new Color(0, 0, 255, 150);
+//            } else {
+//                msg = "¡IMPACTO! Diste en el blanco.";
+//                fondo = new Color(255, 0, 0, 150);
+//            }
+//
+    ////            mostrarNotificacion(msg, color, fondo);
+//        } else if (tableroAfectado == this.miTablero) {
+//            System.out.println("Repintando celda propia");
+//            actualizarCeldaPropia(disparo);
+////            mostrarNotificacion("¡Te han disparado!", Color.YELLOW, Color.RED);
+//        }
+//    }
 
     public GameMediator getMediator() {
         return mediator;
@@ -444,17 +450,31 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         mostrarTableroPropio(miTablero);
     }
 
-    private void mostrarNotificacion(String mensaje, Color colorTexto, Color colorFondo) {
-        lblResultado.setText(mensaje);
-        lblResultado.setForeground(colorTexto);
-        lblResultado.setBackground(colorFondo);
+    public void mostrarNotificacion(ResultadoDisparo resultado) {
+        Color color;
+
+        switch (resultado) {
+            case AGUA ->
+                color = Color.CYAN;
+
+            case IMPACTO_SIN_HUNDIMIENTO ->
+                color = Color.ORANGE;
+
+            case IMPACTO_CON_HUNDIMIENTO ->
+                color = Color.RED;
+            default ->
+                throw new AssertionError();
+        }
+        lblResultado.setText(resultado.getMensaje());
+        lblResultado.setForeground(color);
+//        lblResultado.setBackground(colorFondo);
         lblResultado.setVisible(true);
 
         if (timerNotificacion != null && timerNotificacion.isRunning()) {
             timerNotificacion.stop();
         }
 
-        timerNotificacion = new javax.swing.Timer(3000, e -> {
+        timerNotificacion = new javax.swing.Timer(2000, e -> {
             lblResultado.setText("");
             lblResultado.setBackground(new Color(0, 0, 0, 0));
             lblResultado.setVisible(false);
@@ -464,4 +484,82 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
         timerNotificacion.start();
     }
 
+    public JLabel getLblResultado() {
+        return lblResultado;
+    }
+
+    public void setLblResultado(JLabel lblResultado) {
+        this.lblResultado = lblResultado;
+    }
+
+    private void repintarPropio(TableroModel tablero) {
+        if (tablero == null) {
+            return; // Seguridad
+        }
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+
+                CeldaModel celda = tablero.getCelda(fila, col);
+                JButton boton = botonesPropio[fila][col];
+
+                // 1. Si la celda YA FUE DISPARADA (por el enemigo)
+                if (celda.getEstado() == EstadoCelda.DISPARADA) {
+                    if (celda.isTieneNave()) {
+                        // ¡Nos dieron!
+                        boton.setBackground(Color.RED);
+                    } else {
+                        // Dispararon agua
+                        boton.setBackground(Color.CYAN);
+                    }
+                } // 2. Si NO ha sido disparada, PERO tiene nave
+                else if (celda.isTieneNave()) {
+                    boton.setBackground(Color.GRAY); // Muestra tu nave intacta
+                } // 3. Si es solo agua (sin disparar y sin nave)
+                else {
+                    boton.setBackground(new Color(50, 70, 100)); // Color base del mar
+                }
+            }
+        }
+    }
+
+    public void repintarEnemigo(TableroModel tablero) {
+        if (tablero == null) return; 
+
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                
+                CeldaModel celda = tablero.getCelda(fila, col);
+                JButton boton = botonesEnemigo[fila][col];
+
+                // 1. Si NO ha sido disparada, es "Niebla de Guerra"
+                if (celda.getEstado() == EstadoCelda.NO_DISPARADA) {
+                    boton.setBackground(new Color(50, 70, 100)); // Mar oculto
+                    boton.setEnabled(true);
+                    continue; // Siguiente celda
+                }
+                
+                // 2. Si SÍ fue disparada, leemos el ESTADO DE LA NAVE
+                EstadoNave estadoNave = celda.getEstadoNave();
+                boton.setEnabled(false);
+
+                // 3. Decidimos el color
+                if (estadoNave == null) {
+                    // Si el estadoNave es null, significa que fue AGUA
+                    boton.setBackground(Color.BLUE);
+                } else {
+                    // Si el estadoNave NO es null, fue un impacto
+                    switch (estadoNave) {
+                        case AVERIADO:
+                            boton.setBackground(Color.ORANGE); // Naranja para impacto
+                            break;
+                        case HUNDIDO:
+                            boton.setBackground(Color.RED); // Rojo para hundido
+                            break;
+                        default:
+                            boton.setBackground(Color.PINK); // Error
+                    }
+                }
+            }
+        }
+    }
 }

@@ -5,6 +5,8 @@
 package com.itson.equipo2.battleship_cliente.models;
 
 import mx.itson.equipo_2.common.enums.EstadoCelda;
+import mx.itson.equipo_2.common.enums.EstadoNave;
+import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
  *
@@ -15,53 +17,70 @@ public class CeldaModel {
     private int columna;
     private int fila;
     private boolean tieneNave;
-    private EstadoCelda estado;
+
+    private EstadoCelda estadoDisparo; // NO_DISPARADA, DISPARADA
+
+    // --- ESTOS SON LOS CAMBIOS ---
+    private TipoNave tipoNave; // Qué nave hay aquí (null si es agua)
+    private EstadoNave estadoNave; // Cuál es su estado (null si es agua)
 
     public CeldaModel() {
     }
 
-    public CeldaModel(int columna, int fila, boolean tieneNave, EstadoCelda estado) {
-        this.columna = columna;
+    public CeldaModel(int fila, int col, boolean tieneNave, EstadoCelda estado) {
+        // (Este constructor se vuelve obsoleto, pero lo dejamos por ahora)
         this.fila = fila;
-        this.tieneNave = tieneNave;
-        this.estado = estado;
+        this.columna = col;
+        this.estadoDisparo = estado;
+        this.tipoNave = null;
+        this.estadoNave = null;
     }
 
+    // Constructor limpio (el que TableroModel debe usar)
+    public CeldaModel(int fila, int col) {
+        this.fila = fila;
+        this.columna = col;
+        this.estadoDisparo = EstadoCelda.NO_DISPARADA;
+        this.tipoNave = null;
+        this.estadoNave = null;
+    }
+
+    // --- Getters para la Vista ---
     public int getColumna() {
         return columna;
-    }
-
-    public void setColumna(int columna) {
-        this.columna = columna;
     }
 
     public int getFila() {
         return fila;
     }
 
-    public void setFila(int fila) {
-        this.fila = fila;
-    }
-
     public EstadoCelda getEstado() {
-        return estado;
+        return estadoDisparo;
+    } // Renombrado para claridad
+
+    public EstadoNave getEstadoNave() {
+        return estadoNave;
+    } // <-- ¡EL GETTER CLAVE!
+
+    public TipoNave getTipoNave() {
+        return tipoNave;
     }
 
-    public void setEstado(EstadoCelda estado) {
-        this.estado = estado;
-    }
-
+    // Método 'isTieneNave()' ahora es "derivado" (calculado)
     public boolean isTieneNave() {
-        return tieneNave;
+        return tipoNave != null;
     }
 
-    public void setTieneNave(boolean tieneNave) {
-        this.tieneNave = tieneNave;
+    // --- Setters para el Modelo ---
+    public void setEstado(EstadoCelda estado) {
+        this.estadoDisparo = estado;
     }
 
-    @Override
-    public String toString() {
-        return "CeldaModel{" + "columna=" + columna + ", fila=" + fila + ", tieneNave=" + tieneNave + ", estado=" + estado + '}';
+    public void setTipoNave(TipoNave tipo) {
+        this.tipoNave = tipo;
     }
 
+    public void setEstadoNave(EstadoNave estado) {
+        this.estadoNave = estado;
+    } // <-- ¡EL SETTER CLAVE!
 }

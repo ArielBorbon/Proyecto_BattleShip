@@ -13,7 +13,19 @@ package mx.itson.equipo_2.common.enums;
  * @author José Luis Islas Molina            00000252574
  */
 public enum ResultadoDisparo {
-    AGUA,
-    IMPACTO_CON_HUNDIMIENTO,
-    IMPACTO_SIN_HUNDIMIENTO
+    AGUA("Has fallado :("),
+    IMPACTO_SIN_HUNDIMIENTO("¡Has impactado!"),
+    IMPACTO_CON_HUNDIMIENTO("¡Hundiste una nave!");
+    
+    private String mensaje;
+
+    private ResultadoDisparo(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+    
+    
 }

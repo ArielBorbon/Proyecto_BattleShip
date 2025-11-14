@@ -4,13 +4,11 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
-import com.itson.equipo2.battleship_cliente.pattern.observer.TableroObserver;
-import java.util.ArrayList;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
-import mx.itson.equipo_2.common.dto.DisparoDTO;
 import mx.itson.equipo_2.common.dto.NaveDTO;
 import mx.itson.equipo_2.common.enums.EstadoCelda;
+import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
@@ -21,10 +19,10 @@ public class TableroModel {
 
     private String idJugaodr;
     private CeldaModel[][] celdas;
-    private final List<TableroObserver> observers = new ArrayList<>(); // Para el onDisparo
     public static final int TAMANIO = 10;
 
-public TableroModel() {
+    public TableroModel(String idJugador) {
+        this.idJugaodr = idJugador;
         this.celdas = new CeldaModel[TAMANIO][TAMANIO];
         for (int f = 0; f < TAMANIO; f++) {
             for (int c = 0; c < TAMANIO; c++) {
@@ -33,20 +31,30 @@ public TableroModel() {
         }
     }
 
-
-
     public void actualizarCelda(CoordenadaDTO coord, ResultadoDisparo resultado, List<CoordenadaDTO> coordsHundidas) {
-        
+
         if (resultado == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO && coordsHundidas != null) {
+            // HUNDIDO: Marcar TODAS las celdas de la nave como HUNDIDO
             for (CoordenadaDTO c : coordsHundidas) {
-                this.getCelda(c.getFila(), c.getColumna()).setEstado(EstadoCelda.DISPARADA);
+                CeldaModel celda = this.getCelda(c.getFila(), c.getColumna());
+                celda.setEstado(EstadoCelda.DISPARADA);
+                celda.setEstadoNave(EstadoNave.HUNDIDO); // <-- GUARDAR ESTADO
             }
         } else {
-             this.getCelda(coord.getFila(), coord.getColumna()).setEstado(EstadoCelda.DISPARADA);
+            // AGUA o IMPACTO simple
+            CeldaModel celda = this.getCelda(coord.getFila(), coord.getColumna());
+            celda.setEstado(EstadoCelda.DISPARADA);
+            
+            if (resultado == ResultadoDisparo.AGUA) {
+                // No hacemos nada, estadoNave sigue siendo 'null'
+            } else {
+                // IMPACTO_SIN_HUNDIMIENTO
+                celda.setEstadoNave(EstadoNave.AVERIADO); // <-- GUARDAR ESTADO
+            }
         }
         
-        DisparoDTO dto = new DisparoDTO(resultado, coord, coordsHundidas);
-        notifyObservers(dto);
+        // ¡BORRA ESTO! La notificación la hace PartidaModel
+        // notifyObservers(dto); 
     }
 
     public TableroModel(CeldaModel[][] celdas) {
@@ -64,41 +72,24 @@ public TableroModel() {
     public CeldaModel getCelda(int fila, int columna) {
         return celdas[fila][columna];
     }
+
     @Override
     public String toString() {
         return "TableroModel{" + "celdas=" + celdas + '}';
     }
-    
-    
-    
+
     public void posicionarNaves(List<NaveDTO> naves) {
         for (NaveDTO nave : naves) {
             for (CoordenadaDTO coord : nave.getCoordenadas()) {
                 CeldaModel celda = this.getCelda(coord.getFila(), coord.getColumna());
                 if (celda != null) {
-                    celda.setTieneNave(true);
+                    celda.setEstado(EstadoCelda.NO_DISPARADA);
+                    celda.setEstadoNave(EstadoNave.SIN_DANIOS);
+                    celda.setTipoNave(nave.getTipo());
                 }
             }
         }
         System.out.println("TableroModel local poblado con " + naves.size() + " naves.");
-    }
-    
-    
-    
-    public void addObserver(TableroObserver observer) {
-        if (!observers.contains(observer)) {
-            observers.add(observer);
-        }
-    }
-
-    public void removeObserver(TableroObserver observer) {
-        observers.remove(observer);
-    }
-
-    public void notifyObservers(DisparoDTO disparo) {
-        for (TableroObserver to : observers) {
-            to.onDisparo(this, disparo); // Notifica a DispararView
-        }
     }
 
 }
