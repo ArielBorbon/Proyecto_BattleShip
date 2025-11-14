@@ -92,6 +92,8 @@ public class Battleship_cliente {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
         
+        iniciarPartidaVsIA(publisher, miTablero);
+        
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
         partidaModel.addObserver(dispararView);
@@ -112,7 +114,7 @@ public class Battleship_cliente {
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
         redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
 
-        iniciarPartidaVsIA(publisher, miTablero);
+        
         // ---------------------------------------------------------
         // 5. ARRANQUE
         // ---------------------------------------------------------
