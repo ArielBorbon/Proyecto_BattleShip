@@ -62,8 +62,11 @@ public class Battleship_cliente {
         // ---------------------------------------------------------
         // Creamos el modelo raíz. Al hacerlo aquí, tú controlas su ciclo de vida.
         PartidaModel partidaModel = new PartidaModel();
-        TableroModel tableroModel = new TableroModel();
-        JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, tableroModel, new ArrayList<>());
+        //TableroModel tableroModel = new TableroModel();
+        TableroModel miTablero = new TableroModel(); 
+        TableroModel tableroEnemigo = new TableroModel();
+        
+        JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, miTablero, new ArrayList<>());
         
         partidaModel.setYo(jugadorModel);
 
@@ -89,8 +92,11 @@ public class Battleship_cliente {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
         
+        dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
+        
         partidaModel.addObserver(dispararView);
-        tableroModel.addObserver(dispararView);
+        miTablero.addObserver(dispararView);
+        tableroEnemigo.addObserver(dispararView);
         // Inicializamos las vistas específicas e inyectamos sus dependencias
         // NOTA: Aquí ya no usamos AppContext dentro de las vistas.
         // Si DispararView necesita el controlador, se lo pasamos.
@@ -99,14 +105,14 @@ public class Battleship_cliente {
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
-        eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel, tableroModel, tableroModel));
+        eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel, miTablero, tableroEnemigo));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
         redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
 
-        iniciarPartidaVsIA(publisher, tableroModel);
+        iniciarPartidaVsIA(publisher, miTablero);
         // ---------------------------------------------------------
         // 5. ARRANQUE
         // ---------------------------------------------------------

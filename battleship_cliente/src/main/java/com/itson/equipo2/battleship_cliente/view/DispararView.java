@@ -312,7 +312,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                 botonesEnemigo[fila][col] = celdaEnemigo;
 
                 JButton celdaPropio = new JButton();
-                celdaPropio.setEnabled(false);
+                //celdaPropio.setEnabled(false);
                 celdaPropio.setBackground(new Color(50, 70, 100));
                 celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
 
