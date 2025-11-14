@@ -63,7 +63,7 @@ public class Battleship_cliente {
         // Creamos el modelo raíz. Al hacerlo aquí, tú controlas su ciclo de vida.
         PartidaModel partidaModel = new PartidaModel();
         TableroModel tableroModel = new TableroModel(new CeldaModel[10][10]);
-        JugadorModel jugadorModel = new JugadorModel(UUID.randomUUID().toString(), "Jonh Doe", ColorJugador.AZUL, true, tableroModel, new ArrayList<>());
+        JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, tableroModel, new ArrayList<>());
         
         partidaModel.setYo(jugadorModel);
 
