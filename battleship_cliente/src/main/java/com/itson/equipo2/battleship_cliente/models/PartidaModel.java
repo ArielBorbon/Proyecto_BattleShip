@@ -7,6 +7,10 @@ package com.itson.equipo2.battleship_cliente.models;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import java.util.ArrayList;
 import java.util.List;
+import mx.itson.equipo_2.common.dto.JugadorDTO;
+import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
+import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
+import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
@@ -22,8 +26,7 @@ public class PartidaModel {
     private String turnoDe; // id del jugador con turno actual
     private Integer segundosRestantes;
     private EstadoPartida estado;
-    
-    
+
     private final transient List<PartidaObserver> observers = new ArrayList<>();
 
     public void addObserver(PartidaObserver observer) {
@@ -44,8 +47,76 @@ public class PartidaModel {
             }
         });
     }
-    
-    
+
+    public void procesarResultadoDisparo(ResultadoDisparoReponse response) {
+
+        // 1. Determinar qué tablero actualizar (Lógica movida aquí)
+        TableroModel tableroAfectado;
+
+        // Usamos 'this.getYo().getId()' directamente
+        if (response.getJugadorId().equals(this.getYo().getId())) {
+            // Fui yo quien disparó -> Actualizo el tablero del enemigo (mis marcas)
+            tableroAfectado = this.getEnemigo().getTablero();
+        } else {
+            // Fue el otro -> Actualizo mi tablero (sus impactos)
+            tableroAfectado = this.getYo().getTablero();
+        }
+
+        // 2. Actualizar la celda (Delegando al sub-modelo)
+        if (tableroAfectado != null) {
+            tableroAfectado.actualizarCelda(
+                    response.getCoordenada(),
+                    response.getResultado(),
+                    response.getCoordenadasBarcoHundido()
+            );
+        }
+
+        // 3. Actualizar datos de la partida
+        this.setTurnoDe(response.getTurnoActual()); // (Asegúrate que este setter NO notifique todavía)
+        this.setEstado(response.getEstadoPartida());
+
+        // 4. ¡NOTIFICACIÓN ATÓMICA!
+        // Avisamos a la vista UNA sola vez después de que TODO cambió.
+        // Así la vista no se repinta 3 veces seguidas.
+        notifyObservers();
+    }
+
+    public void iniciarPartida(PartidaIniciadaResponse response, TableroModel tableroPropio, TableroModel tableroEnemigo) {
+
+        // 1. Sincronizar el ID de la partida
+        this.setId(response.getPartidaId());
+
+        // 2. Sincronizar al enemigo
+        JugadorDTO j1 = response.getJugador1();
+        JugadorDTO j2 = response.getJugador2();
+        JugadorModel yo = this.getYo();
+
+        if (yo.getId().equals(j1.getId())) {
+            this.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, tableroEnemigo, null));
+        } else {
+            this.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j1.getColor(), true, tableroEnemigo, null));
+        }
+
+        // 3. Sincronizar el tablero propio
+        yo.setTablero(tableroPropio);
+
+        // 4. Sincronizar el estado de la partida
+        this.setTurnoDe(response.getTurnoActual());
+        this.setEstado(response.getEstado());
+    }
+
+    public void actualizarTick(TurnoTickResponse response) {
+
+        // 1. Actualizamos los campos privados directamente
+        //    (Evitamos los setters para no disparar 2 notificaciones)
+        this.turnoDe = response.getJugadorEnTurnoId();
+        this.segundosRestantes = response.getTiempoRestante();
+
+        // 2. Notificamos a los observadores UNA SOLA VEZ
+        //    con el estado ya actualizado.
+        this.notifyObservers();
+    }
+
     public PartidaModel() {
     }
 

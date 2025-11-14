@@ -41,27 +41,17 @@ public class PartidaIniciadaHandler implements IMessageHandler {
     @Override
     public void onMessage(EventMessage message) {
         System.out.println("Evento PartidaIniciada recibido!");
+
+        // 1. Deserializar el mensaje
         PartidaIniciadaResponse response = gson.fromJson(message.getPayload(), PartidaIniciadaResponse.class);
 
-        partidaModel.setId(response.getPartidaId());
-        
-        // buscamos y el yo y el enemigo
-        JugadorDTO j1 = response.getJugador1();
-        JugadorDTO j2 = response.getJugador2();
-        JugadorModel yo = partidaModel.getYo(); // Ya tiene el ID y nombre
-        
-        if (yo.getId().equals(j1.getId())) {
-            partidaModel.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, tableroEnemigo, null));
-        } else {
-            partidaModel.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j2.getColor(), true, tableroEnemigo, null));
-        }
+        // 2. DELEGAR LÓGICA DE NEGOCIO AL MODELO
+        //    El modelo se actualizará y notificará a las vistas (Observer)
+        partidaModel.iniciarPartida(response, tableroPropio, tableroEnemigo);
 
-        partidaModel.setTurnoDe(response.getTurnoActual());
-        partidaModel.setEstado(response.getEstado());
-        partidaModel.getYo().setTablero(tableroPropio); // Asignar el modelo de tablero
-        
+        // 3. LA LÓGICA DE VISTA SE QUEDA EN EL HANDLER (CONTROLADOR)
+        //    Esto es correcto, el handler decide cuándo cambiar la pantalla.
         System.out.println("PartidaModel actualizado. cambiando a vista 'disparar'");
-        
         javax.swing.SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("disparar");
         });

@@ -34,12 +34,12 @@ public class TurnoTickHandler implements IMessageHandler {
     @Override
     public void onMessage(EventMessage message) {
         try {
+            // 1. Deserializar el mensaje
             TurnoTickResponse response = gson.fromJson(message.getPayload(), TurnoTickResponse.class);
 
-            partidaModel.setTurnoDe(response.getJugadorEnTurnoId());
-            partidaModel.setSegundosRestantes(response.getTiempoRestante());
-
-            partidaModel.notifyObservers();
+            // 2. DELEGAR LÓGICA DE NEGOCIO AL MODELO
+            //    El modelo se actualizará y notificará a las vistas (Observer)
+            partidaModel.actualizarTick(response);
 
         } catch (Exception e) {
             System.err.println("Error en TurnoTickHandler: " + e.getMessage());
