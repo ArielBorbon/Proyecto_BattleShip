@@ -13,6 +13,7 @@ C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\j
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\TurnoTickResponse.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\TableroDTO.java
+C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\ColorJugador.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoCelda.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoNave.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoPartida.java

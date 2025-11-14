@@ -4,8 +4,10 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
+import java.awt.Color;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
  *
@@ -15,6 +17,7 @@ public class JugadorModel {
 
     private String id;
     private String nombre;
+    private ColorJugador color;
     private boolean listo;       // si ya posicionó sus naves
     private TableroModel tablero; // su tablero 
 
@@ -23,9 +26,10 @@ public class JugadorModel {
     public JugadorModel() {
     }
 
-    public JugadorModel(String id, String nombre, boolean listo, TableroModel tablero, List<CoordenadaDTO> disparos) {
+    public JugadorModel(String id, String nombre, ColorJugador color, boolean listo, TableroModel tablero, List<CoordenadaDTO> disparos) {
         this.id = id;
         this.nombre = nombre;
+        this.color = color;
         this.listo = listo;
         this.tablero = tablero;
         this.disparos = disparos;
@@ -45,6 +49,14 @@ public class JugadorModel {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public ColorJugador getColor() {
+        return color;
+    }
+
+    public void setColor(ColorJugador color) {
+        this.color = color;
     }
 
     public boolean isListo() {
@@ -73,7 +85,7 @@ public class JugadorModel {
 
     @Override
     public String toString() {
-        return "JugadorModel{" + "id=" + id + ", nombre=" + nombre + ", listo=" + listo + ", tablero=" + tablero + ", disparos=" + disparos + '}';
+        return "JugadorModel{" + "id=" + id + ", nombre=" + nombre + ", color=" + color + ", listo=" + listo + ", tablero=" + tablero + ", disparos=" + disparos + '}';
     }
 
 }

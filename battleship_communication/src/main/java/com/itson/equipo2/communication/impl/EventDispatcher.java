@@ -53,6 +53,7 @@ public class EventDispatcher {
                     handler.onMessage(event);
                 } catch (Exception e) {
                     System.err.println("Error en handler para " + tipo + ": " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } else {

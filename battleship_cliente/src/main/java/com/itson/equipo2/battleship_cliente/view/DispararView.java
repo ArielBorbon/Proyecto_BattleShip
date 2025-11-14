@@ -41,18 +41,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
 
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
-    private Color colorOriginalUltima;
+    private JugadorModel jugador;
+    private Timer timerNotificacion;
+    private GameMediator mediator;
 
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
 
     private PartidaModel partidaModel; // refeerencia local
-
-    private Timer timerNotificacion;
-
-    private JugadorModel jugador;
-    private GameMediator mediator;
-
 
     public DispararView() {
         initComponents();
@@ -85,11 +81,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     @Override
     public void onChange(PartidaModel model) {
         System.out.println("Observer notificado: Repintando vista.");
-        this.partidaModel = model; 
-        
+        this.partidaModel = model;
+
         actualizarLabelTurno();
-        actualizarLabelTimer(model.getSegundosRestantes()); 
-        
+        actualizarLabelTimer(model.getSegundosRestantes());
+
         repaint();
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
@@ -125,7 +121,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             if (segundos <= 10) {
                 lblTimer.setForeground(Color.ORANGE);
             } else {
-                lblTimer.setForeground(Color.BLACK); 
+                lblTimer.setForeground(Color.BLACK);
             }
         } else {
             lblTimer.setText(30 + "s");
@@ -333,7 +329,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
             for (CoordenadaDTO coord : dto.getCoordenadasBarcoHundido()) {
                 JButton boton = botonesEnemigo[coord.getFila()][coord.getColumna()];
                 boton.setBackground(Color.RED);
-                boton.setEnabled(false); 
+                boton.setEnabled(false);
 
             }
 
@@ -350,7 +346,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
                     boton.getBackground(); //no deberia pasar pero pues por si acaso
             };
             boton.setBackground(nuevoColor);
-            boton.setEnabled(false); 
+            boton.setEnabled(false);
         }
     }
 
@@ -408,14 +404,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Tab
     @Override
     public void onDisparo(TableroModel tableroAfectado, DisparoDTO disparo) {
 
-//actualizamos botones        
-if (tableroAfectado == this.tableroEnemigo) {
+        //actualizamos botones        
+        if (tableroAfectado == this.tableroEnemigo) {
             System.out.println("Repintando celda enemiga");
             actualizarCeldaEnemigo(disparo);
 
             String msg = "Resultado: " + disparo.getResultado();
             Color color = Color.WHITE;
-            Color fondo = new Color(0, 0, 0, 150); 
+            Color fondo = new Color(0, 0, 0, 150);
 
             if (disparo.getResultado() == ResultadoDisparo.AGUA) {
                 msg = "¡AGUA! Fallaste el tiro.";
@@ -448,7 +444,7 @@ if (tableroAfectado == this.tableroEnemigo) {
         mostrarTableroPropio(miTablero);
     }
 
-    public void mostrarNotificacion(String mensaje, Color colorTexto, Color colorFondo) {
+    private void mostrarNotificacion(String mensaje, Color colorTexto, Color colorFondo) {
         lblResultado.setText(mensaje);
         lblResultado.setForeground(colorTexto);
         lblResultado.setBackground(colorFondo);
@@ -460,11 +456,11 @@ if (tableroAfectado == this.tableroEnemigo) {
 
         timerNotificacion = new javax.swing.Timer(3000, e -> {
             lblResultado.setText("");
-            lblResultado.setBackground(new Color(0, 0, 0, 0)); 
+            lblResultado.setBackground(new Color(0, 0, 0, 0));
             lblResultado.setVisible(false);
         });
 
-        timerNotificacion.setRepeats(false); 
+        timerNotificacion.setRepeats(false);
         timerNotificacion.start();
     }
 

@@ -4,21 +4,26 @@
  */
 package mx.itson.equipo_2.common.dto.request;
 
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.NaveDTO;
+import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
  *
  * @author PC Gamer
  */
 public class CrearPartidaVsIARequest implements Serializable {
+
     private String jugadorHumanoId;
+    private ColorJugador colorHumano;
     private List<NaveDTO> navesHumano;
     private List<NaveDTO> navesIA;
 
-    public CrearPartidaVsIARequest(String jugadorHumanoId, List<NaveDTO> navesHumano, List<NaveDTO> navesIA) {
+    public CrearPartidaVsIARequest(String jugadorHumanoId, ColorJugador colorHumano, List<NaveDTO> navesHumano, List<NaveDTO> navesIA) {
         this.jugadorHumanoId = jugadorHumanoId;
+        this.colorHumano = colorHumano;
         this.navesHumano = navesHumano;
         this.navesIA = navesIA;
     }
@@ -31,6 +36,15 @@ public class CrearPartidaVsIARequest implements Serializable {
         this.jugadorHumanoId = jugadorHumanoId;
     }
 
+    public ColorJugador getColorHumano() {
+        return colorHumano;
+    }
+
+    public void setColorHumano(ColorJugador colorHumano) {
+        this.colorHumano = colorHumano;
+    }
+
+    
     public List<NaveDTO> getNavesHumano() {
         return navesHumano;
     }
@@ -46,8 +60,5 @@ public class CrearPartidaVsIARequest implements Serializable {
     public void setNavesIA(List<NaveDTO> navesIA) {
         this.navesIA = navesIA;
     }
-    
-
-
 
 }

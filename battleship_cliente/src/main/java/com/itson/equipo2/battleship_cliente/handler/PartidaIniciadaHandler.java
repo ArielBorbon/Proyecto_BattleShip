@@ -51,9 +51,9 @@ public class PartidaIniciadaHandler implements IMessageHandler {
         JugadorModel yo = partidaModel.getYo(); // Ya tiene el ID y nombre
         
         if (yo.getId().equals(j1.getId())) {
-            partidaModel.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), true, tableroEnemigo, null));
+            partidaModel.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, tableroEnemigo, null));
         } else {
-            partidaModel.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), true, tableroEnemigo, null));
+            partidaModel.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j2.getColor(), true, tableroEnemigo, null));
         }
 
         partidaModel.setTurnoDe(response.getTurnoActual());

@@ -14,9 +14,11 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.request.CrearPartidaVsIARequest;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import com.itson.equipo2.communication.dto.EventMessage;
+import java.awt.Color;
 import java.util.List;
 import java.util.stream.Collectors;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
  *
@@ -40,8 +42,8 @@ public class CrearPartidaVsIAService {
     public void execute(CrearPartidaVsIARequest request) {
         try {
             //Crear Jugadores
-            Jugador jugadorHumano = new Jugador(request.getJugadorHumanoId(), "Humano");
-            Jugador jugadorIA = new Jugador(IA_PLAYER_ID, "IA");
+            Jugador jugadorHumano = new Jugador(request.getJugadorHumanoId(), "Humano", request.getColorHumano());
+            Jugador jugadorIA = new Jugador(IA_PLAYER_ID, "IA", ColorJugador.NARANJA);
 
             //Crear Partida
             Partida partida = new Partida(jugadorHumano);
@@ -65,8 +67,8 @@ public class CrearPartidaVsIAService {
             System.out.println("Partida Vs IA creada. Turno de: " + partida.getTurnoActual());
 
             //Preparar respuesta
-            JugadorDTO j1DTO = new JugadorDTO(jugadorHumano.getId(), "Humano", null, null);
-            JugadorDTO j2DTO = new JugadorDTO(jugadorIA.getId(), "IA", null, null);
+            JugadorDTO j1DTO = new JugadorDTO(jugadorHumano.getId(), jugadorHumano.getNombre(), jugadorHumano.getColor(), null, null);
+            JugadorDTO j2DTO = new JugadorDTO(jugadorIA.getId(), jugadorIA.getNombre(), jugadorIA.getColor(), null, null);
 
             PartidaIniciadaResponse response = new PartidaIniciadaResponse(
                     partida.getId().toString(),

@@ -5,44 +5,33 @@
 package mx.itson.equipo_2.common.dto;
 
 //import java.awt.Color;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
  *
  * @author skyro
  */
 public class JugadorDTO {
-    
+
     private String id;
     private String nombre;
-  //  private Color color;
+    private ColorJugador color;
     private TableroDTO tablero;
     private List<DisparoDTO> disparos;
 
     public JugadorDTO() {
     }
 
-    public JugadorDTO(String id, String nombre, TableroDTO tablero) {
+    public JugadorDTO(String id, String nombre, ColorJugador color, TableroDTO tablero, List<DisparoDTO> disparos) {
         this.id = id;
         this.nombre = nombre;
-        this.tablero = tablero;
-        this.disparos = new ArrayList<>();
-    }
-    
-    
-    
-    
-
-    public JugadorDTO(String id, String nombre, TableroDTO tablero, List<DisparoDTO> disparos) {
-        this.id = id;
-        this.nombre = nombre;
-     //   this.color = color;
+        this.color = color;
         this.tablero = tablero;
         this.disparos = disparos;
     }
-    
-    
 
     public String getId() {
         return id;
@@ -51,12 +40,10 @@ public class JugadorDTO {
     public void setId(String id) {
         this.id = id;
     }
-    
-    
 
     public JugadorDTO(String nombre, TableroDTO tablero, List<DisparoDTO> disparos) {
         this.nombre = nombre;
-       // this.color = color;
+        // this.color = color;
         this.tablero = tablero;
         this.disparos = disparos;
     }
@@ -69,14 +56,13 @@ public class JugadorDTO {
         this.nombre = nombre;
     }
 
-//    public Color getColor() {
-//        return color;
-//    }
-//
-//    public void setColor(Color color) {
-//        this.color = color;
-//    }
+    public ColorJugador getColor() {
+        return color;
+    }
 
+    public void setColor(ColorJugador color) {
+        this.color = color;
+    }
     public TableroDTO getTablero() {
         return tablero;
     }
@@ -97,6 +83,5 @@ public class JugadorDTO {
     public String toString() {
         return "JugadorDTO{" + "id=" + id + ", nombre=" + nombre + ", tablero=" + tablero + ", disparos=" + disparos + '}';
     }
-
 
 }

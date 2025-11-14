@@ -13,6 +13,7 @@ mx\itson\equipo_2\common\dto\response\TurnoTickResponse.class
 mx\itson\equipo_2\common\dto\CeldaDTO.class
 mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.class
 mx\itson\equipo_2\common\enums\EstadoNave.class
+mx\itson\equipo_2\common\enums\ColorJugador.class
 mx\itson\equipo_2\common\dto\response\ErrorResponse.class
 mx\itson\equipo_2\common\dto\response\PartidaIniciadaResponse.class
 mx\itson\equipo_2\common\dto\DisparoDTO.class

@@ -12,27 +12,20 @@ import java.time.LocalDate;
  */
 public class ErrorResponse {
     private String mensaje;
-    private LocalDate fecha;
 
     public ErrorResponse() {
     }
 
     public ErrorResponse(String mensaje) {
         this.mensaje = mensaje;
-        this.fecha = LocalDate.now();
     }
 
     public ErrorResponse(String mensaje, LocalDate fecha) {
         this.mensaje = mensaje;
-        this.fecha = fecha;
     }
 
     public String getMensaje() {
         return mensaje;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
     }
 }
 

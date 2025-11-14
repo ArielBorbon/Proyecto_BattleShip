@@ -89,6 +89,7 @@ public class PartidaModel {
 
     public void setEnCurso(boolean enCurso) {
         this.enCurso = enCurso;
+        notifyObservers();
     }
 
     public String getTurnoDe() {
@@ -97,6 +98,7 @@ public class PartidaModel {
 
     public void setTurnoDe(String turnoDe) {
         this.turnoDe = turnoDe;
+        notifyObservers();
     }
 
     public Integer getSegundosRestantes() {
@@ -105,6 +107,7 @@ public class PartidaModel {
 
     public void setSegundosRestantes(Integer segundosRestantes) {
         this.segundosRestantes = segundosRestantes;
+        notifyObservers();
     }
 
     public EstadoPartida getEstado() {
@@ -113,6 +116,7 @@ public class PartidaModel {
 
     public void setEstado(EstadoPartida estado) {
         this.estado = estado;
+        notifyObservers();
     }
 
     @Override
