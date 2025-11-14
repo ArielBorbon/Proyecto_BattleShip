@@ -67,8 +67,10 @@ public class Battleship_cliente {
         TableroModel tableroEnemigo = new TableroModel();
         
         JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, miTablero, new ArrayList<>());
+        JugadorModel jugadorModelEnemigo = new JugadorModel("IA-123", "IA", ColorJugador.ROJO, true, tableroEnemigo, new ArrayList<>());
         
         partidaModel.setYo(jugadorModel);
+        partidaModel.setEnemigo(jugadorModelEnemigo);
 
         // (Opcional) Si necesitas referencias directas a los tableros para inyectarlas
         // TableroModel miTablero = partidaModel.getJugadorLocal().getTableroModel();
@@ -107,7 +109,7 @@ public class Battleship_cliente {
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
-        eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel, miTablero, tableroEnemigo));
+        eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         
         ExecutorService executor = RedisConnection.getSubscriberExecutor();

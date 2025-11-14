@@ -22,15 +22,11 @@ public class PartidaIniciadaHandler implements IMessageHandler {
 
     private final ViewController viewController;
     private final PartidaModel partidaModel;
-    private final TableroModel tableroPropio;
-    private final TableroModel tableroEnemigo;
     private final Gson gson = new Gson();
 
-    public PartidaIniciadaHandler(ViewController viewController, PartidaModel partidaModel, TableroModel tableroPropio, TableroModel tableroEnemigo) {
+    public PartidaIniciadaHandler(ViewController viewController, PartidaModel partidaModel) {
         this.viewController = viewController;
         this.partidaModel = partidaModel;
-        this.tableroPropio = tableroPropio;
-        this.tableroEnemigo = tableroEnemigo;
     }
 
     @Override
@@ -47,7 +43,7 @@ public class PartidaIniciadaHandler implements IMessageHandler {
 
         // 2. DELEGAR LÓGICA DE NEGOCIO AL MODELO
         //    El modelo se actualizará y notificará a las vistas (Observer)
-        partidaModel.iniciarPartida(response, tableroPropio, tableroEnemigo);
+        partidaModel.iniciarPartida(response);
 
         // 3. LA LÓGICA DE VISTA SE QUEDA EN EL HANDLER (CONTROLADOR)
         //    Esto es correcto, el handler decide cuándo cambiar la pantalla.

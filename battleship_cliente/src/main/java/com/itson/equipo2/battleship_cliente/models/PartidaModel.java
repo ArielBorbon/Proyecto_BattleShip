@@ -81,7 +81,7 @@ public class PartidaModel {
         notifyObservers();
     }
 
-    public void iniciarPartida(PartidaIniciadaResponse response, TableroModel tableroPropio, TableroModel tableroEnemigo) {
+    public void iniciarPartida(PartidaIniciadaResponse response) {
 
         // 1. Sincronizar el ID de la partida
         this.setId(response.getPartidaId());
@@ -92,13 +92,13 @@ public class PartidaModel {
         JugadorModel yo = this.getYo();
 
         if (yo.getId().equals(j1.getId())) {
-            this.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, tableroEnemigo, null));
+            this.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, enemigo.getTablero(), null));
         } else {
-            this.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j1.getColor(), true, tableroEnemigo, null));
+            this.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j1.getColor(), true, enemigo.getTablero(), null));
         }
 
         // 3. Sincronizar el tablero propio
-        yo.setTablero(tableroPropio);
+        yo.setTablero(yo.getTablero());
 
         // 4. Sincronizar el estado de la partida
         this.setTurnoDe(response.getTurnoActual());

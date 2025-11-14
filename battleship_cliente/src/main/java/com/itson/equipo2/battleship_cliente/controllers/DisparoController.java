@@ -1,11 +1,9 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
-import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.pattern.strategy.StrategyTurno;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.Timer;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
 
 /**
