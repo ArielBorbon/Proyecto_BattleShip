@@ -4,8 +4,11 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
+import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.models.CeldaModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
+import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import com.itson.equipo2.battleship_cliente.view.util.NaveView;
@@ -22,7 +25,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
-import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
@@ -32,10 +34,14 @@ import mx.itson.equipo_2.common.enums.TipoNave;
 public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
     private List<NaveView> navesEnTablero = new java.util.ArrayList<>();
+
+    private PosicionarController posicionarController;
+
     /**
      * Creates new form PosicionarNaveVista
      */
-    public PosicionarNaveVista() {
+    public PosicionarNaveVista(PosicionarController posicionarController) {
+        this.posicionarController = posicionarController;
         initComponents();
         crearCeldas();
     }
@@ -51,10 +57,10 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
 
         tablero = new JPanel();
         btnConfirmar = new JButton();
-        nave1 = new SelectorNaveView(TipoNave.BARCO, 3, this.tablero, this.navesEnTablero);
-        nave2 = new SelectorNaveView(TipoNave.SUBMARINO, 4, this.tablero, this.navesEnTablero);
-        nave3 = new SelectorNaveView(TipoNave.CRUCERO, 2, this.tablero, this.navesEnTablero);
-        nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, 2, this.tablero, this.navesEnTablero);
+        nave1 = new SelectorNaveView(TipoNave.BARCO, this.tablero, this.posicionarController);
+        nave2 = new SelectorNaveView(TipoNave.SUBMARINO, this.tablero, this.posicionarController);
+        nave3 = new SelectorNaveView(TipoNave.CRUCERO, this.tablero, this.posicionarController);
+        nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, this.tablero, this.posicionarController);
 
         setBackground(new Color(83, 111, 137));
         setMaximumSize(new Dimension(1280, 720));
@@ -194,7 +200,31 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
 
     @Override
     public void onChange(PartidaModel model) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // Obtiene el tablero del modelo
+        TableroModel tableroPropio = model.getTableroPropio(); //
+        if (tableroPropio == null) {
+            System.out.println("tablero nulo");
+            return;
+        }
+
+        // Recorre las celdas de la VISTA
+        for (int f = 0; f < 10; f++) {
+            for (int c = 0; c < 10; c++) {
+                // Obtiene el estado del MODELO
+                CeldaModel celdaModelo = tableroPropio.getCelda(f, c); //
+
+                // Obtiene el componente de la VISTA
+                JButton celdaUI = (JButton) tablero.getComponent(f * 10 + c);
+
+                // Sincroniza la Vista con el Modelo
+                if (celdaModelo.tieneNave()) {
+                    System.out.println("hay nave!");
+                    celdaUI.setBackground(model.getYo().getColor().getColor()); // O el color que prefieras
+                } else {
+                    celdaUI.setBackground(new Color(50, 70, 100)); // Color agua
+                }
+            }
+        }
     }
 
     private void crearCeldas() {

@@ -12,6 +12,7 @@ import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
+import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
  *
@@ -130,6 +131,29 @@ public class PartidaModel {
         this.estado = estado;
     }
 
+    public boolean intentarPosicionarNavePropia(TipoNave tipo, int col, int fila, boolean esHorizontal) {
+
+        // 1. Delega la petición al modelo "trabajador"
+        TableroModel tableroPropio = this.getTableroPropio();
+        boolean exito = tableroPropio.agregarNave(tipo, col, fila, esHorizontal); //
+
+        // 2. Si el trabajador tuvo éxito, notifica a los observadores
+        if (exito) {
+            this.notifyObservers();//
+        }
+
+        return exito;
+    }
+
+    public TableroModel getTableroPropio() {
+        if (this.yo == null) {
+            // Inicializa si es necesario (depende de tu flujo)
+            this.yo = new JugadorModel(); //
+            this.yo.setTablero(new TableroModel(yo.getId())); //
+        }
+        return this.yo.getTablero(); //
+    }
+
     public String getId() {
         return id;
     }
@@ -160,7 +184,7 @@ public class PartidaModel {
 
     public void setEnCurso(boolean enCurso) {
         this.enCurso = enCurso;
-        
+
     }
 
     public String getTurnoDe() {
@@ -169,7 +193,7 @@ public class PartidaModel {
 
     public void setTurnoDe(String turnoDe) {
         this.turnoDe = turnoDe;
-       
+
     }
 
     public Integer getSegundosRestantes() {
@@ -178,7 +202,7 @@ public class PartidaModel {
 
     public void setSegundosRestantes(Integer segundosRestantes) {
         this.segundosRestantes = segundosRestantes;
-      
+
     }
 
     public EstadoPartida getEstado() {
@@ -187,7 +211,7 @@ public class PartidaModel {
 
     public void setEstado(EstadoPartida estado) {
         this.estado = estado;
-        
+
     }
 
     @Override

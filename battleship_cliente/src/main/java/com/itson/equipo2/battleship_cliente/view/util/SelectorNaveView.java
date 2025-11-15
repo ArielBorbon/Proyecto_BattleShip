@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view.util;
 
+import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -35,13 +36,13 @@ public class SelectorNaveView extends JPanel {
     private final JLabel lblCantidad;
     private final JPanel tablero;
 
-    private final java.util.List<NaveView> navesEnTablero;
+    private final PosicionarController posicionarController;
 
-    public SelectorNaveView(TipoNave tipo, int cantidadInicial, JPanel tablero, java.util.List<NaveView> navesEnTablero) {
+    public SelectorNaveView(TipoNave tipo, JPanel tablero, PosicionarController posicionarController) {
         this.tipo = tipo;
-        this.barcosRestantes = cantidadInicial;
+        this.barcosRestantes = tipo.getCantidadInicial();
         this.tablero = tablero;
-        this.navesEnTablero = navesEnTablero;
+        this.posicionarController = posicionarController;
 
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
@@ -70,7 +71,7 @@ public class SelectorNaveView extends JPanel {
                 JLayeredPane layered = frame.getLayeredPane();
 
                 // Crear la nueva nave del tipo correspondiente
-                NaveView nave = new NaveView(tipo, tablero, navesEnTablero);
+                NaveView nave = new NaveView(tipo, tablero, posicionarController);
 
                 // Posición inicial basada en el clik
                 Point puntoEnLayered = SwingUtilities.convertPoint(SelectorNaveView.this, e.getPoint(), layered);

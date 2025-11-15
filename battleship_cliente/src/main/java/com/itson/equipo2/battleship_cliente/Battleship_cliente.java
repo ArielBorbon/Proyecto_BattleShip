@@ -5,6 +5,7 @@ package com.itson.equipo2.battleship_cliente;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
+import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.communication.impl.RedisConnection;
 import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
@@ -16,6 +17,7 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
+import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
@@ -81,9 +83,11 @@ public class Battleship_cliente {
         ViewController viewController = new ViewController();
 
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
+        PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
         
         // Ejemplo: El controlador de disparo necesita el Modelo para validar y el Publisher para enviar
         DisparoController disparoController = new DisparoController(disparoService);
+        PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
 
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
@@ -94,13 +98,14 @@ public class Battleship_cliente {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
         
-        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista();
+        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
         
 //        iniciarPartidaVsIA(publisher, miTablero);
         
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
         partidaModel.addObserver(dispararView);
+        partidaModel.addObserver(posicionarNaveVista);
 //        miTablero.addObserver(dispararView);
 //        tableroEnemigo.addObserver(dispararView);
         // Inicializamos las vistas específicas e inyectamos sus dependencias
@@ -135,7 +140,7 @@ public class Battleship_cliente {
         List<NaveDTO> navesIA = crearNavesDePrueba(); // La IA usa la misma disposición
 
         // 1. Poblar nuestro modelo local de tablero ANTES de enviar.
-        tableroModel.posicionarNaves(navesHumano);
+//        tableroModel.posicionarNaves(navesHumano);
 
         CrearPartidaVsIARequest request = new CrearPartidaVsIARequest(
                 JUGADOR_HUMANO_ID,

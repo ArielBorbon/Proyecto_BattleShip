@@ -6,6 +6,7 @@ package com.itson.equipo2.battleship_cliente.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.request.PosicionarNaveRequest;
@@ -19,17 +20,17 @@ import com.itson.equipo2.communication.dto.EventMessage;
 public class PosicionarNaveService {
  
     private final IMessagePublisher publisher;
-    private final JugadorModel jugadorModel;
+    private final PartidaModel partidaModel;
     private final Gson gson = new Gson();
 
-    public PosicionarNaveService(IMessagePublisher publisher, JugadorModel jugadorModel) {
+    public PosicionarNaveService(IMessagePublisher publisher, PartidaModel partidaModel) {
         this.publisher = publisher;
-        this.jugadorModel = jugadorModel;
+        this.partidaModel = partidaModel;
     }
 
     
     public void posicionarNave(CoordenadaDTO[] coordenadas, TipoNave tipoNave) {
-        PosicionarNaveRequest req = new PosicionarNaveRequest(jugadorModel.getId(), coordenadas, tipoNave);
+        PosicionarNaveRequest req = new PosicionarNaveRequest(partidaModel.getYo().getId(), coordenadas, tipoNave);
         String payload = gson.toJson(req);
 
         EventMessage message = new EventMessage("PosicionarNave", payload);
