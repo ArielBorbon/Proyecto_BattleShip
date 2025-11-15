@@ -1,10 +1,10 @@
 package com.itson.equipo2.battleship_cliente.view.util;
 
 // Importaciones necesarias
+import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -15,7 +15,6 @@ import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.enums.TipoNave;
@@ -30,61 +29,55 @@ public class NaveView extends JPanel {
     private boolean dragging = false;
     private Point offset;
 
-    private JPanel tablero;
+    // --- Referencias de Arquitectura ---
+    private final JPanel tablero;
     private final TipoNave tipo;
+    private final PosicionarController partidaController; // <-- ¡NUEVO! Habla con el Controlador
+
+    // --- Estado Visual ---
     private boolean esHorizontal = true;
-
-    private final java.util.List<NaveView> navesEnTablero;
-
-    // Constante para el tamaño de la celda
     private static final int CELL_SIZE = 57;
 
-    // --- CONSTRUCTOR ---
-    public NaveView(TipoNave tipo, JPanel tablero, List<NaveView> navesEnTablero) {
+    // --- CONSTRUCTOR MODIFICADO ---
+    // Ya no recibe la lista, ahora recibe el Controlador
+    public NaveView(TipoNave tipo, JPanel tablero, PosicionarController controller) {
         this.tipo = tipo;
         this.tablero = tablero;
-        this.navesEnTablero = navesEnTablero;
+        this.partidaController = controller; // <-- Asignar el controlador
 
-        // --- 1. Arreglo del Ancho (+1 celda) ---
-        // Volvemos a tu cálculo original. Si esto sigue siendo incorrecto,
-        // la discrepancia está entre `TipoNave.getTamanio()` y `CELL_SIZE`.
+        // --- Configuración Visual ---
+        // (Usamos tu cálculo de ancho visual, la lógica de 'soltar' lo compensará)
         int ancho = (CELL_SIZE * tipo.getTamanio()) - CELL_SIZE;
         int alto = CELL_SIZE;
 
         setSize(ancho, alto);
         setPreferredSize(new Dimension(ancho, alto));
-
         setBackground(new Color(100, 100, 100, 200));
-        setOpaque(false); // Para que la transparencia funcione
+        setOpaque(false);
 
-        // --- 2. Lógica de Arrastre Global (Arregla #2 y #3) ---
-        // Este listener se añade una vez por nave y maneja todo.
+        // --- 2. Lógica de Arrastre, Rotación y MVC ---
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             @Override
             public void eventDispatched(AWTEvent event) {
 
-                // --- 1. LÓGICA DE TECLADO (NUEVO) ---
+                // --- 1. LÓGICA DE TECLADO (Rotar con 'R') ---
                 if (event instanceof KeyEvent) {
                     KeyEvent ke = (KeyEvent) event;
-
-                    // Si presionan 'R' MIENTRAS arrastramos
                     if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_R && dragging) {
                         rotarNave();
                     }
                     return; // Termina el evento de teclado
                 }
 
-                // --- 2. LÓGICA DE MOUSE (MODIFICADA) ---
+                // --- 2. LÓGICA DE MOUSE ---
                 if (!(event instanceof MouseEvent)) {
-                    return; // Ignora otros eventos
+                    return;
                 }
-
                 MouseEvent me = (MouseEvent) event;
 
-                // --- A. INICIO DEL ARRASTRE (Solo Clic Izquierdo) ---
+                // --- A. INICIO DEL ARRASTRE (Clic Izquierdo) ---
                 if (me.getID() == MouseEvent.MOUSE_PRESSED && me.getComponent() == NaveView.this && SwingUtilities.isLeftMouseButton(me)) {
-                    // Quitarse de la lista para no colisionar consigo mismo
-                    navesEnTablero.remove(NaveView.this);
+                    // Ya no se quita de ninguna lista, solo empieza a arrastrar
                     startDragFromEvent(me);
                 }
 
@@ -100,7 +93,7 @@ public class NaveView extends JPanel {
                     }
                 }
 
-                // --- C. SOLTAR LA NAVE (¡SÓLO CON CLIC IZQUIERDO!) ---
+                // --- C. SOLTAR LA NAVE (Lógica MVC) ---
                 if (me.getID() == MouseEvent.MOUSE_RELEASED) {
                     // Solo actuar si estábamos arrastrando Y si el botón que se soltó fue el izquierdo
                     if (dragging && SwingUtilities.isLeftMouseButton(me)) {
@@ -114,56 +107,42 @@ public class NaveView extends JPanel {
                         Rectangle tableroBounds = SwingUtilities.convertRectangle(tablero.getParent(), tablero.getBounds(), parent);
                         Point naveCenter = new Point(getX() + getWidth() / 2, getY() + getHeight() / 2);
 
-                        // 1. DEVOLVER SI ESTÁ FUERA
-                        if (!tableroBounds.contains(naveCenter)) {
-                            firePropertyChange("naveDevuelta", false, true);
-                            parent.remove(NaveView.this);
-                            parent.repaint();
-                            return;
-                        }
+                        boolean exito = false;
 
-                        // 2. CALCULAR POSICIÓN "SNAP" (CONSIDERA ROTACIÓN)
-                        int relativeX = getX() - tableroBounds.x;
-                        int relativeY = getY() - tableroBounds.y;
-                        int targetCol = Math.round((float) relativeX / CELL_SIZE);
-                        int targetFila = Math.round((float) relativeY / CELL_SIZE);
+                        // 1. SI ESTÁ DENTRO DEL TABLERO...
+                        if (tableroBounds.contains(naveCenter)) {
+                            // Calcular celda (targetCol, targetFila) basado en la esquina (getX, getY)
+                            int relativeX = getX() - tableroBounds.x;
+                            int relativeY = getY() - tableroBounds.y;
+                            int targetCol = Math.round((float) relativeX / CELL_SIZE);
+                            int targetFila = Math.round((float) relativeY / CELL_SIZE);
 
-                        int numColsNave, numFilasNave;
-                        if (esHorizontal) {
-                            numColsNave = (getWidth() / CELL_SIZE);
-                            numFilasNave = getHeight() / CELL_SIZE;
-                        } else {
-                            numColsNave = getWidth() / CELL_SIZE;
-                            numFilasNave = (getHeight() / CELL_SIZE);
-                        }
-
-                        targetCol = Math.max(0, Math.min(targetCol, 10 - numColsNave));
-                        targetFila = Math.max(0, Math.min(targetFila, 10 - numFilasNave));
-
-                        int newX = tableroBounds.x + (targetCol * CELL_SIZE);
-                        int newY = tableroBounds.y + (targetFila * CELL_SIZE);
-
-                        // 3. LÓGICA DE COLISIÓN
-                        Rectangle proposedBounds = new Rectangle(newX, newY, getWidth(), getHeight());
-                        boolean colision = false;
-                        for (NaveView otraNave : navesEnTablero) {
-                            if (otraNave.getBounds().intersects(proposedBounds)) {
-                                colision = true;
-                                break;
+                            // Validar límites visuales (para que el 'snap' no se salga)
+                            int numColsNave, numFilasNave;
+                            if (esHorizontal) {
+                                numColsNave = (getWidth() / CELL_SIZE); // (ej. 3)
+                                numFilasNave = getHeight() / CELL_SIZE; // (ej. 1)
+                            } else {
+                                numColsNave = getWidth() / CELL_SIZE; // (ej. 1)
+                                numFilasNave = (getHeight() / CELL_SIZE); // (ej. 3)
                             }
+                            targetCol = Math.max(0, Math.min(targetCol, 10 - numColsNave));
+                            targetFila = Math.max(0, Math.min(targetFila, 10 - numFilasNave));
+
+                            // 2. ¡LLAMAR AL CONTROLADOR!
+                            // Esta es la nueva lógica MVC
+                            exito = partidaController.intentarPosicionarNave(tipo, targetCol, targetFila, esHorizontal);
                         }
 
-                        // 4. DEVOLVER SI HAY COLISIÓN
-                        if (colision) {
+                        // 3. SI FALLÓ (colisión) O SE SOLTÓ FUERA...
+                        if (!exito) {
+                            // Notificar al SelectorNaveView que debe devolver el barco
                             firePropertyChange("naveDevuelta", false, true);
-                            parent.remove(NaveView.this);
-                            parent.repaint();
-                            return;
                         }
 
-                        // 5. SI TODO ESTÁ BIEN: Posicionar y añadir a la lista
-                        setLocation(newX, newY);
-                        navesEnTablero.add(NaveView.this);
+                        // 4. ¡SIEMPRE AUTO-DESTRUIRSE!
+                        // El NaveView ya cumplió su propósito (enviar el evento al C).
+                        parent.remove(NaveView.this);
                         parent.repaint();
                     }
                 }
@@ -171,24 +150,22 @@ public class NaveView extends JPanel {
         }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK); // <-- MÁSCARA MODIFICADA
     }
 
-    // --- Métodos Auxiliares ---
     /**
-     * Método público que inicia el arrastre. Es llamado por SelectorNaveView y
-     * por este mismo listener.
+     * Inicia el proceso de arrastre. Ya no necesita 'buscarTablero' porque lo
+     * recibe en el constructor.
      */
     public void startDragFromEvent(MouseEvent e) {
         Container parent = getParent();
-        if (parent == null) {
-            return;
+        if (parent == null || this.tablero == null) {
+            return; // 'tablero' ya es una variable de clase
         }
-
         Point eventPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), parent);
         this.offset = new Point(eventPoint.x - getX(), eventPoint.y - getY());
         this.dragging = true;
     }
 
     /**
-     * Dibuja la nave
+     * Dibuja la nave (el rectángulo y el borde).
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -203,6 +180,10 @@ public class NaveView extends JPanel {
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
+    /**
+     * Rota la nave 90 grados sobre el eje del puntero del mouse (this.offset).
+     * Esta es la versión "compleja" que gira sobre el eje.
+     */
     private void rotarNave() {
         // 1. Obtener dimensiones y offset actuales
         int anchoActual = getWidth();
@@ -235,12 +216,11 @@ public class NaveView extends JPanel {
         int newOffsetY = (int) Math.round(nuevoCentroY + vecRotadoY);
 
         // 6. Calcular la nueva posición TOP-LEFT de la nave
-        // (El pivote global no se mueve, así que restamos el nuevo offset)
         int newX = globalPivotX - newOffsetX;
         int newY = globalPivotY - newOffsetY;
 
         // 7. Aplicar todos los cambios
-        this.esHorizontal = !this.esHorizontal; //
+        this.esHorizontal = !this.esHorizontal;
         this.offset = new Point(newOffsetX, newOffsetY); // ¡Actualizar el offset!
 
         setSize(nuevoAncho, nuevoAlto);
@@ -252,28 +232,5 @@ public class NaveView extends JPanel {
             parent.revalidate();
             parent.repaint();
         }
-    }
-
-    // --- Getters (útiles para el botón Confirmar) ---
-    public TipoNave getTipoNave() {
-        return this.tipo;
-    }
-
-    public int getColumna() {
-        if (tablero == null) {
-            return -1;
-        }
-        Rectangle tableroBounds = tablero.getBounds();
-        int relativeX = getX() - tableroBounds.x;
-        return Math.round((float) relativeX / CELL_SIZE);
-    }
-
-    public int getFila() {
-        if (tablero == null) {
-            return -1;
-        }
-        Rectangle tableroBounds = tablero.getBounds();
-        int relativeY = getY() - tableroBounds.y;
-        return Math.round((float) relativeY / CELL_SIZE);
     }
 }

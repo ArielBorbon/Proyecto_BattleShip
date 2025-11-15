@@ -143,7 +143,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.BARCO, 3, this.tablero, this.navesEnTablero)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.BARCO, this.tablero, this.posicionarController)"/>
       </AuxValues>
 
       <Layout>
@@ -173,7 +173,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.SUBMARINO, 4, this.tablero, this.navesEnTablero)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.SUBMARINO, this.tablero, this.posicionarController)"/>
       </AuxValues>
 
       <Layout>
@@ -204,7 +204,7 @@
         <Property name="requestFocusEnabled" type="boolean" value="false"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.CRUCERO, 2, this.tablero, this.navesEnTablero)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.CRUCERO, this.tablero, this.posicionarController)"/>
       </AuxValues>
 
       <Layout>
@@ -235,7 +235,7 @@
         <Property name="requestFocusEnabled" type="boolean" value="false"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.PORTA_AVIONES, 2, this.tablero, this.navesEnTablero)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectorNaveView(TipoNave.PORTA_AVIONES, this.tablero, this.posicionarController)"/>
       </AuxValues>
 
       <Layout>
