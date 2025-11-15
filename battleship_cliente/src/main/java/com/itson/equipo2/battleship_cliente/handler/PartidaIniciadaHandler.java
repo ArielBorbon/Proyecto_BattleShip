@@ -48,6 +48,7 @@ public class PartidaIniciadaHandler implements IMessageHandler {
         // 3. LA LÓGICA DE VISTA SE QUEDA EN EL HANDLER (CONTROLADOR)
         //    Esto es correcto, el handler decide cuándo cambiar la pantalla.
         System.out.println("PartidaModel actualizado. cambiando a vista 'disparar'");
+        
         javax.swing.SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("disparar");
         });

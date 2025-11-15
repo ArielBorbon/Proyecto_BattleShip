@@ -4,28 +4,30 @@
  */
 package mx.itson.equipo_2.common.enums;
 
+import java.awt.Color;
+
 /**
  *
  * @author skyro
  */
 public enum ColorJugador {
 
-    ROJO("#FF0000"),
-    AZUL("#0000FF"),
-    VERDE("#00FF00"),
-    AMARILLO("#FFFF00"),
-    NARANJA("#FFA500"),
-    MORADO("#800080");
+    ROJO(Color.RED),
+    AZUL(Color.BLUE),
+    VERDE(Color.GREEN),
+    AMARILLO(Color.YELLOW),
+    NARANJA(Color.ORANGE),
+    MORADO(Color.MAGENTA);
 
-    private String color;
+    private Color color;
 
-    private ColorJugador(String color) {
+    private ColorJugador(Color color) {
         this.color = color;
     }
     
     
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 

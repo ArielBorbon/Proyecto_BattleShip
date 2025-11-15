@@ -8,7 +8,6 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
-import com.itson.equipo2.battleship_cliente.pattern.observer.TableroObserver;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -66,7 +65,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         System.out.println("DispararView: Modelos inyectados.");
         actualizarLabelTurno();
 
-        mostrarTableroPropio(this.miTablero);
+//        mostrarTableroPropio(this.miTablero);
 
     
 
@@ -84,7 +83,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTimer(model.getSegundosRestantes());
 
         if (this.miTablero != null) {
-            repintarPropio(this.miTablero);
+            repintarPropio(this.miTablero, model.getYo().getColor().getColor());
         }
         if (this.tableroEnemigo != null) {
             repintarEnemigo(this.tableroEnemigo);
@@ -203,13 +202,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         panelTableroPropio.setBounds(130, 50, 250, 250);
 
         lblTurno.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
-        lblTurno.setText("...");
+        lblTurno.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTurno.setText(" ");
         add(lblTurno);
-        lblTurno.setBounds(100, 320, 360, 50);
+        lblTurno.setBounds(80, 320, 360, 50);
 
         lblTimer.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
         lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTimer.setText("...");
+        lblTimer.setText(" ");
         add(lblTimer);
         lblTimer.setBounds(130, 400, 250, 30);
 
@@ -229,7 +229,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
         lblResultado.setFont(new Font("Segoe UI", 0, 24)); // NOI18N
         lblResultado.setHorizontalAlignment(SwingConstants.CENTER);
-        lblResultado.setText("...");
+        lblResultado.setText(" ");
         add(lblResultado);
         lblResultado.setBounds(100, 550, 330, 30);
     }// </editor-fold>//GEN-END:initComponents
@@ -492,7 +492,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         this.lblResultado = lblResultado;
     }
 
-    private void repintarPropio(TableroModel tablero) {
+    private void repintarPropio(TableroModel tablero, Color color) {
         if (tablero == null) {
             return; // Seguridad
         }
@@ -513,7 +513,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                     }
                 } // 2. Si NO ha sido disparada, PERO tiene nave
                 else if (celda.isTieneNave()) {
-                    boton.setBackground(Color.GRAY); // Muestra tu nave intacta
+                    boton.setBackground(color); // Muestra tu nave intacta
                 } // 3. Si es solo agua (sin disparar y sin nave)
                 else {
                     boton.setBackground(new Color(50, 70, 100)); // Color base del mar
