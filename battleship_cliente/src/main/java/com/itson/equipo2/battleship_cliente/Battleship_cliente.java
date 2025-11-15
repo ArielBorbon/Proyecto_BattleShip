@@ -12,13 +12,13 @@ import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
-import com.itson.equipo2.battleship_cliente.models.CeldaModel;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
+import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import java.util.ArrayList;
 import java.util.List;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
@@ -31,10 +31,9 @@ import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.communication.dto.EventMessage;
 import com.itson.equipo2.communication.impl.EventDispatcher;
 import com.itson.equipo2.communication.impl.RedisSubscriber;
-import java.awt.Color;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 import redis.clients.jedis.JedisPool;
@@ -95,7 +94,9 @@ public class Battleship_cliente {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
         
-        iniciarPartidaVsIA(publisher, miTablero);
+        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista();
+        
+//        iniciarPartidaVsIA(publisher, miTablero);
         
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
@@ -106,6 +107,7 @@ public class Battleship_cliente {
         // NOTA: Aquí ya no usamos AppContext dentro de las vistas.
         // Si DispararView necesita el controlador, se lo pasamos.
         viewController.registrarPantalla("disparar", dispararView);
+        viewController.registrarPantalla("posicionar", posicionarNaveVista);
         
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
@@ -121,6 +123,9 @@ public class Battleship_cliente {
         // ---------------------------------------------------------
         // 5. ARRANQUE
         // ---------------------------------------------------------
+        SwingUtilities.invokeLater(() -> {
+            viewController.cambiarPantalla("posicionar");
+        });
     }
 
     private static void iniciarPartidaVsIA(IMessagePublisher publisher, TableroModel tableroModel) {

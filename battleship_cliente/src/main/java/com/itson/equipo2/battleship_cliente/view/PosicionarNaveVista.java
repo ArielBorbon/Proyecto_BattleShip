@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -30,6 +31,7 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  */
 public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
+    private List<NaveView> navesEnTablero = new java.util.ArrayList<>();
     /**
      * Creates new form PosicionarNaveVista
      */
@@ -49,10 +51,10 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
 
         tablero = new JPanel();
         btnConfirmar = new JButton();
-        nave1 = new SelectorNaveView(TipoNave.BARCO, 3);
-        nave2 = new SelectorNaveView(TipoNave.SUBMARINO, 4);
-        nave3 = new SelectorNaveView(TipoNave.CRUCERO, 2);
-        nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, 2);
+        nave1 = new SelectorNaveView(TipoNave.BARCO, 3, this.tablero, this.navesEnTablero);
+        nave2 = new SelectorNaveView(TipoNave.SUBMARINO, 4, this.tablero, this.navesEnTablero);
+        nave3 = new SelectorNaveView(TipoNave.CRUCERO, 2, this.tablero, this.navesEnTablero);
+        nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, 2, this.tablero, this.navesEnTablero);
 
         setBackground(new Color(83, 111, 137));
         setMaximumSize(new Dimension(1280, 720));

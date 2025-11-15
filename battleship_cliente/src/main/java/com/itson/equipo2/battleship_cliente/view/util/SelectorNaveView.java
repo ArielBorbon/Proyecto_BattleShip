@@ -33,10 +33,15 @@ public class SelectorNaveView extends JPanel {
     private int barcosRestantes;
     private final JLabel lblTitulo;
     private final JLabel lblCantidad;
+    private final JPanel tablero;
 
-    public SelectorNaveView(TipoNave tipo, int cantidadInicial) {
+    private final java.util.List<NaveView> navesEnTablero;
+
+    public SelectorNaveView(TipoNave tipo, int cantidadInicial, JPanel tablero, java.util.List<NaveView> navesEnTablero) {
         this.tipo = tipo;
         this.barcosRestantes = cantidadInicial;
+        this.tablero = tablero;
+        this.navesEnTablero = navesEnTablero;
 
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
@@ -65,11 +70,15 @@ public class SelectorNaveView extends JPanel {
                 JLayeredPane layered = frame.getLayeredPane();
 
                 // Crear la nueva nave del tipo correspondiente
-                NaveView nave = new NaveView(tipo);
+                NaveView nave = new NaveView(tipo, tablero, navesEnTablero);
 
                 // Posición inicial basada en el clik
                 Point puntoEnLayered = SwingUtilities.convertPoint(SelectorNaveView.this, e.getPoint(), layered);
                 nave.setLocation(puntoEnLayered.x - nave.getWidth() / 2, puntoEnLayered.y - nave.getHeight() / 2);
+
+                nave.addPropertyChangeListener("naveDevuelta", (evt) -> {
+                    devolverBarco();
+                });
 
                 // Añadir a la capa superior
                 layered.add(nave, JLayeredPane.DRAG_LAYER);
