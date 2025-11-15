@@ -1,10 +1,6 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
-import com.itson.equipo2.battleship_cliente.pattern.strategy.StrategyTurno;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
-import java.util.HashMap;
-import java.util.Map;
-import mx.itson.equipo_2.common.dto.JugadorDTO;
 
 /**
  *
@@ -14,29 +10,14 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
  */
 public class DisparoController {
 
-    private final RealizarDisparoService tableroService;
-    private final Map<JugadorDTO, StrategyTurno> estrategias;
+    private final RealizarDisparoService realizarDisparoService;
 
-    public DisparoController(RealizarDisparoService tableroService) {
-        this.tableroService = tableroService;
-        this.estrategias = new HashMap<>();
-    }
-
-    public DisparoController(RealizarDisparoService tableroService, Map<JugadorDTO, StrategyTurno> estrategias) {
-        this.tableroService = tableroService;
-        this.estrategias = estrategias;
-    }
-    
-    
-    
-
-    public void registrarEstrategia(JugadorDTO jugador, StrategyTurno estrategia) {
-        estrategias.put(jugador, estrategia);
+    public DisparoController(RealizarDisparoService realizarDisparoService) {
+        this.realizarDisparoService = realizarDisparoService;
     }
 
     public void disparar(int columna, int fila) {
-        tableroService.disparar(columna, fila);
-        System.out.println("3");
+        realizarDisparoService.disparar(columna, fila);
     }
 
 }
