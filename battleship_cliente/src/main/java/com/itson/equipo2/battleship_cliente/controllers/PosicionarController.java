@@ -27,4 +27,8 @@ public class PosicionarController {
 
         return this.partidaModel.intentarPosicionarNavePropia(tipo, col, fila, esHorizontal);
     }
+    
+    public void confirmarPosicionamiento() {
+        
+    }
 }

@@ -78,6 +78,7 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
         btnConfirmar.setForeground(new Color(255, 255, 255));
         btnConfirmar.setText("Confirmar");
         btnConfirmar.setBorder(null);
+        btnConfirmar.setEnabled(false);
         btnConfirmar.setFocusPainted(false);
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -187,10 +188,20 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
                         .addGap(99, 99, 99)))
                 .addComponent(btnConfirmar, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE))
         );
+
+        nave1.getAccessibleContext().setAccessibleName("");
+        nave1.getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        posicionarController.confirmarPosicionamiento();
 
+        // Deshabilita todo para que no pueda mover nada más
+        btnConfirmar.setEnabled(false);
+        nave1.setEnabled(false);
+        nave2.setEnabled(false);
+        nave3.setEnabled(false);
+        nave4.setEnabled(false);
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
     @Override
@@ -225,6 +236,8 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
                 }
             }
         }
+        
+        actualizarEstadoBoton();
     }
 
     private void crearCeldas() {
@@ -242,6 +255,19 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
         }
     }
 
+    public void actualizarEstadoBoton() {
+
+        // ¡El truco! Hacemos un "cast" al JPanel genérico
+        // para tratarlo como lo que realmente es: un SelectorNaveView.
+        boolean todosPuestos
+                = ((SelectorNaveView) nave1).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave2).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave3).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave4).getBarcosRestantes() == 0;
+        // (Añade '&& ((SelectorNaveView) nave5).getBarcosRestantes() == 0' si tienes una quinta nave)
+
+        btnConfirmar.setEnabled(todosPuestos);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnConfirmar;
