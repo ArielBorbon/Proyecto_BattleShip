@@ -37,4 +37,8 @@ public class PosicionarNaveService {
 
         publisher.publish("battleship:comandos", message);
     }
+    
+    public void confirmarPosicionamiento() {
+        
+    }
 }

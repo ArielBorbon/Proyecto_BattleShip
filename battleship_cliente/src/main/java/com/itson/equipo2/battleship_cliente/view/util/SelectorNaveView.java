@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_cliente.view.util;
 
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
+import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -35,7 +36,7 @@ public class SelectorNaveView extends JPanel {
     private final JLabel lblTitulo;
     private final JLabel lblCantidad;
     private final JPanel tablero;
-
+    
     private final PosicionarController posicionarController;
 
     public SelectorNaveView(TipoNave tipo, JPanel tablero, PosicionarController posicionarController) {
@@ -100,4 +101,9 @@ public class SelectorNaveView extends JPanel {
         barcosRestantes++;
         lblCantidad.setText("Disponibles: " + barcosRestantes);
     }
+
+    public int getBarcosRestantes() {
+        return barcosRestantes;
+    }
+
 }
