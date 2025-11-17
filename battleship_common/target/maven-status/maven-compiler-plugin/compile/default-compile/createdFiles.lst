@@ -5,6 +5,7 @@ mx\itson\equipo_2\common\enums\EstadoCelda.class
 mx\itson\equipo_2\common\enums\OrientacionNave.class
 mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.class
 mx\itson\equipo_2\common\dto\request\PosicionarNaveRequest.class
+mx\itson\equipo_2\common\dto\request\RegistrarJugadorRequest.class
 mx\itson\equipo_2\common\dto\TableroDTO.class
 mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.class
 mx\itson\equipo_2\common\enums\EstadoPartida.class

@@ -11,6 +11,8 @@ import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerSer
 import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.RegistrarJugadorHandler;
+import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_servidor.domain.service.AIService;
 import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
@@ -32,29 +34,29 @@ public class Battleship_servidor {
     public static void main(String[] args) {
         System.out.println("Iniciando Battleship Servidor...");
 
-        //Conexin a Redis
+    
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
 
-        //Inicializar Componentes de Infraestructura
+      
         IMessagePublisher publisher = new RedisPublisher(pool);
-        IPartidaRepository partidaRepository = new PartidaRepository(null); // Repositorio Singleton
+        IPartidaRepository partidaRepository = new PartidaRepository(null); 
         Gson gson = new Gson();
         AIService aiService = new AIService(partidaRepository, publisher);
 
-        // crear el router """" de los eventos
+        
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         
         PartidaTimerService timerService = new PartidaTimerService();
         
-        // 2. creamos el servicio de los balazos
+       
         RealizarDisparoService disparoService = new RealizarDisparoService(
                 partidaRepository, 
                 publisher, 
                 timerService
         );
         
-        //creamos el evento de la partida como tal
+        
         CrearPartidaVsIAService crearPartidaService = new CrearPartidaVsIAService(
                 partidaRepository, 
                 publisher, 
@@ -62,6 +64,15 @@ public class Battleship_servidor {
                 gson
         );
                 
+     
+    
+        RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(
+                publisher, 
+                gson
+        );
+        
+
+    
         eventDispatcher.subscribe(
                 "RealizarDisparo", 
                 new RealizarDisparoHandler(disparoService)
@@ -72,20 +83,25 @@ public class Battleship_servidor {
                 new CrearPartidaVsIAHandler(crearPartidaService)
         );
         
-        // Registrar el AIService para que escuche los eventos
+       
+       
+        eventDispatcher.subscribe(
+                "RegistrarJugador", 
+                new RegistrarJugadorHandler(registrarJugadorService)
+        );
+     
+        
+        
         eventDispatcher.subscribe("TurnoTick", aiService);
 
-        //Iniciar el Suscriptor de Comandos del Cliente
+        
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-
-        commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);// El handler se ignora, usa el dispatcher
+        commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);
 
         
-        //Iniciar el Suscriptor de Eventos (IA)
+     
         IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-
-
-        eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);// El handler se ignora, usa el dispatcher
+        eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
 
 
         System.out.println("************************************************************");
