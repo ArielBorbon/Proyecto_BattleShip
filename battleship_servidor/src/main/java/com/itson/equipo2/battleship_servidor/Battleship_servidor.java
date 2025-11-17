@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
 import com.itson.equipo2.communication.impl.EventDispatcher;
-import com.itson.equipo2.communication.impl.RedisConfig;
 import com.itson.equipo2.communication.impl.RedisConnection;
 import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.communication.impl.RedisSubscriber;

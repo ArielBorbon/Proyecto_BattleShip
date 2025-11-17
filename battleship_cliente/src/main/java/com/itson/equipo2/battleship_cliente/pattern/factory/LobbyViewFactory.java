@@ -2,29 +2,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_cliente.view;
+package com.itson.equipo2.battleship_cliente.pattern.factory;
 
-import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
+
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.view.LobbyView;
 import javax.swing.JPanel;
 
-/**
- *
- * @author Cricri
- */
-public class RegistroViewFactory implements ViewFactory {
+public class LobbyViewFactory implements ViewFactory {
 
-    private final RegistroController registroController;
-
-  
-    public RegistroViewFactory(RegistroController controller) {
-        this.registroController = controller;
+    public LobbyViewFactory() {
+   
     }
     
     @Override
     public JPanel crear(ViewController control) {
-  
-        return new RegistroView(control, registroController);
+        return new LobbyView(control);
     }
 }
