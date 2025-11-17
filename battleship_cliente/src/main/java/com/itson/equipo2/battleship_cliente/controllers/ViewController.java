@@ -26,7 +26,7 @@ public class ViewController implements ViewManager {
     private JPanel pantallaActual;
 
     public ViewController() {
-        frame = new JFrame("App con Mediator");
+        frame = new JFrame("Battleship");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);

@@ -22,7 +22,6 @@ import mx.itson.equipo_2.common.enums.ColorJugador;
 
 public class RegistroView extends JPanel {
 
-    
     private final Color COLOR_FONDO = new Color(83, 111, 137);
     private final Color COLOR_BOTON = new Color(75, 75, 75);
     private final Color COLOR_TEXTO = new Color(255, 255, 255);
@@ -44,23 +43,29 @@ public class RegistroView extends JPanel {
         setMaximumSize(new Dimension(1280, 720));
         setMinimumSize(new Dimension(1280, 720));
 
-        
+      
         JLabel lblTitulo = new JLabel("Registrar Jugador:");
         lblTitulo.setFont(FUENTE_TITULO);
         lblTitulo.setForeground(COLOR_TEXTO);
         lblTitulo.setBounds(490, 150, 300, 30);
         add(lblTitulo);
 
-                try {
-            ImageIcon shipIcon = new ImageIcon(getClass().getResource("/images/ship_small.png")); 
+      
+        try {
+            java.io.InputStream is = getClass().getResourceAsStream("/images/ship_small.png");
+            if (is == null) throw new Exception("Recurso no encontrado: /images/ship_small.png");
+            java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(is);
+            ImageIcon shipIcon = new ImageIcon(img);
+            is.close();
             JLabel lblShipImage = new JLabel(shipIcon);
-            lblShipImage.setBounds(750, 230, 200, 133); 
+            lblShipImage.setBounds(750, 230, 200, 133); // Ajusta tamaño y pos
             add(lblShipImage);
         } catch (Exception e) {
-            System.err.println("No se pudo cargar la imagen del barco: " + e.getMessage());
+            System.err.println("Error fatal al cargar imagen 'ship_small.png': " + e.getMessage());
         }
 
-                JLabel lblNombre = new JLabel("Nombre:");
+        
+        JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setFont(FUENTE_LABEL);
         lblNombre.setForeground(COLOR_TEXTO);
         lblNombre.setBounds(400, 240, 100, 30);
@@ -71,7 +76,6 @@ public class RegistroView extends JPanel {
         txtNombre.setBounds(510, 240, 220, 30);
         add(txtNombre);
 
-      
         JLabel lblColor = new JLabel("Color:");
         lblColor.setFont(FUENTE_LABEL);
         lblColor.setForeground(COLOR_TEXTO);
@@ -83,7 +87,7 @@ public class RegistroView extends JPanel {
         cmbColor.setBounds(510, 310, 220, 30);
         add(cmbColor);
         
-        
+       
         JButton btnConfirmar = new JButton("Confirmar");
         btnConfirmar.setBackground(COLOR_BOTON);
         btnConfirmar.setFont(FUENTE_BOTON);
@@ -91,21 +95,25 @@ public class RegistroView extends JPanel {
         btnConfirmar.setBorder(null);
         btnConfirmar.setFocusPainted(false);
         btnConfirmar.setBounds(650, 450, 156, 41);
+        
+ 
         btnConfirmar.addActionListener(e -> {
             String nombre = txtNombre.getText();
             ColorJugador color = (ColorJugador) cmbColor.getSelectedItem();
-            
           
             if (nombre == null || nombre.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Error: nombre invalido", "Error de Validación", JOptionPane.ERROR_MESSAGE);
             } else {
               
                 registroController.registrar(nombre, color);
+                
+   
+                viewController.cambiarPantalla("lobby");
             }
         });
         add(btnConfirmar);
 
-  
+    
         JButton btnVolver = new JButton("+ Volver");
         btnVolver.setBackground(COLOR_BOTON);
         btnVolver.setFont(FUENTE_BOTON);
@@ -113,7 +121,8 @@ public class RegistroView extends JPanel {
         btnVolver.setBorder(null);
         btnVolver.setFocusPainted(false);
         btnVolver.setBounds(470, 450, 156, 41);
-        btnVolver.addActionListener(e -> viewController.cambiarPantalla("menu")); 
+        btnVolver.addActionListener(e -> viewController.cambiarPantalla("menu"));
         add(btnVolver);
     }
 }
+
