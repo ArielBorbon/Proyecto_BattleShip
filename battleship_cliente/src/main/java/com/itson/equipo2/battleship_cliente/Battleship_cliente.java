@@ -4,6 +4,7 @@
 package com.itson.equipo2.battleship_cliente;
 
 import com.google.gson.Gson;
+import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.communication.impl.RedisConnection;
@@ -17,6 +18,7 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
+import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
@@ -84,13 +86,16 @@ public class Battleship_cliente {
 
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
+        AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
         
         // Ejemplo: El controlador de disparo necesita el Modelo para validar y el Publisher para enviar
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
+        AbandonarController abandonarController = new AbandonarController(abandonarService);
 
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
+        gameMediator.setAbandonarController(abandonarController);
         // ---------------------------------------------------------
         // 4. VISTAS (UI)
         // ---------------------------------------------------------
@@ -98,21 +103,21 @@ public class Battleship_cliente {
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
         
-        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
+//        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
         
-//        iniciarPartidaVsIA(publisher, miTablero);
+        iniciarPartidaVsIA(publisher, miTablero);
         
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
         partidaModel.addObserver(dispararView);
-        partidaModel.addObserver(posicionarNaveVista);
+//        partidaModel.addObserver(posicionarNaveVista);
 //        miTablero.addObserver(dispararView);
 //        tableroEnemigo.addObserver(dispararView);
         // Inicializamos las vistas específicas e inyectamos sus dependencias
         // NOTA: Aquí ya no usamos AppContext dentro de las vistas.
         // Si DispararView necesita el controlador, se lo pasamos.
         viewController.registrarPantalla("disparar", dispararView);
-        viewController.registrarPantalla("posicionar", posicionarNaveVista);
+//        viewController.registrarPantalla("posicionar", posicionarNaveVista);
         
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
@@ -128,9 +133,9 @@ public class Battleship_cliente {
         // ---------------------------------------------------------
         // 5. ARRANQUE
         // ---------------------------------------------------------
-        SwingUtilities.invokeLater(() -> {
-            viewController.cambiarPantalla("posicionar");
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            viewController.cambiarPantalla("posicionar");
+//        });
     }
 
     private static void iniciarPartidaVsIA(IMessagePublisher publisher, TableroModel tableroModel) {

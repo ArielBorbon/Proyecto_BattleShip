@@ -82,7 +82,7 @@ public class Partida {
         if (resultado == ResultadoDisparo.AGUA) {
             cambiarTurno();
         }else{
-            iniciarTurno(); // <-- AÑADIR
+            iniciarTurno(); 
         }
 
         if (tableroOponente.todasNavesHundidas()) {
@@ -144,7 +144,22 @@ public class Partida {
         this.tiempoRestante = tiempoRestante;
     }
     
-    
+    public void finalizarPartida(String jugadorQueAbandonaId) {
+        if (this.estado == EstadoPartida.FINALIZADA) {
+            return;
+        }
+
+        System.out.println("Procesando abandono para: " + jugadorQueAbandonaId);
+        this.estado = EstadoPartida.FINALIZADA;
+        
+        if (this.jugador1 != null && this.jugador1.getId().equals(jugadorQueAbandonaId)) {
+            if (this.jugador2 != null) this.turnoActual = this.jugador2.getId();
+        } else if (this.jugador2 != null && this.jugador2.getId().equals(jugadorQueAbandonaId)) {
+            this.turnoActual = this.jugador1.getId();
+        }
+        
+        System.out.println("Partida FINALIZADA por abandono. Ganador: " + this.turnoActual);
+    }
     
     
     

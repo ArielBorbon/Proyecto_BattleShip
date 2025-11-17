@@ -109,12 +109,12 @@ public class PartidaModel {
     public void actualizarTick(TurnoTickResponse response) {
 
         // 1. Actualizamos los campos privados directamente
-        //    (Evitamos los setters para no disparar 2 notificaciones)
         this.turnoDe = response.getJugadorEnTurnoId();
         this.segundosRestantes = response.getTiempoRestante();
 
+        this.estado = response.getEstadoPartida();
+        
         // 2. Notificamos a los observadores UNA SOLA VEZ
-        //    con el estado ya actualizado.
         this.notifyObservers();
     }
 

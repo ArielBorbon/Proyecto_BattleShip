@@ -234,10 +234,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro que deseas rendirte?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(
+            this, 
+            "¿Estás seguro que deseas rendirte?", 
+            "Confirmación", 
+            JOptionPane.YES_NO_OPTION
+        );
 
         if (opcion == JOptionPane.YES_OPTION) {
-            System.out.println("El jugador se rindió");
+            if (mediator != null) {
+                // La vista da la orden al mediador
+                mediator.abandonarPartida();
+            }
         }
     }//GEN-LAST:event_btnRendirseActionPerformed
 

@@ -4,6 +4,7 @@
 package com.itson.equipo2.battleship_servidor;
 
 import com.google.gson.Gson;
+import com.itson.equipo2.battleship_servidor.application.handler.AbandonarPartidaHandler;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
 import com.itson.equipo2.battleship_servidor.application.service.CrearPartidaVsIAService;
@@ -12,11 +13,14 @@ import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparo
 import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RegistrarJugadorHandler;
+import com.itson.equipo2.battleship_servidor.application.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_servidor.domain.service.AIService;
+import com.itson.equipo2.communication.broker.IMessageHandler;
 import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
+import com.itson.equipo2.communication.dto.EventMessage;
 import com.itson.equipo2.communication.impl.EventDispatcher;
 import com.itson.equipo2.communication.impl.RedisConfig;
 import com.itson.equipo2.communication.impl.RedisConnection;
@@ -71,6 +75,12 @@ public class Battleship_servidor {
                 gson
         );
         
+        AbandonarPartidaService abandonarService = new AbandonarPartidaService(
+                partidaRepository, 
+                publisher, 
+                timerService
+        );
+        
 
     
         eventDispatcher.subscribe(
@@ -90,10 +100,22 @@ public class Battleship_servidor {
                 new RegistrarJugadorHandler(registrarJugadorService)
         );
      
+        eventDispatcher.subscribe(
+                "AbandonarPartida", 
+                new AbandonarPartidaHandler(abandonarService)
+        );
         
         
         eventDispatcher.subscribe("TurnoTick", aiService);
 
+        eventDispatcher.subscribe("DisparoRealizado", new IMessageHandler() {
+            @Override
+            public boolean canHandle(EventMessage message) { return true; }
+            @Override
+            public void onMessage(EventMessage message) { 
+                // No hacer nada (Silencio) 
+            }
+        });
         
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
         commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);

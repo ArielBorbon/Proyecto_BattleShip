@@ -1,23 +1,24 @@
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoPartida.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\OrientacionNave.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoNave.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\TipoNave.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\NaveDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\PartidaIniciadaResponse.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\ErrorResponse.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\CoordenadaDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\CeldaDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RegistrarJugadorRequest.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\ResultadoDisparo.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\ColorJugador.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\TableroDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\JugadorDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\broker\BrokerConfig.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\DisparoDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\PartidaDTO.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\PosicionarNaveRequest.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\TurnoTickResponse.java
-C:\Users\Cricri\OneDrive\Documentos\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoCelda.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\broker\BrokerConfig.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\CeldaDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\CoordenadaDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\DisparoDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\JugadorDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\NaveDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\PartidaDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\AbandonarPartidaRequest.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\PosicionarNaveRequest.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RegistrarJugadorRequest.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\ErrorResponse.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\PartidaIniciadaResponse.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\response\TurnoTickResponse.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\TableroDTO.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\ColorJugador.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoCelda.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoNave.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\EstadoPartida.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\OrientacionNave.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\ResultadoDisparo.java
+C:\Users\Alberto Jimenez\OneDrive\Escritorio\git\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\enums\TipoNave.java
