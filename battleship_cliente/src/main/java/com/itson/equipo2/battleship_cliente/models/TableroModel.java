@@ -18,12 +18,12 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  */
 public class TableroModel {
 
-    private String idJugaodr;
+    private String idJugador;
     private CeldaModel[][] celdas;
     public static final int TAMANIO = 10;
 
     public TableroModel(String idJugador) {
-        this.idJugaodr = idJugador;
+        this.idJugador = idJugador;
         this.celdas = new CeldaModel[TAMANIO][TAMANIO];
         for (int f = 0; f < TAMANIO; f++) {
             for (int c = 0; c < TAMANIO; c++) {
@@ -80,12 +80,12 @@ public class TableroModel {
         return "TableroModel{" + "celdas=" + celdas + '}';
     }
 
-    public String getIdJugaodr() {
-        return idJugaodr;
+    public String getIdJugador() {
+        return idJugador;
     }
 
     public void setIdJugaodr(String idJugaodr) {
-        this.idJugaodr = idJugaodr;
+        this.idJugador = idJugaodr;
     }
 
     /**
