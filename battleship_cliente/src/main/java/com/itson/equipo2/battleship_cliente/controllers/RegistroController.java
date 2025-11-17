@@ -39,10 +39,6 @@ public class RegistroController {
         partidaModel.getYo().setColor(color);
         
      
-        if (partidaModel.getYo().getTablero() != null) {
-            partidaModel.getYo().getTablero().setIdJugaodr(idLocal);
-        }
-
         System.out.println("--- Jugador registrado localmente (Flujo Local) ---");
         System.out.println("  ID: " + partidaModel.getYo().getId());
         System.out.println("  Nombre: " + partidaModel.getYo().getNombre());
