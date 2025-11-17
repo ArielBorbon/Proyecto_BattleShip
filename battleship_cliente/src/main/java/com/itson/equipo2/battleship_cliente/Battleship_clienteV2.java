@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_cliente;
 
 import com.google.gson.Gson; 
+import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
@@ -42,6 +43,7 @@ import redis.clients.jedis.JedisPool;
 
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.handler.JugadorRegistradoHandler;
+import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.view.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.view.MenuPrincipalViewFactory;
@@ -85,18 +87,21 @@ public class Battleship_clienteV2 {
   
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
+        AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
 
      
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
         RegistroController registroController = new RegistroController(registrarJugadorService, partidaModel);
-       
+        
 
         
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
+        AbandonarController abandonarController = new AbandonarController(abandonarService);
 
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
+        gameMediator.setAbandonarController(abandonarController);
 
       
         DispararView dispararView = new DispararView();
