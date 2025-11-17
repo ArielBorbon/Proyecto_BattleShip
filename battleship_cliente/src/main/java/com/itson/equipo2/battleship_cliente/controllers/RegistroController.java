@@ -24,16 +24,19 @@ public class RegistroController {
     
     public void registrar(String nombre, ColorJugador color) {
         
-    
-        if (partidaModel.getYo() != null) {
-            partidaModel.getYo().setColor(color);
-            System.out.println("Color local del jugador establecido en: " + color);
-        } else {
-             
-            System.err.println("Error: partidaModel.getYo() es null en RegistroController.");
+        if (partidaModel.getYo() == null) {
+             System.err.println("Error: partidaModel.getYo() es null en RegistroController.");
+             return;
         }
+
+     
+        partidaModel.getYo().setColor(color);
+        System.out.println("Color local del jugador establecido en: " + color);
         
-       
+ 
+        partidaModel.getYo().setNombre(nombre); 
+        System.out.println("Nombre local del jugador establecido en: " + nombre);
+
         registrarJugadorService.registrar(nombre);
     }
 }
