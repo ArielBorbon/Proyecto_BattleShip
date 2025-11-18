@@ -21,7 +21,7 @@ import mx.itson.equipo_2.common.dto.CoordenadaDTO;
  * @author skyro
  */
 public class RealizarDisparoService {
-    
+
     private final IPartidaRepository partidaRepository;
     private final IMessagePublisher eventPublisher;
     private final PartidaTimerService partidaTimerService;
@@ -34,9 +34,11 @@ public class RealizarDisparoService {
     }
 
     public void realizarDisparo(RealizarDisparoRequest request) {
+        
+        System.out.println("DISPARO PARA PROCESAR EN:" + request.getCoordenada().toString());
         try {
             partidaTimerService.cancelCurrentTimer();
-            
+
             Partida partida = partidaRepository.getPartida();
             if (partida == null) {
                 throw new Exception("Error: No se encontró la partida en el repositorio.");
@@ -48,14 +50,13 @@ public class RealizarDisparoService {
                     request.getCoordenada()
             );
 
-            
             // Llamar a todas las partes del dominio interesadas en este evento...
             CoordenadaDTO coordenada = request.getCoordenada();
-            partida.getJugadorById(request.getJugadorId()).addDisparo(coordenada.getColumna(), coordenada.getFila(), response.getResultado());
-            
+            partida.getJugadorById(request.getJugadorId()).addDisparo(coordenada.getFila(), coordenada.getColumna(), response.getResultado());
+
             // 3. GUARDAR ESTADO
             partidaRepository.guardar(partida);
-            
+
             // 4. PUBLICAR RESPUESTA
             EventMessage eventoResultado = new EventMessage(
                     "DisparoRealizado",
@@ -65,18 +66,18 @@ public class RealizarDisparoService {
             System.out.println("Disparo procesado. Resultado: " + response);
 
             if (partida.getEstado() == EstadoPartida.EN_BATALLA) {
-                 partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
+                partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
             }
 
         } catch (IllegalStateException e) {
             System.out.println("INFO: Disparo rechazado (fuera de turno): " + e.getMessage());
             ErrorResponse error = new ErrorResponse(e.getMessage());
             eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("ErrorDisparo", gson.toJson(error)));
-            
-             Partida partida = partidaRepository.getPartida();
-             if (partida != null && partida.getEstado() == EstadoPartida.EN_BATALLA) {
-                 partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
-             }
+
+            Partida partida = partidaRepository.getPartida();
+            if (partida != null && partida.getEstado() == EstadoPartida.EN_BATALLA) {
+                partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
+            }
 
         } catch (Exception e) {
             System.err.println("Error INESPERADO procesando el disparo: " + e.getMessage());
@@ -86,5 +87,3 @@ public class RealizarDisparoService {
         }
     }
 }
-    
-

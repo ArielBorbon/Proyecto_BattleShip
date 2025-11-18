@@ -11,6 +11,7 @@ import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
+import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
@@ -20,6 +21,7 @@ import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
+import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import mx.itson.equipo_2.common.enums.ColorJugador;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -47,7 +50,7 @@ import redis.clients.jedis.JedisPool;
 public class Battleship_cliente {
 
     private static final String JUGADOR_HUMANO_ID = "JUGADOR_1";
-    private static final String JUGADOR_IA_ID = "IA-123";
+    private static final String JUGADOR_IA_ID = "JUGADOR_IA_01";
 
     public static void main(String[] args) {
         System.out.println("Iniciando Cliente Battleship (Arquitectura Limpia)...");
@@ -68,8 +71,8 @@ public class Battleship_cliente {
         TableroModel miTablero = new TableroModel(JUGADOR_HUMANO_ID); 
         TableroModel tableroEnemigo = new TableroModel(JUGADOR_IA_ID);
         
-        JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, true, miTablero, new ArrayList<>());
-        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, true, tableroEnemigo, new ArrayList<>());
+        JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, EstadoJugador.POSICIONANDO, miTablero, new ArrayList<>());
+        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, EstadoJugador.POSICIONANDO, tableroEnemigo, new ArrayList<>());
         
         partidaModel.setYo(jugadorModel);
         partidaModel.setEnemigo(jugadorModelEnemigo);
@@ -100,25 +103,28 @@ public class Battleship_cliente {
         
         PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
         
+        EsperandoPosicionamientoVista esperandoPosicionamientoVista = new EsperandoPosicionamientoVista();
+        
 //        iniciarPartidaVsIA(publisher, miTablero);
         
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         
         partidaModel.addObserver(dispararView);
         partidaModel.addObserver(posicionarNaveVista);
-//        miTablero.addObserver(dispararView);
-//        tableroEnemigo.addObserver(dispararView);
+
         // Inicializamos las vistas específicas e inyectamos sus dependencias
         // NOTA: Aquí ya no usamos AppContext dentro de las vistas.
         // Si DispararView necesita el controlador, se lo pasamos.
         viewController.registrarPantalla("disparar", dispararView);
         viewController.registrarPantalla("posicionar", posicionarNaveVista);
+        viewController.registrarPantalla("esperandoPosicionamiento", esperandoPosicionamientoVista);
         
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
+        eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
         
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
@@ -156,23 +162,23 @@ public class Battleship_cliente {
     private static List<NaveDTO> crearNavesDePrueba() {
         List<NaveDTO> naves = new ArrayList<>();
 
-        List<CoordenadaDTO> coordsBarco1 = new ArrayList<>();
-        coordsBarco1.add(new CoordenadaDTO(0, 0));
-        coordsBarco1.add(new CoordenadaDTO(0, 1));
-        naves.add(new NaveDTO(TipoNave.BARCO, null, coordsBarco1, OrientacionNave.HORIZONTAL));
+//        List<CoordenadaDTO> coordsBarco1 = new ArrayList<>();
+//        coordsBarco1.add(new CoordenadaDTO(0, 0));
+//        coordsBarco1.add(new CoordenadaDTO(0, 1));
+        naves.add(new NaveDTO(TipoNave.BARCO, null, new CoordenadaDTO(0, 0), OrientacionNave.HORIZONTAL));
 
-        List<CoordenadaDTO> coordsBarco2 = new ArrayList<>();
-        coordsBarco2.add(new CoordenadaDTO(2, 3));
-        coordsBarco2.add(new CoordenadaDTO(3, 3));
-        coordsBarco2.add(new CoordenadaDTO(4, 3));
-        naves.add(new NaveDTO(TipoNave.SUBMARINO, null, coordsBarco2, OrientacionNave.VERTICAL));
+//        List<CoordenadaDTO> coordsBarco2 = new ArrayList<>();
+//        coordsBarco2.add(new CoordenadaDTO(2, 3));
+//        coordsBarco2.add(new CoordenadaDTO(3, 3));
+//        coordsBarco2.add(new CoordenadaDTO(4, 3));
+        naves.add(new NaveDTO(TipoNave.SUBMARINO, null, new CoordenadaDTO(2, 3), OrientacionNave.VERTICAL));
 
-        List<CoordenadaDTO> coordsBarco3 = new ArrayList<>();
-        coordsBarco3.add(new CoordenadaDTO(5, 5));
-        coordsBarco3.add(new CoordenadaDTO(5, 6));
-        coordsBarco3.add(new CoordenadaDTO(5, 7));
-        coordsBarco3.add(new CoordenadaDTO(5, 8));
-        naves.add(new NaveDTO(TipoNave.CRUCERO, null, coordsBarco3, OrientacionNave.HORIZONTAL));
+//        List<CoordenadaDTO> coordsBarco3 = new ArrayList<>();
+//        coordsBarco3.add(new CoordenadaDTO(5, 5));
+//        coordsBarco3.add(new CoordenadaDTO(5, 6));
+//        coordsBarco3.add(new CoordenadaDTO(5, 7));
+//        coordsBarco3.add(new CoordenadaDTO(5, 8));
+        naves.add(new NaveDTO(TipoNave.CRUCERO, null, new CoordenadaDTO(5, 5), OrientacionNave.HORIZONTAL));
 
         return naves;
     }

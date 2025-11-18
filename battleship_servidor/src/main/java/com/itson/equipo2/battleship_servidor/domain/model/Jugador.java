@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import mx.itson.equipo_2.common.enums.ColorJugador;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 
 /**
@@ -19,25 +20,29 @@ public class Jugador {
     private final String id;
     private String nombre;
     private ColorJugador color;
+    private EstadoJugador estado;
     private List<Disparo> disparos;
+
+    private Tablero tablero;
 
     public Jugador(String id, String nombre, ColorJugador color) {
         this.id = id;
         this.nombre = nombre;
         this.color = color;
         this.disparos = new ArrayList<>();
+        this.tablero = new Tablero();
     }
 
-    public Jugador(String id, String nombre, ColorJugador color, List<Disparo> disparos) {
-        this.id = id;
-        this.nombre = nombre;
-        this.color = color;
-        this.disparos = disparos;
+    public EstadoJugador getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoJugador estado) {
+        this.estado = estado;
     }
 
     public void addDisparo(int c, int f, ResultadoDisparo r) {
         this.disparos.add(new Disparo(new Coordenada(c, f), r));
-        disparos.forEach((t) -> System.out.println(t));
     }
 
     public String getId() {
@@ -67,6 +72,12 @@ public class Jugador {
     public void setDisparos(List<Disparo> disparos) {
         this.disparos = disparos;
     }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+    
+    
 
     @Override
     public String toString() {

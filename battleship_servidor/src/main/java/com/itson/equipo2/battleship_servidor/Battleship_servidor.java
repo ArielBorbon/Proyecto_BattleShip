@@ -10,9 +10,13 @@ import com.itson.equipo2.battleship_servidor.application.service.CrearPartidaVsI
 import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerService;
 import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.PosicionarNaveHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RegistrarJugadorHandler;
+import com.itson.equipo2.battleship_servidor.application.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
+import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
+import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.domain.service.AIService;
 import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
@@ -22,6 +26,8 @@ import com.itson.equipo2.communication.impl.RedisConnection;
 import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.communication.impl.RedisSubscriber;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import mx.itson.equipo_2.common.enums.ColorJugador;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -37,9 +43,13 @@ public class Battleship_servidor {
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
 
+        Jugador jugador = new Jugador("JUGADOR_1", "Jonh Doe", ColorJugador.AZUL);
+        Jugador jugador2 = new Jugador("JUGADOR_IA_01", "IA", ColorJugador.ROJO);
+        jugador2.setEstado(EstadoJugador.POSICIONANDO);
       
         IMessagePublisher publisher = new RedisPublisher(pool);
-        IPartidaRepository partidaRepository = new PartidaRepository(null); 
+        IPartidaRepository partidaRepository = new PartidaRepository(new Partida(jugador)); 
+        partidaRepository.getPartida().unirseAPartida(jugador2, "JUGADOR_1");
         Gson gson = new Gson();
         AIService aiService = new AIService(partidaRepository, publisher);
 
@@ -70,6 +80,12 @@ public class Battleship_servidor {
                 gson
         );
         
+        PosicionarNaveService posicionarNaveService = new PosicionarNaveService(
+                partidaRepository, 
+                publisher
+        );
+        
+        posicionarNaveService.setCrearPartidaVsIAService(crearPartidaService);
 
     
         eventDispatcher.subscribe(
@@ -88,6 +104,9 @@ public class Battleship_servidor {
                 "RegistrarJugador", 
                 new RegistrarJugadorHandler(registrarJugadorService)
         );
+        
+        eventDispatcher.subscribe(
+                "PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
      
         
         

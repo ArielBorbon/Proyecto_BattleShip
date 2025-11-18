@@ -14,8 +14,7 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  */
 public class CeldaModel {
 
-    private final int columna;
-    private final int fila;
+    private final CoordenadaModel coordenada;
 
     private EstadoCelda estadoDisparo; // NO_DISPARADA, DISPARADA
 
@@ -25,8 +24,7 @@ public class CeldaModel {
 
     // Constructor limpio
     public CeldaModel(int fila, int col) {
-        this.fila = fila;
-        this.columna = col;
+        this.coordenada = new CoordenadaModel(fila, col);
         this.estadoDisparo = EstadoCelda.NO_DISPARADA;
         this.tipoNave = null;
         this.estadoNave = null;
@@ -67,12 +65,8 @@ public class CeldaModel {
         return estadoNave;
     }
 
-    public int getColumna() {
-        return columna;
-    }
-
-    public int getFila() {
-        return fila;
+    public CoordenadaModel getCoordenada() {
+        return coordenada;
     }
 
 }

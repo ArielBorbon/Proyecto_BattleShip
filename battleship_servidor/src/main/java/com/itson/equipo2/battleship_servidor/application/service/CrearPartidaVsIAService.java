@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
+import com.itson.equipo2.battleship_servidor.domain.model.Coordenada;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Nave;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
@@ -18,6 +19,8 @@ import java.awt.Color;
 import java.util.List;
 import java.util.stream.Collectors;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.dto.NaveDTO;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
@@ -39,31 +42,14 @@ public class CrearPartidaVsIAService {
         this.gson = gson;
     }
 
-    public void execute(CrearPartidaVsIARequest request) {
+    public void execute(List<NaveDTO> naves) {
         try {
+            Partida partida = partidaRepository.getPartida();
+            
             //Crear Jugadores
-            Jugador jugadorHumano = new Jugador(request.getJugadorHumanoId(), "Humano", request.getColorHumano());
-            Jugador jugadorIA = new Jugador(IA_PLAYER_ID, "IA", ColorJugador.NARANJA);
+            Jugador jugadorHumano = partida.getJugadorById("JUGADOR_1");
+            Jugador jugadorIA = partida.getJugadorById(IA_PLAYER_ID);
 
-            //Crear Partida
-            Partida partida = new Partida(jugadorHumano);
-
-            //Posicionar Naves
-            List<Nave> navesHumano = request.getNavesHumano().stream()
-                    .map(dto -> new Nave(dto.getTipo(), dto.getCoordenadas(), dto.getOrientacion()))
-                    .collect(Collectors.toList());
-            partida.posicionarNaves(jugadorHumano.getId(), navesHumano);
-
-            List<Nave> navesIA = request.getNavesIA().stream()
-                    .map(dto -> new Nave(dto.getTipo(), dto.getCoordenadas(), dto.getOrientacion()))
-                    .collect(Collectors.toList());
-
-            //Unir IA y posicionar sus naves
-            partida.unirseAPartida(jugadorIA, jugadorHumano.getId());
-            partida.posicionarNaves(jugadorIA.getId(), navesIA);
-
-            //Guardar
-            partidaRepository.guardar(partida);
             System.out.println("Partida Vs IA creada. Turno de: " + partida.getTurnoActual());
 
             //Preparar respuesta
@@ -78,15 +64,15 @@ public class CrearPartidaVsIAService {
                     partida.getTurnoActual()
             );
 
-
             // 7. Publicar evento de éxito
             eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS,
                     new EventMessage("PartidaIniciada", gson.toJson(response)));
-            
+
             partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
 
         } catch (Exception e) {
             System.err.println("Error al crear partida vs IA: " + e.getMessage());
+            e.printStackTrace();
             EventMessage errorMsg = new EventMessage("ErrorCrearPartida", gson.toJson(e.getMessage()));
             eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, errorMsg);
         }

@@ -34,6 +34,7 @@ import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.RegistroViewFactory;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 
 
 public class Battleship_clienteV2 {
@@ -56,7 +57,7 @@ public class Battleship_clienteV2 {
         jugadorModel.setTablero(miTablero);
         partidaModel.setYo(jugadorModel);
 
-        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, true, tableroEnemigo, new ArrayList<>());
+        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, EstadoJugador.LISTO, tableroEnemigo, new ArrayList<>());
         partidaModel.setEnemigo(jugadorModelEnemigo);
 
    

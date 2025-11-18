@@ -57,7 +57,7 @@ public class EventDispatcher {
                 }
             }
         } else {
-            System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
+//            System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
         }
     }
 }

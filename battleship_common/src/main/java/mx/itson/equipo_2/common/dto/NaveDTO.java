@@ -4,7 +4,6 @@
  */
 package mx.itson.equipo_2.common.dto;
 
-import java.util.List;
 import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.OrientacionNave;
 import mx.itson.equipo_2.common.enums.TipoNave;
@@ -14,19 +13,19 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  * @author CISCO
  */
 public class NaveDTO {
-    
+
     private TipoNave tipo;
     private EstadoNave estado;
-    private List<CoordenadaDTO> coordenadas;
+    private CoordenadaDTO coordenadaInicial;
     private OrientacionNave orientacion;
 
     public NaveDTO() {
     }
 
-    public NaveDTO(TipoNave tipo, EstadoNave estado, List<CoordenadaDTO> coordenadas, OrientacionNave orientacion) {
+    public NaveDTO(TipoNave tipo, EstadoNave estado, CoordenadaDTO coordenadaInicial, OrientacionNave orientacion) {
         this.tipo = tipo;
         this.estado = estado;
-        this.coordenadas = coordenadas;
+        this.coordenadaInicial = coordenadaInicial;
         this.orientacion = orientacion;
     }
 
@@ -46,12 +45,12 @@ public class NaveDTO {
         this.estado = estado;
     }
 
-    public List<CoordenadaDTO> getCoordenadas() {
-        return coordenadas;
+    public CoordenadaDTO getCoordenadaInicial() {
+        return coordenadaInicial;
     }
 
-    public void setCoordenadas(List<CoordenadaDTO> coordenadas) {
-        this.coordenadas = coordenadas;
+    public void setCoordenadaInicial(CoordenadaDTO coordenadas) {
+        this.coordenadaInicial = coordenadas;
     }
 
     public OrientacionNave getOrientacion() {
@@ -64,6 +63,6 @@ public class NaveDTO {
 
     @Override
     public String toString() {
-        return "NaveDTO{" + "tipo=" + tipo + ", estado=" + estado + ", coordenadas=" + coordenadas + ", orientacion=" + orientacion + '}';
+        return "NaveDTO{" + "tipo=" + tipo + ", estado=" + estado + ", coordenada=" + coordenadaInicial + ", orientacion=" + orientacion + '}';
     }
 }

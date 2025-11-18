@@ -2,20 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_servidor.domain.model;
+package com.itson.equipo2.battleship_cliente.models;
 
 /**
  *
  * @author skyro
  */
-public class Coordenada {
+public class CoordenadaModel {
 
-    private int fila;
-    private int columna;
+    private final int columna;
+    private final int fila;
 
-    public Coordenada(int fila, int columna) {
-        this.fila = fila;
+    public CoordenadaModel(int fila, int columna) {
         this.columna = columna;
+        this.fila = fila;
     }
 
     public int getColumna() {
@@ -28,7 +28,7 @@ public class Coordenada {
 
     @Override
     public String toString() {
-        return "Coordenada{" + "fila=" + fila + ", columna=" + columna + '}';
+        return "CoordenadaModel{" + "columna=" + columna + ", fila=" + fila + '}';
     }
 
 }

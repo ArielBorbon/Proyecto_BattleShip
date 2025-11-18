@@ -27,6 +27,6 @@ public class CrearPartidaVsIAHandler implements IMessageHandler {
     @Override
     public void onMessage(EventMessage message) {
         CrearPartidaVsIARequest req = gson.fromJson(message.getPayload(), CrearPartidaVsIARequest.class);
-        service.execute(req);
+//        service.execute(req);
     }
 }
