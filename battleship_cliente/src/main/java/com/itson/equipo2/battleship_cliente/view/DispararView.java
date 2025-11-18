@@ -50,6 +50,8 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private TableroModel tableroEnemigo;
 
     private PartidaModel partidaModel; // refeerencia local
+    
+    private ViewController viewController;
 
     public DispararView() {
         initComponents();
@@ -92,12 +94,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         repaint();
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
-            JOptionPane.showMessageDialog(this, "¡Partida terminada! Ganador: " + model.getTurnoDe());
-            btnDisparar.setEnabled(false);
-            btnRendirse.setEnabled(false);
+             btnDisparar.setEnabled(false);
+             btnRendirse.setEnabled(false);
         }
 
     }
+
+    
 
     private void actualizarLabelTurno() {
         if (partidaModel == null || partidaModel.getTurnoDe() == null || partidaModel.getYo() == null) {
@@ -235,10 +238,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         int opcion = JOptionPane.showConfirmDialog(
-            this, 
-            "¿Estás seguro que deseas rendirte?", 
-            "Confirmación", 
-            JOptionPane.YES_NO_OPTION
+                this,
+                "¿Estás seguro que deseas rendirte?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION
         );
 
         if (opcion == JOptionPane.YES_OPTION) {
@@ -337,6 +340,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     @Override
     public JPanel crear(ViewController control) {
+        this.viewController = control;
         return this;
     }
 

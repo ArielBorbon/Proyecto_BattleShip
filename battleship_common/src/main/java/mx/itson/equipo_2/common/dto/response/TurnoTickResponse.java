@@ -22,12 +22,6 @@ public class TurnoTickResponse implements Serializable {
         this.jugadorEnTurnoId = jugadorEnTurnoId;
         this.tiempoRestante = tiempoRestante;
     }
-    
-    public TurnoTickResponse(String jugadorEnTurnoId, int tiempoRestante, EstadoPartida estadoPartida) {
-        this.jugadorEnTurnoId = jugadorEnTurnoId;
-        this.tiempoRestante = tiempoRestante;
-        this.estadoPartida = estadoPartida;
-    }
 
     public String getJugadorEnTurnoId() {
         return jugadorEnTurnoId;

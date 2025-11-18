@@ -12,6 +12,7 @@ import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
@@ -124,6 +125,7 @@ public class Battleship_cliente {
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
+        eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);

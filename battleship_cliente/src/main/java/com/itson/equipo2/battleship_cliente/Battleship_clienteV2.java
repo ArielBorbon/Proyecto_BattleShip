@@ -43,6 +43,7 @@ import redis.clients.jedis.JedisPool;
 
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.handler.JugadorRegistradoHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
 import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.view.LobbyViewFactory;
@@ -127,6 +128,7 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
+        eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
 
 
         eventDispatcher.subscribe(

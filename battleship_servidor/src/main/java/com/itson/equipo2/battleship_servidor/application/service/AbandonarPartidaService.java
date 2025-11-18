@@ -11,6 +11,7 @@ import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import mx.itson.equipo_2.common.dto.request.AbandonarPartidaRequest;
+import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 
@@ -35,17 +36,20 @@ public class AbandonarPartidaService {
         timerService.cancelCurrentTimer();
         Partida partida = partidaRepository.getPartida();
         
-        // 1. Finalizar en el modelo
+        // 1. Finalizar en el modelo (Igual que antes)
         partida.finalizarPartida(request.getJugadorId());
         partidaRepository.guardar(partida);
-
-        // 2. Avisar al cliente que el estado ahora es FINALIZADA
-        TurnoTickResponse response = new TurnoTickResponse(
-            partida.getTurnoActual(), 
-            0, 
-            partida.getEstado()
+        
+        PartidaFinalizadaResponse response = new PartidaFinalizadaResponse(
+            partida.getTurnoActual(), // El ganador (que se calculó en finalizarPartida)
+            "El oponente ha abandonado la partida." // El motivo
         );
-        publisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", new Gson().toJson(response)));
+
+        // Publicamos el evento "PartidaFinalizada"
+        publisher.publish(
+            BrokerConfig.CHANNEL_EVENTOS, 
+            new EventMessage("PartidaFinalizada", new Gson().toJson(response))
+        );
     }
     
 }
