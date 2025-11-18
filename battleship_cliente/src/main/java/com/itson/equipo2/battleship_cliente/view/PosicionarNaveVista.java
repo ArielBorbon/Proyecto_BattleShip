@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
@@ -194,6 +195,10 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        int resultado = JOptionPane.showConfirmDialog(this, "¿Deseas confirmar el tablero?");
+        
+        if (resultado != JOptionPane.YES_OPTION) return;
+        
         posicionarController.confirmarPosicionamiento();
 
         // Deshabilita todo para que no pueda mover nada más
@@ -229,7 +234,6 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
 
                 // Sincroniza la Vista con el Modelo
                 if (celdaModelo.tieneNave()) {
-                    System.out.println("hay nave!");
                     celdaUI.setBackground(model.getYo().getColor().getColor()); // O el color que prefieras
                 } else {
                     celdaUI.setBackground(new Color(50, 70, 100)); // Color agua

@@ -29,13 +29,13 @@ public class AIService implements IMessageHandler {
 
     private final Random random = new Random();
     private final Gson gson = new Gson();
-    private final IPartidaRepository partidaRepository; 
-    private final IMessagePublisher publisher; 
-    private final String IA_PLAYER_ID = "JUGADOR_IA_01"; 
+    private final IPartidaRepository partidaRepository;
+    private final IMessagePublisher publisher;
+    private final String IA_PLAYER_ID = "JUGADOR_IA_01";
 
-    public AIService(IPartidaRepository partidaRepository , IMessagePublisher publisher ) {
+    public AIService(IPartidaRepository partidaRepository, IMessagePublisher publisher) {
         this.partidaRepository = partidaRepository;
-        this.publisher = publisher; 
+        this.publisher = publisher;
     }
 
     public void solicitarTurnoIA() {
@@ -58,13 +58,13 @@ public class AIService implements IMessageHandler {
                 }
 
                 Tablero tableroEnemigo = (partidaActual.getTurnoActual().equals(partidaActual.getJugador1().getId()))
-                        ? partidaActual.getTableroJugador2()
-                        : partidaActual.getTableroJugador1();
+                        ? partidaActual.getJugador2().getTablero()
+                        : partidaActual.getJugador1().getTablero();
 
                 CoordenadaDTO coordIA = generarDisparo(tableroEnemigo);
 
                 RealizarDisparoRequest aiRequest = new RealizarDisparoRequest(
-                        partidaActual.getTurnoActual(), 
+                        partidaActual.getTurnoActual(),
                         coordIA
                 );
 
@@ -73,7 +73,7 @@ public class AIService implements IMessageHandler {
                 EventMessage message = new EventMessage("RealizarDisparo", gson.toJson(aiRequest));
                 publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
             }
-        }, 2000); 
+        }, 2000);
     }
 
     private CoordenadaDTO generarDisparo(Tablero tableroEnemigo) {
@@ -91,18 +91,18 @@ public class AIService implements IMessageHandler {
         return "TurnoTick".equals(message.getEventType());
     }
 
-/**
-     * Este método es llamado por el suscriptor de Redis
-     * cuando llega un evento "TurnoTick".
+    /**
+     * Este método es llamado por el suscriptor de Redis cuando llega un evento
+     * "TurnoTick".
      */
     @Override
     public void onMessage(EventMessage message) {
         TurnoTickResponse tick = gson.fromJson(message.getPayload(), TurnoTickResponse.class);
-        
+
         if (tick.getJugadorEnTurnoId().equals(IA_PLAYER_ID)) {
-            if (tick.getTiempoRestante() > 28) { 
-                 System.out.println("AIService (Handler): Detectado inicio de turno de IA. Solicitando disparo...");
-                 solicitarTurnoIA();
+            if (tick.getTiempoRestante() == 28) {
+                System.out.println("AIService (Handler): Detectado tick 28s. Solicitando disparo...");
+                solicitarTurnoIA();
             }
         }
     }

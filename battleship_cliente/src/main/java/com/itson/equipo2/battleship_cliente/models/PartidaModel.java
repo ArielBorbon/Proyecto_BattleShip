@@ -11,6 +11,7 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
@@ -88,19 +89,11 @@ public class PartidaModel {
         this.setId(response.getPartidaId());
 
         // 2. Sincronizar al enemigo
-        JugadorDTO j1 = response.getJugador1();
-        JugadorDTO j2 = response.getJugador2();
-        JugadorModel yo = this.getYo();
-
-        if (yo.getId().equals(j1.getId())) {
-            this.setEnemigo(new JugadorModel(j2.getId(), j2.getNombre(), j2.getColor(), true, enemigo.getTablero(), null));
-        } else {
-            this.setEnemigo(new JugadorModel(j1.getId(), j1.getNombre(), j1.getColor(), true, enemigo.getTablero(), null));
-        }
+        JugadorDTO yoDTO = response.getYo(getYo().getId());
+        JugadorDTO enemigoDTO = response.getEnemigo(getYo().getId());
 
         // 3. Sincronizar el tablero propio
-        yo.setTablero(yo.getTablero());
-
+//        yo.setTablero(yoDTO.getTablero());
         // 4. Sincronizar el estado de la partida
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstado());
@@ -131,11 +124,11 @@ public class PartidaModel {
         this.estado = estado;
     }
 
-    public boolean intentarPosicionarNavePropia(TipoNave tipo, int col, int fila, boolean esHorizontal) {
+    public boolean intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) {
 
         // 1. Delega la petición al modelo "trabajador"
         TableroModel tableroPropio = this.getTableroPropio();
-        boolean exito = tableroPropio.agregarNave(tipo, col, fila, esHorizontal); //
+        boolean exito = tableroPropio.agregarNave(tipo, fila, col, esHorizontal); //
 
         // 2. Si el trabajador tuvo éxito, notifica a los observadores
         if (exito) {
@@ -146,12 +139,13 @@ public class PartidaModel {
     }
 
     public TableroModel getTableroPropio() {
-        if (this.yo == null) {
-            // Inicializa si es necesario (depende de tu flujo)
-            this.yo = new JugadorModel(); //
-            this.yo.setTablero(new TableroModel(yo.getId())); //
+        // Asumimos que 'this.yo' NUNCA es nulo aquí. 
+        // 'this.yo' debe ser asignado cuando la partida se crea o el jugador se une.
+        if (this.yo.getTablero() == null) {
+            // Si el jugador 'yo' no tiene un tablero, se lo creamos.
+            this.yo.setTablero(new TableroModel(this.yo.getId()));
         }
-        return this.yo.getTablero(); //
+        return this.yo.getTablero();
     }
 
     public String getId() {

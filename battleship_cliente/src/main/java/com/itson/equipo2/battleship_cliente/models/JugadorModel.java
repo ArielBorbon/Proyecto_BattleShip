@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.enums.ColorJugador;
+import mx.itson.equipo_2.common.enums.EstadoJugador;
 
 /**
  *
@@ -18,7 +19,7 @@ public class JugadorModel {
     private String id;
     private String nombre;
     private ColorJugador color;
-    private boolean listo;       // si ya posicionó sus naves
+    private EstadoJugador estado;       // si ya posicionó sus naves
     private TableroModel tablero; // su tablero 
 
     private List<CoordenadaDTO> disparos;
@@ -26,11 +27,11 @@ public class JugadorModel {
     public JugadorModel() {
     }
 
-    public JugadorModel(String id, String nombre, ColorJugador color, boolean listo, TableroModel tablero, List<CoordenadaDTO> disparos) {
+    public JugadorModel(String id, String nombre, ColorJugador color, EstadoJugador estado, TableroModel tablero, List<CoordenadaDTO> disparos) {
         this.id = id;
         this.nombre = nombre;
         this.color = color;
-        this.listo = listo;
+        this.estado = estado;
         this.tablero = tablero;
         this.disparos = disparos;
     }
@@ -59,12 +60,12 @@ public class JugadorModel {
         this.color = color;
     }
 
-    public boolean isListo() {
-        return listo;
+    public EstadoJugador getEstado() {
+        return estado;
     }
 
-    public void setListo(boolean listo) {
-        this.listo = listo;
+    public void setEstado(EstadoJugador estado) {
+        this.estado = estado;
     }
 
     public TableroModel getTablero() {
@@ -85,7 +86,7 @@ public class JugadorModel {
 
     @Override
     public String toString() {
-        return "JugadorModel{" + "id=" + id + ", nombre=" + nombre + ", color=" + color + ", listo=" + listo + ", tablero=" + tablero + ", disparos=" + disparos + '}';
+        return "JugadorModel{" + "id=" + id + ", nombre=" + nombre + ", color=" + color + ", estado=" + estado + ", tablero=" + tablero + ", disparos=" + disparos + '}';
     }
 
 }

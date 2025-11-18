@@ -23,10 +23,9 @@ public class GameMediator {
         this.partidaController = controller;
     }
     
-    public void disparar(int columna, int fila) {
+    public void disparar(int fila, int columna) {
         if (partidaController != null) {
-            partidaController.disparar(columna, fila);
-            System.out.println("2");
+            partidaController.disparar(fila, columna);
         }
     }
 }

@@ -47,7 +47,7 @@ public class NaveView extends JPanel {
 
         // --- Configuración Visual ---
         // (Usamos tu cálculo de ancho visual, la lógica de 'soltar' lo compensará)
-        int ancho = (CELL_SIZE * tipo.getTamanio()) - CELL_SIZE;
+        int ancho = CELL_SIZE * tipo.getTamanio();
         int alto = CELL_SIZE;
 
         setSize(ancho, alto);
@@ -131,7 +131,7 @@ public class NaveView extends JPanel {
 
                             // 2. ¡LLAMAR AL CONTROLADOR!
                             // Esta es la nueva lógica MVC
-                            exito = partidaController.intentarPosicionarNave(tipo, targetCol, targetFila, esHorizontal);
+                            exito = partidaController.intentarPosicionarNave(tipo, targetFila, targetCol, esHorizontal);
                         }
 
                         // 3. SI FALLÓ (colisión) O SE SOLTÓ FUERA...

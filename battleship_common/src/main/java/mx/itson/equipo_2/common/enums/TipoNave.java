@@ -13,10 +13,10 @@ package mx.itson.equipo_2.common.enums;
  * @author José Luis Islas Molina 00000252574
  */
 public enum TipoNave {
-    PORTA_AVIONES(5, 2),
-    CRUCERO(4, 2),
-    SUBMARINO(3, 4),
-    BARCO(2, 3);
+    PORTA_AVIONES(4, 2),
+    CRUCERO(3, 2),
+    SUBMARINO(2, 4),
+    BARCO(1, 3);
 
     private final int tamanio;
     private final int cantidadInicial;

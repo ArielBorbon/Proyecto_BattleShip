@@ -67,10 +67,11 @@ public class PartidaIniciadaResponse implements Serializable {
         this.turnoActual = turnoActual;
     }
     
+    public JugadorDTO getYo(String miId) {
+        return this.jugador1.getId().equals(miId) ? jugador1 : jugador2;
+    }
     
-    
-    
-    
-    
-    
+    public JugadorDTO getEnemigo(String miId) {
+        return this.jugador1.getId().equals(miId) ? jugador2 : jugador1;
+    }
 }

@@ -14,14 +14,14 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  *
  * @author CISCO
  */
-public class ResultadoDisparoReponse implements Serializable{
- 
+public class ResultadoDisparoReponse implements Serializable {
+
     private CoordenadaDTO coordenada;
     private ResultadoDisparo resultado;
     private String jugadorId; // El jugador que realizó el disparo
-    
-    private List<CoordenadaDTO> coordenadasBarcoHundido; 
-    private String turnoActual; 
+
+    private List<CoordenadaDTO> coordenadasBarcoHundido;
+    private String turnoActual;
     private EstadoPartida estadoPartida;
 
     public ResultadoDisparoReponse(CoordenadaDTO coordenada, ResultadoDisparo resultado, String jugadorId, List<CoordenadaDTO> coordenadasBarcoHundido, String turnoActual, EstadoPartida estadoPartida) {
@@ -33,10 +33,6 @@ public class ResultadoDisparoReponse implements Serializable{
         this.estadoPartida = estadoPartida;
     }
 
-   
-    
-    
-    
     public ResultadoDisparoReponse() {
     }
 
@@ -69,11 +65,7 @@ public class ResultadoDisparoReponse implements Serializable{
     public void setEstadoPartida(EstadoPartida estadoPartida) {
         this.estadoPartida = estadoPartida;
     }
-    
-    
-    
 
-  
     public CoordenadaDTO getCoordenada() {
         return coordenada;
     }
@@ -97,4 +89,10 @@ public class ResultadoDisparoReponse implements Serializable{
     public void setJugadorId(String jugadorId) {
         this.jugadorId = jugadorId;
     }
+
+    @Override
+    public String toString() {
+        return "ResultadoDisparoReponse{" + "coordenada=" + coordenada + ", resultado=" + resultado + ", jugadorId=" + jugadorId + ", coordenadasBarcoHundido=" + coordenadasBarcoHundido + ", turnoActual=" + turnoActual + ", estadoPartida=" + estadoPartida + '}';
+    }
+
 }

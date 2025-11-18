@@ -247,8 +247,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             return;
         }
         if (mediator != null) {
-            mediator.disparar(coordSeleccionada.getColumna(), coordSeleccionada.getFila());
-            System.out.println("1");
+            mediator.disparar(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
         }
 
         this.coordSeleccionada = null;

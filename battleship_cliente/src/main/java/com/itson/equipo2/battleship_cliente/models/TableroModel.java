@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
+import java.util.ArrayList;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.NaveDTO;
@@ -22,8 +23,11 @@ public class TableroModel {
     private CeldaModel[][] celdas;
     public static final int TAMANIO = 10;
 
+    private List<NaveModel> navesPosicionadas;
+
     public TableroModel(String idJugador) {
         this.idJugador = idJugador;
+        this.navesPosicionadas = new ArrayList<>();
         this.celdas = new CeldaModel[TAMANIO][TAMANIO];
         for (int f = 0; f < TAMANIO; f++) {
             for (int c = 0; c < TAMANIO; c++) {
@@ -91,19 +95,19 @@ public class TableroModel {
     /**
      * Añade la nave al modelo de celdas. (Llamado por PosicionarController)
      */
-    public boolean agregarNave(TipoNave tipo, int col, int fila, boolean esHorizontal) {
+    public boolean agregarNave(TipoNave tipo, int fila, int columna, boolean esHorizontal) {
 
         // 1. Llama a la lógica de validación interna
-        if (!esPosicionValida(tipo, col, fila, esHorizontal)) {
+        if (!esPosicionValida(tipo, fila, columna, esHorizontal)) {
             return false; // Falla la validación
         }
 
         // 2. Si es válido, AHORA SÍ modificamos el estado
         // NOTA: Usamos 'tipo.getTamanio() - 1' basado en el bug de ancho que resolvimos.
-        int tamanio = (tipo.getTamanio() > 1) ? tipo.getTamanio() - 1 : 1;
+        int tamanio = tipo.getTamanio();
 
         for (int i = 0; i < tamanio; i++) {
-            int c = col;
+            int c = columna;
             int f = fila;
 
             if (esHorizontal) {
@@ -120,22 +124,23 @@ public class TableroModel {
             }
         }
 
+        navesPosicionadas.add(new NaveModel(tipo, fila, columna, esHorizontal));
         return true; // Éxito
     }
 
-    private boolean esPosicionValida(TipoNave tipo, int col, int fila, boolean esHorizontal) {
+    private boolean esPosicionValida(TipoNave tipo, int fila, int columna, boolean esHorizontal) {
 
         // NOTA: Usamos 'tipo.getTamanio() - 1' basado en el bug de ancho que resolvimos.
         // Si tu TipoNave.PORTAAVIONES tiene getTamanio() = 5,
         // y debe ocupar 4 celdas, este cálculo (5-1 = 4) es correcto.
         // Si debe ocupar 5, cambia 'tamanio' a 'tipo.getTamanio()'.
-        int tamanio = (tipo.getTamanio() > 1) ? tipo.getTamanio() - 1 : 1;
+        int tamanio = tipo.getTamanio();
 
         // Creamos una lista temporal de las celdas que la nave ocuparía
         java.util.List<CeldaModel> celdasNave = new java.util.ArrayList<>();
 
         for (int i = 0; i < tamanio; i++) {
-            int c = col;
+            int c = columna;
             int f = fila;
 
             if (esHorizontal) {
@@ -174,8 +179,8 @@ public class TableroModel {
      * intentando colocar.
      */
     private boolean sonAdyacenciasValidas(CeldaModel celda, java.util.List<CeldaModel> celdasNaveActual) {
-        int f = celda.getFila(); //
-        int c = celda.getColumna(); //
+        int f = celda.getCoordenada().getFila(); //
+        int c = celda.getCoordenada().getColumna(); //
 
         // Definir los 8 vecinos (arriba-izq, arriba, arriba-der, ... etc)
         int[] filasVecinas = {f - 1, f - 1, f - 1, f, f + 1, f + 1, f + 1, f};
@@ -207,6 +212,10 @@ public class TableroModel {
      */
     private boolean esCoordenadaValida(int fila, int col) {
         return fila >= 0 && fila < TAMANIO && col >= 0 && col < TAMANIO;
+    }
+
+    public List<NaveModel> getNavesPosicionadas() {
+        return navesPosicionadas;
     }
 
 }

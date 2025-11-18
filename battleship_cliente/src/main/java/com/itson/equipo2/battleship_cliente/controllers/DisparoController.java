@@ -16,8 +16,8 @@ public class DisparoController {
         this.realizarDisparoService = realizarDisparoService;
     }
 
-    public void disparar(int columna, int fila) {
-        realizarDisparoService.disparar(columna, fila);
+    public void disparar(int fila, int columna) {
+        realizarDisparoService.disparar(fila, columna);
     }
 
 }

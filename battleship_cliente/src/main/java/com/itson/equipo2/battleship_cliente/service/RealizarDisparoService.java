@@ -28,9 +28,10 @@ public class RealizarDisparoService {
         this.jugadorModel = jugadorModel;
     }
 
-    public void disparar(int columna, int fila) {
+    public void disparar(int fila, int columna) {
 
         CoordenadaDTO coordenada = new CoordenadaDTO(fila, columna);
+        System.out.println("Enviando disparo en:" + coordenada.toString());
 
         RealizarDisparoRequest req = new RealizarDisparoRequest(jugadorModel.getId(), coordenada);
 

@@ -23,12 +23,12 @@ public class PosicionarController {
         this.partidaModel = partidaModel;
     }
 
-    public boolean intentarPosicionarNave(TipoNave tipo, int col, int fila, boolean esHorizontal) {
+    public boolean intentarPosicionarNave(TipoNave tipo, int fila, int col, boolean esHorizontal) {
 
-        return this.partidaModel.intentarPosicionarNavePropia(tipo, col, fila, esHorizontal);
+        return this.partidaModel.intentarPosicionarNavePropia(tipo, fila, col, esHorizontal);
     }
     
     public void confirmarPosicionamiento() {
-        
+        this.posicionarNaveService.confirmarPosicionamiento();
     }
 }
