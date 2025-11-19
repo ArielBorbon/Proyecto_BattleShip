@@ -59,8 +59,50 @@ public class TableroModel {
             }
         }
 
-        // ¡BORRA ESTO! La notificación la hace PartidaModel
-        // notifyObservers(dto); 
+    }
+
+    public java.util.Map<TipoNave, java.util.List<EstadoNave>> calcularEstadoNaves() {
+        java.util.Map<TipoNave, java.util.List<EstadoNave>> estados = new java.util.HashMap<>();
+
+        for (NaveModel nave : navesPosicionadas) {
+            int impactos = 0;
+            int tamanio = nave.getTipo().getTamanio();
+
+            // 1. Recorremos las coordenadas que ocupa esta nave
+            for (int i = 0; i < tamanio; i++) {
+                int f = nave.getFila();
+                int c = nave.getColumna();
+
+                if (nave.isEsHorizontal()) {
+                    c += i;
+                } else {
+                    f += i;
+                }
+
+                // 2. Verificamos si la celda tiene un disparo
+                if (esCoordenadaValida(f, c)) {
+                    CeldaModel celda = this.getCelda(f, c);
+                    if (celda.getEstado() == EstadoCelda.DISPARADA) {
+                        impactos++;
+                    }
+                }
+            }
+
+            // 3. Determinamos el estado según el daño
+            EstadoNave estadoFinal;
+            if (impactos == 0) {
+                estadoFinal = EstadoNave.SIN_DANIOS;
+            } else if (impactos < tamanio) {
+                estadoFinal = EstadoNave.AVERIADO;
+            } else {
+                estadoFinal = EstadoNave.HUNDIDO;
+            }
+
+            // 4. Agregamos a la lista
+            estados.computeIfAbsent(nave.getTipo(), k -> new java.util.ArrayList<>()).add(estadoFinal);
+        }
+
+        return estados;
     }
 
     public TableroModel(CeldaModel[][] celdas) {
@@ -204,7 +246,7 @@ public class TableroModel {
                 }
             }
         }
-        return true; // No se encontraron naves adyacentes
+        return true;
     }
 
     /**
