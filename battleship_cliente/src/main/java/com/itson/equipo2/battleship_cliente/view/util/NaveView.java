@@ -1,6 +1,6 @@
 package com.itson.equipo2.battleship_cliente.view.util;
 
-// Importaciones necesarias
+// Importaciones necesarias para la interfaz gráfica, manejo de eventos y lógica del juego
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;
@@ -20,42 +20,88 @@ import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
- * Representa la vista de una nave que puede ser arrastrada y soltada. Versión
- * con AWTEventListener para manejar drag-and-drop global.
+ * Representa la vista de una **nave (barco) arrastrable** que el jugador puede
+ * posicionar sobre el tablero.
+ * <p>
+ * Esta clase utiliza un {@code AWTEventListener} global para manejar la lógica
+ * de
+ * <b>Drag-and-Drop (Arrastrar y Soltar)</b> y <b>Rotación (tecla 'R')</b>,
+ * desacoplando la nave del contenedor y permitiendo el movimiento libre sobre
+ * el panel de la ventana principal.
+ * </p>
  */
 public class NaveView extends JPanel {
 
-    // --- Variables de Clase ---
+    // --- Variables de Estado y Configuración ---
+    /**
+     * Indica si la nave está siendo arrastrada actualmente por el usuario.
+     */
     private boolean dragging = false;
+
+    /**
+     * Almacena la diferencia entre la esquina superior izquierda de la nave
+     * (0,0) y el punto exacto donde se hizo clic con el mouse. Es crucial para
+     * el arrastre para que la nave no "salte" y se mueva desde donde se hizo
+     * clic.
+     */
     private Point offset;
 
-    // --- Referencias de Arquitectura ---
+    /**
+     * Referencia al panel que representa el tablero de juego donde se intentará
+     * posicionar la nave.
+     */
     private final JPanel tablero;
-    private final TipoNave tipo;
-    private final PosicionarController partidaController; // <-- ¡NUEVO! Habla con el Controlador
 
-    // --- Estado Visual ---
+    /**
+     * El tipo de nave que representa esta vista (ej. Acorazado, Submarino), que
+     * define su tamaño.
+     */
+    private final TipoNave tipo;
+
+    /**
+     * Referencia al **Controlador** (patrón MVC) que contiene la lógica de
+     * negocio para validar si la nave puede ser posicionada o no.
+     */
+    private final PosicionarController partidaController;
+
+    /**
+     * Indica la orientación actual de la nave. {@code true} si es horizontal,
+     * {@code false} si es vertical.
+     */
     private boolean esHorizontal = true;
+
+    /**
+     * Tamaño en píxeles de un solo lado de una celda del tablero. Constante
+     * para el cálculo de dimensiones.
+     */
     private static final int CELL_SIZE = 57;
 
-    // --- CONSTRUCTOR MODIFICADO ---
-    // Ya no recibe la lista, ahora recibe el Controlador
+    // --- CONSTRUCTOR ---
+    /**
+     * Crea una nueva vista de nave arrastrable.
+     *
+     * @param tipo El tipo de nave (tamaño) a crear.
+     * @param tablero El panel que representa el tablero del jugador para
+     * calcular límites.
+     * @param controller El controlador de posicionamiento para la lógica de
+     * negocio (MVC).
+     */
     public NaveView(TipoNave tipo, JPanel tablero, PosicionarController controller) {
         this.tipo = tipo;
         this.tablero = tablero;
-        this.partidaController = controller; // <-- Asignar el controlador
+        this.partidaController = controller; // Asigna el controlador para la interacción MVC
 
-        // --- Configuración Visual ---
-        // (Usamos tu cálculo de ancho visual, la lógica de 'soltar' lo compensará)
-        int ancho = CELL_SIZE * tipo.getTamanio();
+        // 1. Configuración Visual Inicial
+        int ancho = CELL_SIZE * tipo.getTamanio(); // Ancho inicial según el tamaño de la nave
         int alto = CELL_SIZE;
 
         setSize(ancho, alto);
         setPreferredSize(new Dimension(ancho, alto));
-        setBackground(new Color(100, 100, 100, 200));
-        setOpaque(false);
+        setBackground(new Color(100, 100, 100, 200)); // Color con transparencia
+        setOpaque(false); // Necesario para que el fondo del contenedor se vea
 
-        // --- 2. Lógica de Arrastre, Rotación y MVC ---
+        // 2. Lógica de Eventos Globales (Arrastre y Rotación)
+        // Se añade un listener que captura eventos de mouse y teclado EN TODA LA APLICACIÓN.
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             @Override
             public void eventDispatched(AWTEvent event) {
@@ -63,10 +109,11 @@ public class NaveView extends JPanel {
                 // --- 1. LÓGICA DE TECLADO (Rotar con 'R') ---
                 if (event instanceof KeyEvent) {
                     KeyEvent ke = (KeyEvent) event;
+                    // Solo si la tecla es 'R', está presionada y la nave está siendo arrastrada.
                     if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_R && dragging) {
                         rotarNave();
                     }
-                    return; // Termina el evento de teclado
+                    return; // Ignora el resto si es un evento de teclado
                 }
 
                 // --- 2. LÓGICA DE MOUSE ---
@@ -75,121 +122,138 @@ public class NaveView extends JPanel {
                 }
                 MouseEvent me = (MouseEvent) event;
 
-                // --- A. INICIO DEL ARRASTRE (Clic Izquierdo) ---
+                // --- A. INICIO DEL ARRASTRE (MOUSE_PRESSED) ---
+                // Verifica que el evento sea el clic inicial, que haya ocurrido sobre ESTA nave
+                // y que sea el botón izquierdo.
                 if (me.getID() == MouseEvent.MOUSE_PRESSED && me.getComponent() == NaveView.this && SwingUtilities.isLeftMouseButton(me)) {
-                    // Ya no se quita de ninguna lista, solo empieza a arrastrar
-                    startDragFromEvent(me);
+                    startDragFromEvent(me); // Inicia el arrastre
                 }
 
-                // --- B. DURANTE EL ARRASTRE (Sigue al cursor) ---
+                // --- B. DURANTE EL ARRASTRE (MOUSE_DRAGGED) ---
+                // Solo mueve la nave si el estado 'dragging' es verdadero.
                 if (me.getID() == MouseEvent.MOUSE_DRAGGED && dragging) {
                     Container parent = getParent();
                     if (parent != null) {
+                        // Convierte la posición del mouse al sistema de coordenadas del contenedor padre.
                         Point newPoint = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), parent);
+                        // Resta el 'offset' para mantener la posición relativa al clic inicial.
                         int newX = newPoint.x - offset.x;
                         int newY = newPoint.y - offset.y;
                         setLocation(newX, newY);
-                        parent.repaint();
+                        parent.repaint(); // Fuerza el redibujo del contenedor
                     }
                 }
 
-                // --- C. SOLTAR LA NAVE (Lógica MVC) ---
+                // --- C. SOLTAR LA NAVE (MOUSE_RELEASED) ---
                 if (me.getID() == MouseEvent.MOUSE_RELEASED) {
-                    // Solo actuar si estábamos arrastrando Y si el botón que se soltó fue el izquierdo
+                    // Solo procede si la nave estaba siendo arrastrada y se soltó el botón izquierdo.
                     if (dragging && SwingUtilities.isLeftMouseButton(me)) {
-                        dragging = false;
+                        dragging = false; // Finaliza el estado de arrastre
 
                         Container parent = getParent();
                         if (parent == null || tablero == null) {
-                            return;
+                            return; // Se necesita un padre y una referencia al tablero
                         }
 
+                        // Calcula las coordenadas del tablero relativas al contenedor padre (generalmente un JLayeredPane)
                         Rectangle tableroBounds = SwingUtilities.convertRectangle(tablero.getParent(), tablero.getBounds(), parent);
+                        // Calcula el centro de la nave en coordenadas del contenedor padre
                         Point naveCenter = new Point(getX() + getWidth() / 2, getY() + getHeight() / 2);
 
                         boolean exito = false;
 
-                        // 1. SI ESTÁ DENTRO DEL TABLERO...
+                        // 1. Verifica si el centro de la nave está sobre los límites visuales del tablero
                         if (tableroBounds.contains(naveCenter)) {
-                            // Calcular celda (targetCol, targetFila) basado en la esquina (getX, getY)
+                            // Calcula la posición relativa al tablero (coordenadas de la celda)
                             int relativeX = getX() - tableroBounds.x;
                             int relativeY = getY() - tableroBounds.y;
+                            // Calcula la celda de inicio redondeando al múltiplo de CELL_SIZE más cercano
                             int targetCol = Math.round((float) relativeX / CELL_SIZE);
                             int targetFila = Math.round((float) relativeY / CELL_SIZE);
 
-                            // Validar límites visuales (para que el 'snap' no se salga)
-                            int numColsNave, numFilasNave;
-                            if (esHorizontal) {
-                                numColsNave = (getWidth() / CELL_SIZE); // (ej. 3)
-                                numFilasNave = getHeight() / CELL_SIZE; // (ej. 1)
-                            } else {
-                                numColsNave = getWidth() / CELL_SIZE; // (ej. 1)
-                                numFilasNave = (getHeight() / CELL_SIZE); // (ej. 3)
-                            }
+                            // Ajuste para evitar que la nave se salga del borde del tablero (ej. un barco de 3 celdas en Col 9)
+                            int numColsNave = esHorizontal ? (getWidth() / CELL_SIZE) : 1;
+                            int numFilasNave = esHorizontal ? 1 : (getHeight() / CELL_SIZE);
+
+                            // Asegura que la celda de inicio esté dentro de [0, 10 - tamaño_nave]
                             targetCol = Math.max(0, Math.min(targetCol, 10 - numColsNave));
                             targetFila = Math.max(0, Math.min(targetFila, 10 - numFilasNave));
 
-                            // 2. ¡LLAMAR AL CONTROLADOR!
-                            // Esta es la nueva lógica MVC
+                            // 2. ¡LLAMADA AL CONTROLADOR!
+                            // Se intenta posicionar la nave en la cuadrícula del Modelo.
                             exito = partidaController.intentarPosicionarNave(tipo, targetFila, targetCol, esHorizontal);
                         }
 
-                        // 3. SI FALLÓ (colisión) O SE SOLTÓ FUERA...
+                        // 3. Manejo de Fallo
                         if (!exito) {
-                            // Notificar al SelectorNaveView que debe devolver el barco
+                            // Si el posicionamiento falló (colisión o fuera del tablero),
+                            // se notifica al panel que contiene la lista de naves para que la devuelva.
                             firePropertyChange("naveDevuelta", false, true);
                         }
 
-                        // 4. ¡SIEMPRE AUTO-DESTRUIRSE!
-                        // El NaveView ya cumplió su propósito (enviar el evento al C).
+                        // 4. AUTO-DESTRUCCIÓN
+                        // La NaveView solo existe para capturar el arrastre. Una vez enviado el
+                        // intento de posicionamiento (exitoso o fallido), se elimina de la interfaz.
                         parent.remove(NaveView.this);
-                        parent.repaint();
+                        parent.repaint(); // Actualiza el contenedor para eliminar la vista
                     }
                 }
             }
-        }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK); // <-- MÁSCARA MODIFICADA
+            // Se define qué eventos deben ser escuchados: mouse y teclado.
+        }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
     }
 
     /**
-     * Inicia el proceso de arrastre. Ya no necesita 'buscarTablero' porque lo
-     * recibe en el constructor.
+     * Inicializa el estado de arrastre (`dragging = true`) y calcula el
+     * `offset`. Convierte las coordenadas del clic al sistema de coordenadas
+     * del padre.
+     *
+     * @param e El evento de mouse de tipo {@code MOUSE_PRESSED}.
      */
     public void startDragFromEvent(MouseEvent e) {
         Container parent = getParent();
         if (parent == null || this.tablero == null) {
-            return; // 'tablero' ya es una variable de clase
+            return;
         }
+        // Convierte el punto del clic de las coordenadas de la NaveView a las del contenedor padre.
         Point eventPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), parent);
+        // Calcula el offset (distancia del clic a la esquina superior izquierda de la nave).
         this.offset = new Point(eventPoint.x - getX(), eventPoint.y - getY());
         this.dragging = true;
     }
 
     /**
-     * Dibuja la nave (el rectángulo y el borde).
+     * Dibuja el cuerpo y el borde de la nave.
+     *
+     * @param g El contexto gráfico.
      */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+        // Dibuja el relleno con el color de fondo (transparente)
         g2.setColor(getBackground());
         g2.fillRect(0, 0, getWidth(), getHeight());
 
+        // Dibuja el borde con un grosor de 2 píxeles
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(2));
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+
     }
 
     /**
-     * Rota la nave 90 grados sobre el eje del puntero del mouse (this.offset).
-     * Esta es la versión "compleja" que gira sobre el eje.
+     * Rota la nave 90 grados alrededor del punto donde el cursor del mouse está
+     * actualmente sobre ella (definido por {@code this.offset}). Esto mantiene
+     * la nave "pegada" al cursor durante la rotación.
      */
     private void rotarNave() {
         // 1. Obtener dimensiones y offset actuales
         int anchoActual = getWidth();
         int altoActual = getHeight();
 
-        // Punto de pivote (mouse) en coordenadas globales (del JLayeredPane)
+        // Punto de pivote global (coordenadas del padre)
         int globalPivotX = getX() + offset.x;
         int globalPivotY = getY() + offset.y;
 
@@ -197,36 +261,38 @@ public class NaveView extends JPanel {
         double centroX = (double) anchoActual / 2;
         double centroY = (double) altoActual / 2;
 
-        // 2. Calcular el vector desde el centro de la nave hasta el puntero
+        // 2. Vector: Centro de la nave -> Punto de Clic (Offset)
         double vecRelX = offset.x - centroX;
         double vecRelY = offset.y - centroY;
 
-        // 3. Rotar ese vector 90 grados (x, y) -> (-y, x)
+        // 3. Rotar ese vector 90 grados: (x, y) -> (-y, x)
         double vecRotadoX = -vecRelY;
         double vecRotadoY = vecRelX;
 
-        // 4. Calcular nuevas dimensiones y nuevo centro
+        // 4. Calcular nuevas dimensiones y centro
         int nuevoAncho = altoActual;
         int nuevoAlto = anchoActual;
         double nuevoCentroX = (double) nuevoAncho / 2;
         double nuevoCentroY = (double) nuevoAlto / 2;
 
-        // 5. Calcular el *nuevo* offset (dónde estará el puntero en la nave rotada)
+        // 5. Calcular el *nuevo* offset. El puntero debe estar a una distancia (vecRotado)
+        // del nuevo centro (nuevoCentro) en la nave rotada.
         int newOffsetX = (int) Math.round(nuevoCentroX + vecRotadoX);
         int newOffsetY = (int) Math.round(nuevoCentroY + vecRotadoY);
 
-        // 6. Calcular la nueva posición TOP-LEFT de la nave
+        // 6. Calcular la nueva posición superior izquierda (TOP-LEFT)
+        // Nueva Posición = Punto de Pivote Global - Nuevo Offset
         int newX = globalPivotX - newOffsetX;
         int newY = globalPivotY - newOffsetY;
 
-        // 7. Aplicar todos los cambios
+        // 7. Aplicar todos los cambios al estado y a la vista
         this.esHorizontal = !this.esHorizontal;
-        this.offset = new Point(newOffsetX, newOffsetY); // ¡Actualizar el offset!
+        this.offset = new Point(newOffsetX, newOffsetY); // Actualiza el offset para el arrastre futuro
 
         setSize(nuevoAncho, nuevoAlto);
         setLocation(newX, newY);
 
-        // 8. Forzar al JLayeredPane a redibujar
+        // 8. Forzar el redibujo del contenedor
         Container parent = getParent();
         if (parent != null) {
             parent.revalidate();

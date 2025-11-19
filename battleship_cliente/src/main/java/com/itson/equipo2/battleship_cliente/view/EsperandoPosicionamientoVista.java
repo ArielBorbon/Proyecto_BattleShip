@@ -40,7 +40,6 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnConfirmar = new JButton();
         jLabel1 = new JLabel();
         jLabel2 = new JLabel();
 
@@ -49,21 +48,6 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements
         setMinimumSize(new Dimension(1280, 720));
         setPreferredSize(new Dimension(1280, 720));
         setLayout(null);
-
-        btnConfirmar.setBackground(new Color(75, 75, 75));
-        btnConfirmar.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
-        btnConfirmar.setForeground(new Color(255, 255, 255));
-        btnConfirmar.setText("Confirmar");
-        btnConfirmar.setBorder(null);
-        btnConfirmar.setEnabled(false);
-        btnConfirmar.setFocusPainted(false);
-        btnConfirmar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                btnConfirmarActionPerformed(evt);
-            }
-        });
-        add(btnConfirmar);
-        btnConfirmar.setBounds(40, 640, 156, 41);
 
         jLabel1.setFont(new Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -79,17 +63,12 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements
         jLabel2.setBounds(380, 40, 480, 480);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-
-    }//GEN-LAST:event_btnConfirmarActionPerformed
-
     @Override
     public JPanel crear(ViewController control) {
         return this;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JButton btnConfirmar;
     private JLabel jLabel1;
     private JLabel jLabel2;
     // End of variables declaration//GEN-END:variables

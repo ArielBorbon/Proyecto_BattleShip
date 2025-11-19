@@ -29,22 +29,120 @@ import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
- *
- * @author skyro
+ * Vista principal utilizada para la fase de posicionamiento de naves del
+ * jugador. Implementa {@code ViewFactory} y {@code PartidaObserver} para crear
+ * la vista y sincronizar el estado visual del tablero con el
+ * {@code PartidaModel}.
  */
 public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
-    private List<NaveView> navesEnTablero = new java.util.ArrayList<>();
+    // --- Variables de Referencia y Modelo ---
+    /**
+     * Referencia a la lista (histórica) de NaveView. No usada actualmente, pero
+     * mantenida si se requiere.
+     */
+    private List navesEnTablero = new java.util.ArrayList<>();
 
+    /**
+     * El controlador de la lógica de posicionamiento (parte del patrón MVC).
+     */
     private PosicionarController posicionarController;
 
     /**
-     * Creates new form PosicionarNaveVista
+     * Crea e inicializa la vista de posicionamiento de naves.
+     *
+     * @param posicionarController El controlador de lógica de posicionamiento
+     * asociado.
      */
     public PosicionarNaveVista(PosicionarController posicionarController) {
         this.posicionarController = posicionarController;
         initComponents();
         crearCeldas();
+    }
+
+    // --- MÉTODOS DE LA INTERFAZ ---
+    /**
+     * Implementación del patrón Factory. Devuelve esta instancia de JPanel.
+     *
+     * @param control Referencia al {@code ViewController} (no utilizada
+     * directamente en esta clase).
+     * @return Esta instancia de {@code JPanel}.
+     */
+    @Override
+    public JPanel crear(ViewController control) {
+        return this;
+    }
+
+    /**
+     * Implementación del patrón Observer. Se llama cuando el
+     * {@code PartidaModel} cambia, permitiendo la sincronización de la vista
+     * con el modelo.
+     * <p>
+     * Se utiliza para colorear las celdas del tablero propio con el color de la
+     * nave después de un posicionamiento exitoso.
+     * </p>
+     *
+     * @param model El {@code PartidaModel} actualizado.
+     */
+    @Override
+    public void onChange(PartidaModel model) {
+        TableroModel tableroPropio = model.getTableroPropio();
+
+        if (tableroPropio == null) {
+            System.out.println("tablero nulo");
+            return;
+        }
+
+        // Recorre las celdas y sincroniza el color con el estado del modelo.
+        for (int f = 0; f < 10; f++) {
+            for (int c = 0; c < 10; c++) {
+                CeldaModel celdaModelo = tableroPropio.getCelda(f, c);
+                // La celda en la UI se obtiene por índice (f * 10 + c)
+                JButton celdaUI = (JButton) tablero.getComponent(f * 10 + c);
+
+                if (celdaModelo.tieneNave()) {
+                    // Colorea la celda con el color del jugador si tiene una nave.
+                    celdaUI.setBackground(model.getYo().getColor().getColor());
+                } else {
+                    // Mantiene el color base (agua) si no tiene nave.
+                    celdaUI.setBackground(new Color(50, 70, 100));
+                }
+            }
+        }
+
+        actualizarEstadoBoton();
+    }
+
+    // --- MÉTODOS AUXILIARES ---
+    /**
+     * Inicializa y añade los 100 {@code JButton} que representan las celdas del
+     * tablero del jugador.
+     */
+    private void crearCeldas() {
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                JButton celdaPropio = new JButton();
+                celdaPropio.setEnabled(false); // Las celdas son solo visuales, no interactivas
+                celdaPropio.setBackground(new Color(50, 70, 100)); // Color de agua inicial
+                celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
+                tablero.add(celdaPropio);
+            }
+        }
+    }
+
+    /**
+     * Verifica si todos los selectores de naves indican que no quedan barcos
+     * restantes. Si es así, habilita el botón "Confirmar".
+     */
+    public void actualizarEstadoBoton() {
+        // Se realiza un casting para acceder al método getBarcosRestantes() del SelectorNaveView
+        boolean todosPuestos
+                = ((SelectorNaveView) nave1).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave2).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave3).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave4).getBarcosRestantes() == 0;
+
+        btnConfirmar.setEnabled(todosPuestos);
     }
 
     /**
@@ -196,9 +294,11 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
         int resultado = JOptionPane.showConfirmDialog(this, "¿Deseas confirmar el tablero?");
-        
-        if (resultado != JOptionPane.YES_OPTION) return;
-        
+
+        if (resultado != JOptionPane.YES_OPTION) {
+            return;
+        }
+
         posicionarController.confirmarPosicionamiento();
 
         // Deshabilita todo para que no pueda mover nada más
@@ -209,69 +309,6 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
         nave4.setEnabled(false);
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
-    @Override
-    public JPanel crear(ViewController control) {
-        return this;
-    }
-
-    @Override
-    public void onChange(PartidaModel model) {
-        // Obtiene el tablero del modelo
-        TableroModel tableroPropio = model.getTableroPropio(); //
-        if (tableroPropio == null) {
-            System.out.println("tablero nulo");
-            return;
-        }
-
-        // Recorre las celdas de la VISTA
-        for (int f = 0; f < 10; f++) {
-            for (int c = 0; c < 10; c++) {
-                // Obtiene el estado del MODELO
-                CeldaModel celdaModelo = tableroPropio.getCelda(f, c); //
-
-                // Obtiene el componente de la VISTA
-                JButton celdaUI = (JButton) tablero.getComponent(f * 10 + c);
-
-                // Sincroniza la Vista con el Modelo
-                if (celdaModelo.tieneNave()) {
-                    celdaUI.setBackground(model.getYo().getColor().getColor()); // O el color que prefieras
-                } else {
-                    celdaUI.setBackground(new Color(50, 70, 100)); // Color agua
-                }
-            }
-        }
-        
-        actualizarEstadoBoton();
-    }
-
-    private void crearCeldas() {
-
-        for (int fila = 0; fila < 10; fila++) {
-            for (int col = 0; col < 10; col++) {
-
-                JButton celdaPropio = new JButton();
-                celdaPropio.setEnabled(false);
-                celdaPropio.setBackground(new Color(50, 70, 100));
-                celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
-
-                tablero.add(celdaPropio);
-            }
-        }
-    }
-
-    public void actualizarEstadoBoton() {
-
-        // ¡El truco! Hacemos un "cast" al JPanel genérico
-        // para tratarlo como lo que realmente es: un SelectorNaveView.
-        boolean todosPuestos
-                = ((SelectorNaveView) nave1).getBarcosRestantes() == 0
-                && ((SelectorNaveView) nave2).getBarcosRestantes() == 0
-                && ((SelectorNaveView) nave3).getBarcosRestantes() == 0
-                && ((SelectorNaveView) nave4).getBarcosRestantes() == 0;
-        // (Añade '&& ((SelectorNaveView) nave5).getBarcosRestantes() == 0' si tienes una quinta nave)
-
-        btnConfirmar.setEnabled(todosPuestos);
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnConfirmar;
