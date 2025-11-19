@@ -1,11 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.itson.equipo2.communication.impl;
 
 import com.google.gson.Gson;
-import java.lang.System.Logger.Level;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import redis.clients.jedis.Jedis;
@@ -13,12 +8,19 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
- *
- * @author skyro
+ * Implementación de {@code IMessagePublisher} que utiliza Redis Pub/Sub para la
+ * publicación.
  */
 public class RedisPublisher implements IMessagePublisher {
 
+    /**
+     * Pool de conexiones para obtener recursos de conexión a Redis.
+     */
     private final JedisPool jedisPool;
+
+    /**
+     * Serializador JSON para convertir el mensaje a String.
+     */
     private final Gson gson = new Gson();
 
     /**
@@ -30,27 +32,34 @@ public class RedisPublisher implements IMessagePublisher {
         this.jedisPool = jedisPool;
     }
 
+    /**
+     * Serializa el mensaje y lo publica en el canal de Redis.
+     *
+     * @param channel El nombre del canal (tema).
+     * @param message El objeto {@code EventMessage} a publicar.
+     */
     @Override
     public void publish(String channel, EventMessage message) {
         String jsonMessage;
 
+        // 1. Serializar el mensaje DTO a JSON
         try {
             jsonMessage = gson.toJson(message);
         } catch (Exception e) {
             System.err.println("Error al serializar mensaje: " + e.getMessage());
-            return; 
+            return;
         }
 
+        // 2. Obtener un recurso de conexión y publicar
         try (Jedis jedis = jedisPool.getResource()) {
 
-            // 3. Publicar el mensaje
             jedis.publish(channel, jsonMessage);
 
-//            System.out.println("Mensaje publicado en '" + channel + "': " + jsonMessage);
-
         } catch (JedisConnectionException e) {
+            // Manejo de error si la conexión a Redis falla
             System.err.println("Error publicando en Redis (Canal: " + channel + "): " + e.getMessage());
         } catch (Exception e) {
+            // Manejo de errores inesperados
             System.err.println("Error inesperado al publicar mensaje: " + e.getMessage());
             e.printStackTrace();
         }

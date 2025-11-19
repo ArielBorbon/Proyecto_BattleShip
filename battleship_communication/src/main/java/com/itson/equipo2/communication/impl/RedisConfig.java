@@ -1,16 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.itson.equipo2.communication.impl;
 
 /**
- *
- * @author skyro
+ * Clase de configuración estática para los parámetros de conexión a Redis.
  */
 public class RedisConfig {
 
+    /** Host o dirección IP donde se ejecuta el servidor Redis. */
     public static final String REDIS_HOST = "localhost";
+    
+    /** Puerto predeterminado para el servicio de Redis. */
     public static final int REDIS_PORT = 6379;
 
 }

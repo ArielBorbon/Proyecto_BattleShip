@@ -1,16 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.itson.equipo2.communication.broker;
 
 /**
- *
- * @author skyro
+ * Interfaz que define la capacidad de suscribirse y desuscribirse a canales.
  */
 public interface IMessageSubscriber {
  
+    /**
+     * Inicia el proceso de escucha y suscripción a un canal de mensajes.
+     *
+     * @param channel El nombre del canal (tema) al que suscribirse.
+     */
     void subscribe(String channel);
 
+    /**
+     * Finaliza la suscripción al canal.
+     */
     void unsubscribe();
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.itson.equipo2.communication.impl;
 
 import java.util.concurrent.ExecutorService;
@@ -10,40 +6,44 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
- *
- * @author skyro
+ * Clase utilitaria para gestionar la conexión y los recursos del pool de Redis.
+ * Implementa el patrón Singleton para {@code JedisPool} y {@code ExecutorService}.
  */
 public class RedisConnection {
 
     private static JedisPool jedisPool;
     private static ExecutorService subscriberExecutor;
 
-    // Constructor privado para evitar que alguien haga 'new RedisConnection()'
+    /** Constructor privado para evitar la instanciación externa. */
     private RedisConnection() {
     }
 
     /**
-     * Configuración del pool de conexiones.
+     * Configuración del pool de conexiones para optimizar el rendimiento y la concurrencia.
+     *
+     * @return El objeto {@code JedisPoolConfig} configurado.
      */
     private static JedisPoolConfig buildPoolConfig() {
         final JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(128);
-        poolConfig.setMaxIdle(128);
-        poolConfig.setMinIdle(16);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setBlockWhenExhausted(true);
+        // Configuración para el manejo eficiente de hilos
+        poolConfig.setMaxTotal(128); // Máximo de conexiones totales
+        poolConfig.setMaxIdle(128);  // Máximo de conexiones inactivas
+        poolConfig.setMinIdle(16);   // Mínimo de conexiones inactivas
+        poolConfig.setTestOnBorrow(true); // Verificar la conexión al tomar del pool
+        poolConfig.setBlockWhenExhausted(true); // Bloquear si el pool está lleno
         return poolConfig;
     }
 
     /**
      * Obtiene la instancia única del Pool de Jedis (Lazy-loaded y thread-safe).
      *
-     * @return El JedisPool.
+     * @return El {@code JedisPool} configurado.
      */
     public static synchronized JedisPool getJedisPool() {
         if (jedisPool == null) {
             JedisPoolConfig poolConfig = buildPoolConfig();
 
+            // Crea el pool utilizando la configuración y las constantes de conexión
             jedisPool = new JedisPool(
                     poolConfig,
                     RedisConfig.REDIS_HOST,
@@ -55,8 +55,12 @@ public class RedisConnection {
 
     /**
      * Obtiene la instancia única del Pool de Hilos para suscriptores.
+     * <p>
+     * Se usa un {@code CachedThreadPool} ya que las operaciones de suscripción
+     * suelen ser de larga duración.
+     * </p>
      *
-     * @return El ExecutorService.
+     * @return El {@code ExecutorService} para los hilos de suscripción.
      */
     public static synchronized ExecutorService getSubscriberExecutor() {
         if (subscriberExecutor == null) {
@@ -66,7 +70,8 @@ public class RedisConnection {
     }
 
     /**
-     * Cierra todos los pools. Debe llamarse al apagar el servidor.
+     * Cierra y libera todos los recursos de los pools.
+     * Debe llamarse al finalizar la aplicación para evitar fugas de memoria y recursos.
      */
     public static void shutdown() {
         System.out.println("Cerrando pools de Redis y Hilos...");
