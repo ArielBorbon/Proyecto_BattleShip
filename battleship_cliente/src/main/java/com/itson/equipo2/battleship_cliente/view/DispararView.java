@@ -14,7 +14,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,6 +31,7 @@ import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import static mx.itson.equipo_2.common.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
+import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
  *
@@ -50,6 +54,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private TableroModel tableroEnemigo;
 
     private PartidaModel partidaModel; // refeerencia local
+    private MarcadorView marcadorView;
 
     public DispararView() {
         initComponents();
@@ -66,13 +71,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTurno();
 
 //        mostrarTableroPropio(this.miTablero);
-    
-
-    //////////////////////////////////////////////////
+        //////////////////////////////////////////////////
     }
-    
-    
-    
+
     @Override
     public void onChange(PartidaModel model) {
         System.out.println("Observer notificado: Repintando vista.");
@@ -88,6 +89,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             repintarEnemigo(this.tableroEnemigo);
         }
 
+        actualizarDatosMarcador();
+        // --------------------------------------------------------------------
+
         revalidate();
         repaint();
 
@@ -97,6 +101,20 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             btnRendirse.setEnabled(false);
         }
 
+    }
+
+    /**
+     * Método auxiliar que conecta el Modelo con la Vista del Marcador. Extrae
+     * los mapas de estado y se los pasa a la ventana.
+     */
+    private void actualizarDatosMarcador() {
+        if (marcadorView != null && partidaModel != null) {
+            Map<TipoNave, List<EstadoNave>> misNaves = partidaModel.getEstadoMisNaves();
+            Map<TipoNave, List<EstadoNave>> navesEnemigas = partidaModel.getEstadoNavesEnemigas();
+
+            marcadorView.actualizarFlotaPropia(misNaves);
+            marcadorView.actualizarFlotaEnemiga(navesEnemigas);
+        }
     }
 
     private void actualizarLabelTurno() {
@@ -262,7 +280,15 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     }//GEN-LAST:event_btnDispararActionPerformed
 
     private void btnMarcadorActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnMarcadorActionPerformed
-        // TODO add your handling code here:
+
+        if (marcadorView == null) {
+            JFrame frame = (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this);
+            marcadorView = new MarcadorView(frame);
+        }
+        
+        actualizarDatosMarcador();
+
+        marcadorView.setVisible(true);
     }//GEN-LAST:event_btnMarcadorActionPerformed
 
 

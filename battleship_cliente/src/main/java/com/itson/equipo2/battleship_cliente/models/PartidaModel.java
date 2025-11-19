@@ -6,12 +6,16 @@ package com.itson.equipo2.battleship_cliente.models;
 
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
+import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
@@ -28,6 +32,8 @@ public class PartidaModel {
     private String turnoDe; // id del jugador con turno actual
     private Integer segundosRestantes;
     private EstadoPartida estado;
+
+    private Map<TipoNave, List<EstadoNave>> navesEnemigas;
 
     private final transient List<PartidaObserver> observers = new ArrayList<>();
 
@@ -112,6 +118,8 @@ public class PartidaModel {
     }
 
     public PartidaModel() {
+        this.navesEnemigas = new HashMap<>();
+        inicializarNavesEnemigas();
     }
 
     public PartidaModel(String id, JugadorModel yo, JugadorModel enemigo, boolean enCurso, String turnoDe, Integer segundosRestantes, EstadoPartida estado) {
@@ -122,6 +130,10 @@ public class PartidaModel {
         this.turnoDe = turnoDe;
         this.segundosRestantes = segundosRestantes;
         this.estado = estado;
+
+        this.navesEnemigas = new HashMap<>();
+        inicializarNavesEnemigas();
+
     }
 
     public boolean intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) {
@@ -136,6 +148,57 @@ public class PartidaModel {
         }
 
         return exito;
+    }
+
+
+    private void inicializarNavesEnemigas() {
+        navesEnemigas.clear();
+        for (TipoNave tipo : TipoNave.values()) {
+            List<EstadoNave> listaEstados = new ArrayList<>();
+            for (int i = 0; i < tipo.getCantidadInicial(); i++) {
+                listaEstados.add(EstadoNave.SIN_DANIOS);
+            }
+            navesEnemigas.put(tipo, listaEstados);
+        }
+        System.out.println("Flota enemiga inicializada en el marcador.");
+    }
+
+    /**
+     * Actualiza el estado de una nave enemiga a HUNDIDO basándose en el tamaño
+     * del barco reportado.
+     */
+    private void registrarHundimientoEnemigo(int tamanioBarco) {
+        TipoNave tipoHundido = null;
+
+        // Buscamos qué TipoNave corresponde a ese tamaño
+        for (TipoNave tipo : TipoNave.values()) {
+            if (tipo.getTamanio() == tamanioBarco) {
+                tipoHundido = tipo;
+                break;
+            }
+        }
+
+        if (tipoHundido != null && navesEnemigas.containsKey(tipoHundido)) {
+            List<EstadoNave> estados = navesEnemigas.get(tipoHundido);
+            for (int i = 0; i < estados.size(); i++) {
+                if (estados.get(i) != EstadoNave.HUNDIDO) {
+                    estados.set(i, EstadoNave.HUNDIDO);
+                    System.out.println("¡Marcador actualizado! Nave enemiga hundida: " + tipoHundido);
+                    break;
+                }
+            }
+        }
+    }
+
+    public Map<TipoNave, List<EstadoNave>> getEstadoMisNaves() {
+        if (this.getTableroPropio() != null) {
+            return this.getTableroPropio().calcularEstadoNaves();
+        }
+        return Collections.emptyMap();
+    }
+
+    public Map<TipoNave, List<EstadoNave>> getEstadoNavesEnemigas() {
+        return this.navesEnemigas;
     }
 
     public TableroModel getTableroPropio() {
