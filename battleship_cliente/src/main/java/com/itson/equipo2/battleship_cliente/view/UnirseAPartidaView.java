@@ -8,12 +8,12 @@ package com.itson.equipo2.battleship_cliente.view;
  *
  * @author PC Gamer
  */
-public class SalaPartidaView extends javax.swing.JPanel {
+public class UnirseAPartidaView extends javax.swing.JPanel {
 
     /**
      * Creates new form SalaPartidaView
      */
-    public SalaPartidaView() {
+    public UnirseAPartidaView() {
         initComponents();
     }
 
