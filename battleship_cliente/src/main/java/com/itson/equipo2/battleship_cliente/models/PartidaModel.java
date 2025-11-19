@@ -17,6 +17,7 @@ import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
 import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
+import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import mx.itson.equipo_2.common.enums.TipoNave;
 
 /**
@@ -58,19 +59,23 @@ public class PartidaModel {
 
     public void procesarResultadoDisparo(ResultadoDisparoReponse response) {
 
-        // 1. Determinar qué tablero actualizar (Lógica movida aquí)
+        // 1. Determinar qué tablero actualizar
         TableroModel tableroAfectado;
 
-        // Usamos 'this.getYo().getId()' directamente
         if (response.getJugadorId().equals(this.getYo().getId())) {
-            // Fui yo quien disparó -> Actualizo el tablero del enemigo (mis marcas)
             tableroAfectado = this.getEnemigo().getTablero();
+            
+            if (response.getResultado() == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
+                // El servidor nos manda la lista de coordenadas del barco hundido.
+                // Usamos su tamaño (.size()) para deducir qué tipo de barco era 
+                int tamanioNave = response.getCoordenadasBarcoHundido().size();
+                registrarHundimientoEnemigo(tamanioNave); 
+            }
+            // -----------------------------------------------
+            
         } else {
-            // Fue el otro -> Actualizo mi tablero (sus impactos)
             tableroAfectado = this.getYo().getTablero();
         }
-
-        // 2. Actualizar la celda (Delegando al sub-modelo)
         if (tableroAfectado != null) {
             tableroAfectado.actualizarCelda(
                     response.getCoordenada(),
@@ -79,13 +84,9 @@ public class PartidaModel {
             );
         }
 
-        // 3. Actualizar datos de la partida
-        this.setTurnoDe(response.getTurnoActual()); // (Asegúrate que este setter NO notifique todavía)
+        this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstadoPartida());
 
-        // 4. ¡NOTIFICACIÓN ATÓMICA!
-        // Avisamos a la vista UNA sola vez después de que TODO cambió.
-        // Así la vista no se repinta 3 veces seguidas.
         notifyObservers();
     }
 
