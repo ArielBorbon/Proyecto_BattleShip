@@ -111,15 +111,21 @@ public class PosicionarNaveService {
     }
 
     private void iniciarBatalla(Partida partida) {
-        partida.setEstado(EstadoPartida.EN_BATALLA);
+        partida.iniciarBatalla();
 
-        if (partida.getTurnoActual() == null) {
-            partida.setTurnoActual(partida.getJugador1().getId());
-        }
-        partida.iniciarTurno();
+        JugadorDTO j1DTO = new JugadorDTO(
+                partida.getJugador1().getId(),
+                partida.getJugador1().getNombre(),
+                partida.getJugador1().getColor(),
+                null, null
+        );
 
-        JugadorDTO j1DTO = new JugadorDTO(partida.getJugador1().getId(), partida.getJugador1().getNombre(), partida.getJugador1().getColor(), null, null);
-        JugadorDTO j2DTO = new JugadorDTO(partida.getJugador2().getId(), partida.getJugador2().getNombre(), partida.getJugador2().getColor(), null, null);
+        JugadorDTO j2DTO = new JugadorDTO(
+                partida.getJugador2().getId(),
+                partida.getJugador2().getNombre(),
+                partida.getJugador2().getColor(),
+                null, null
+        );
 
         PartidaIniciadaResponse response = new PartidaIniciadaResponse(
                 partida.getId().toString(),

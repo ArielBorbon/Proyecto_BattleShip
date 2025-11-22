@@ -126,9 +126,20 @@ public class Partida {
         }
     }
 
+    public void iniciarBatalla() {
+        this.estado = EstadoPartida.EN_BATALLA;
+
+        if (this.turnoActual == null) {
+            this.turnoActual = this.jugador1.getId();
+        }
+
+        iniciarTurno();
+    }
+
     public Jugador getEnemigo(String miId) {
         return jugador1.getId().equals(miId) ? jugador2 : jugador1;
     }
+
     public Jugador getJugadorById(String id) {
         return this.jugador1.getId().equals(id) ? jugador1 : jugador2;
     }
