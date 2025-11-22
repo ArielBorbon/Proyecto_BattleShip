@@ -18,6 +18,8 @@ public class PosicionarController {
      */
     private final PosicionarNaveService posicionarNaveService;
 
+    private ViewController viewController;
+
     /**
      * Referencia al modelo de datos principal de la partida.
      */
@@ -62,5 +64,15 @@ public class PosicionarController {
      */
     public void confirmarPosicionamiento() {
         this.posicionarNaveService.confirmarPosicionamiento();
+
+        if (viewController != null) {
+            System.out.println("Cliente: Flota enviada. Esperando al rival...");
+            viewController.cambiarPantalla("esperandoPosicionamiento");
+        }
     }
+
+    public void setViewController(ViewController viewController) {
+        this.viewController = viewController;
+    }
+
 }

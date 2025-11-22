@@ -30,7 +30,7 @@ public class PartidaIniciadaHandler implements IMessageHandler {
 
     @Override
     public void onMessage(EventMessage message) {
-        System.out.println("Evento PartidaIniciada recibido!");
+        System.out.println("Cliente: ¡Evento PartidaIniciada recibido! ¡A la batalla!");
 
         PartidaIniciadaResponse response = gson.fromJson(message.getPayload(), PartidaIniciadaResponse.class);
 
@@ -38,6 +38,7 @@ public class PartidaIniciadaHandler implements IMessageHandler {
 
         System.out.println("PartidaModel actualizado. cambiando a vista 'disparar'");
         
+
         javax.swing.SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("disparar");
         });

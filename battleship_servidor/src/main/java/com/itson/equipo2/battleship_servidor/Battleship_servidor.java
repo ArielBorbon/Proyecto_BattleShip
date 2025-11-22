@@ -73,6 +73,7 @@ public class Battleship_servidor {
                 publisher
         );
 
+
     //    posicionarNaveService.setCrearPartidaVsIAService(crearPartidaService);
 
         eventDispatcher.subscribe("RealizarDisparo", new RealizarDisparoHandler(disparoService));

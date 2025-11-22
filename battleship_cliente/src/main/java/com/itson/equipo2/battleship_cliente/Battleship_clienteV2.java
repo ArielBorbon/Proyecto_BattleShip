@@ -86,6 +86,8 @@ public class Battleship_clienteV2 {
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         SalaController salaController = new SalaController(salaService, viewController);
 
+        posicionarController.setViewController(viewController);
+
         // 6. Mediadores
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
@@ -135,6 +137,22 @@ public class Battleship_clienteV2 {
 
         // Para actualizar la lista de jugadores en la sala
         eventDispatcher.subscribe("PartidaActualizada", new PartidaActualizadaHandler(partidaModel));
+
+        eventDispatcher.subscribe("InicioPosicionamiento", new com.itson.equipo2.communication.broker.IMessageHandler() {
+            @Override
+            public boolean canHandle(com.itson.equipo2.communication.dto.EventMessage message) {
+                return "InicioPosicionamiento".equals(message.getEventType());
+            }
+
+            @Override
+            public void onMessage(com.itson.equipo2.communication.dto.EventMessage message) {
+                System.out.println("Cliente: ¡El juego comienza! Cambiando a pantalla de posicionamiento.");
+
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    viewController.cambiarPantalla("posicionar");
+                });
+            }
+        });
 
         // 10. Suscripción a Redis
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);

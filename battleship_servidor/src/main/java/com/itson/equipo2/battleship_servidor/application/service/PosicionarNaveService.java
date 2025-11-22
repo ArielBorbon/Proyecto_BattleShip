@@ -9,10 +9,13 @@ import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepositor
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import java.util.List;
+import java.util.stream.Collectors;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.request.PosicionarFlotaRequest;
-import mx.itson.equipo_2.common.dto.response.NavesPosicionadasResponse;
+import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
  * Servicio de aplicación encargado de procesar la solicitud de posicionamiento
@@ -41,6 +44,12 @@ public class PosicionarNaveService {
      */
     private CrearPartidaVsIAService crearPartidaVsIAService;
 
+    private PartidaTimerService partidaTimerService;
+
+    public void setPartidaTimerService(PartidaTimerService partidaTimerService) {
+        this.partidaTimerService = partidaTimerService;
+    }
+
     // --- CONSTRUCTOR ---
     /**
      * Inicializa el servicio de posicionamiento con sus dependencias.
@@ -61,38 +70,70 @@ public class PosicionarNaveService {
      * {@code NaveDTO}.
      */
     public void posicionarNaves(PosicionarFlotaRequest request) {
-
-        // 1. Obtiene la partida y el jugador
         Partida partida = partidaRepository.getPartida();
+        if (partida == null) {
+            return;
+        }
+
         Jugador jugador = partida.getJugadorById(request.getJugadorId());
+        if (jugador == null) {
+            return;
+        }
 
-        // 2. Mapea los DTOs de Naves a los objetos del Dominio (Nave)
-        List<Nave> naves = request.getNaves().stream().map((n)
+        // 1. Mapear DTOs a Entidades de Dominio
+        List<Nave> navesDominio = request.getNaves().stream().map(nDTO
                 -> new Nave(
-                        n.getTipo(),
-                        // Mapea el DTO de Coordenada a la Coordenada del Dominio
-                        new Coordenada(
-                                n.getCoordenadaInicial().getFila(),
-                                n.getCoordenadaInicial().getColumna()),
-                        n.getOrientacion()
-                )).toList();
+                        nDTO.getTipo(),
+                        new Coordenada(nDTO.getCoordenadaInicial().getFila(), nDTO.getCoordenadaInicial().getColumna()),
+                        nDTO.getOrientacion()
+                )
+        ).collect(Collectors.toList());
 
-        // 3. Aplica la lógica de dominio
-        partida.posicionarNaves(jugador.getId(), naves);
-        jugador.setEstado(EstadoJugador.LISTO); // Marca al jugador como listo para el juego
+        // 2. Guardar en el dominio
+        partida.posicionarNaves(jugador.getId(), navesDominio);
+        jugador.setEstado(EstadoJugador.LISTO);
 
-        // 4. Notifica al cliente que este jugador ha posicionado su flota
-        NavesPosicionadasResponse response = new NavesPosicionadasResponse(request.getJugadorId());
-        String payload = gson.toJson(response);
-        EventMessage message = new EventMessage("NavesPosicionadas", payload);
-        eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, message);
+        System.out.println("Servidor: Jugador " + jugador.getNombre() + " está LISTO.");
 
-        // 5. Verifica si el otro jugador (enemigo) también está listo
-        if (partida.getEnemigo(jugador.getId()).getEstado() == EstadoJugador.LISTO) {
-            // Si ambos están listos, se inicia la siguiente fase del juego (PartidaVsIA)
-            if (crearPartidaVsIAService != null) {
-                crearPartidaVsIAService.execute(request.getNaves());
-            }
+        // 3. VERIFICAR SI AMBOS ESTÁN LISTOS
+        boolean j1Listo = partida.getJugador1().getEstado() == EstadoJugador.LISTO;
+        boolean j2Listo = partida.getJugador2() != null && partida.getJugador2().getEstado() == EstadoJugador.LISTO;
+
+        if (j1Listo && j2Listo) {
+            System.out.println("Servidor: ¡AMBOS JUGADORES LISTOS! Iniciando batalla...");
+            iniciarBatalla(partida);
+        } else {
+            // Opcional: Notificar al otro que estamos esperando
+            System.out.println("Servidor: Esperando al otro jugador...");
+        }
+
+        partidaRepository.guardar(partida);
+    }
+
+    private void iniciarBatalla(Partida partida) {
+        partida.setEstado(EstadoPartida.EN_BATALLA);
+
+        if (partida.getTurnoActual() == null) {
+            partida.setTurnoActual(partida.getJugador1().getId());
+        }
+        partida.iniciarTurno();
+
+        JugadorDTO j1DTO = new JugadorDTO(partida.getJugador1().getId(), partida.getJugador1().getNombre(), partida.getJugador1().getColor(), null, null);
+        JugadorDTO j2DTO = new JugadorDTO(partida.getJugador2().getId(), partida.getJugador2().getNombre(), partida.getJugador2().getColor(), null, null);
+
+        PartidaIniciadaResponse response = new PartidaIniciadaResponse(
+                partida.getId().toString(),
+                j1DTO,
+                j2DTO,
+                partida.getEstado(),
+                partida.getTurnoActual()
+        );
+
+        EventMessage evento = new EventMessage("PartidaIniciada", gson.toJson(response));
+        eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, evento);
+
+        if (partidaTimerService != null) {
+            partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
         }
     }
 
@@ -102,8 +143,7 @@ public class PosicionarNaveService {
      * @param crearPartidaVsIAService El servicio para iniciar la lógica del
      * juego.
      */
-    public void setCrearPartidaVsIAService(CrearPartidaVsIAService crearPartidaVsIAService) {
-        this.crearPartidaVsIAService = crearPartidaVsIAService;
-    }
-
+//    public void setCrearPartidaVsIAService(CrearPartidaVsIAService crearPartidaVsIAService) {
+//        this.crearPartidaVsIAService = crearPartidaVsIAService;
+//    }
 }
