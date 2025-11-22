@@ -1,8 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package com.itson.equipo2.battleship_cliente.view;
+
+import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import javax.swing.JOptionPane;
+import mx.itson.equipo_2.common.enums.AccionPartida;
 
 /**
  *
@@ -10,11 +12,27 @@ package com.itson.equipo2.battleship_cliente.view;
  */
 public class UnirseAPartidaView extends javax.swing.JPanel {
 
-    /**
-     * Creates new form SalaPartidaView
-     */
-    public UnirseAPartidaView() {
+    private final ViewController viewController;
+    private final RegistroController registroController;
+
+    public UnirseAPartidaView(ViewController viewController, RegistroController registroController) {
+        this.viewController = viewController;
+        this.registroController = registroController;
         initComponents();
+
+        btnConfirmar.addActionListener(evt -> {
+            String ip = txtIp.getText().trim();
+            if (ip.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingresa una IP válida");
+                return;
+            }
+
+            registroController.configurarConexion(ip);
+            String nombre = registroController.getPartidaModel().getYo().getNombre();
+            registroController.registrar(nombre, AccionPartida.UNIRSE);
+
+        });
+
     }
 
     /**
@@ -28,7 +46,7 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtIp = new javax.swing.JTextField();
         btnConfirmar = new javax.swing.JButton();
         btnVolver = new javax.swing.JButton();
 
@@ -40,10 +58,10 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel2.setText("IP:");
 
-        jTextField1.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtIp.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
+        txtIp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtIpActionPerformed(evt);
             }
         });
 
@@ -79,7 +97,7 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
                 .addGap(390, 390, 390)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtIp, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -89,7 +107,7 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
                 .addGap(225, 225, 225)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtIp, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -98,9 +116,9 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtIpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIpActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtIpActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
@@ -112,6 +130,6 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
     private javax.swing.JButton btnVolver;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField txtIp;
     // End of variables declaration//GEN-END:variables
 }

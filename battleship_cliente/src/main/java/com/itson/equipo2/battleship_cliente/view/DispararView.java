@@ -49,7 +49,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
 
-    private PartidaModel partidaModel; // refeerencia local
+    private PartidaModel partidaModel;
 
     public DispararView() {
         initComponents();
@@ -66,13 +66,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTurno();
 
 //        mostrarTableroPropio(this.miTablero);
-    
-
-    //////////////////////////////////////////////////
+        //////////////////////////////////////////////////
     }
-    
-    
-    
+
     @Override
     public void onChange(PartidaModel model) {
         System.out.println("Observer notificado: Repintando vista.");
@@ -82,8 +78,16 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTimer(model.getSegundosRestantes());
 
         if (this.miTablero != null) {
-            repintarPropio(this.miTablero, model.getYo().getColor().getColor());
+            Color colorJugador = Color.GRAY;
+
+            if (model.getYo() != null
+                    && model.getYo().getColor() != null) {
+                colorJugador = model.getYo().getColor().getColor();
+            }
+
+            repintarPropio(this.miTablero, colorJugador);
         }
+        
         if (this.tableroEnemigo != null) {
             repintarEnemigo(this.tableroEnemigo);
         }
@@ -253,7 +257,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         this.coordSeleccionada = null;
 
         if (this.ultimaSeleccionada != null) {
-            // Restaurar el borde original (negro)
             this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
             this.ultimaSeleccionada = null;
         }
@@ -297,7 +300,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                         CeldaModel celdaModelo = tableroEnemigo.getCelda(f, c);
                         if (celdaModelo != null && celdaModelo.getEstado() == EstadoCelda.DISPARADA) {
                             mostrarError("Ya has disparado en esta casilla.");
-                            return; // No permitir seleccionar
+                            return;
                         }
                     }
 
@@ -316,7 +319,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                 botonesEnemigo[fila][col] = celdaEnemigo;
 
                 JButton celdaPropio = new JButton();
-                //celdaPropio.setEnabled(false);
                 celdaPropio.setBackground(new Color(50, 70, 100));
                 celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
 
@@ -387,7 +389,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         }
         lblResultado.setText(resultado.getMensaje());
         lblResultado.setForeground(color);
-//        lblResultado.setBackground(colorFondo);
         lblResultado.setVisible(true);
 
         if (timerNotificacion != null && timerNotificacion.isRunning()) {
@@ -414,7 +415,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     private void repintarPropio(TableroModel tablero, Color color) {
         if (tablero == null) {
-            return; // Seguridad
+            return; 
         }
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
@@ -422,21 +423,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                 CeldaModel celda = tablero.getCelda(fila, col);
                 JButton boton = botonesPropio[fila][col];
 
-                // 1. Si la celda YA FUE DISPARADA (por el enemigo)
                 if (celda.getEstado() == EstadoCelda.DISPARADA) {
                     if (celda.tieneNave()) {
-                        // ¡Nos dieron!
                         boton.setBackground(Color.RED);
                     } else {
-                        // Dispararon agua
                         boton.setBackground(Color.CYAN);
                     }
-                } // 2. Si NO ha sido disparada, PERO tiene nave
+                } 
                 else if (celda.tieneNave()) {
-                    boton.setBackground(color); // Muestra tu nave intacta
-                } // 3. Si es solo agua (sin disparar y sin nave)
+                    boton.setBackground(color); 
+                }
                 else {
-                    boton.setBackground(new Color(50, 70, 100)); // Color base del mar
+                    boton.setBackground(new Color(50, 70, 100));
                 }
             }
         }
@@ -453,32 +451,27 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                 CeldaModel celda = tablero.getCelda(fila, col);
                 JButton boton = botonesEnemigo[fila][col];
 
-                // 1. Si NO ha sido disparada, es "Niebla de Guerra"
                 if (celda.getEstado() == EstadoCelda.NO_DISPARADA) {
-                    boton.setBackground(new Color(50, 70, 100)); // Mar oculto
+                    boton.setBackground(new Color(50, 70, 100));
                     boton.setEnabled(true);
-                    continue; // Siguiente celda
+                    continue; 
                 }
 
-                // 2. Si SÍ fue disparada, leemos el ESTADO DE LA NAVE
                 EstadoNave estadoNave = celda.getEstadoNave();
                 boton.setEnabled(false);
 
-                // 3. Decidimos el color
                 if (estadoNave == null) {
-                    // Si el estadoNave es null, significa que fue AGUA
                     boton.setBackground(Color.BLUE);
                 } else {
-                    // Si el estadoNave NO es null, fue un impacto
                     switch (estadoNave) {
                         case AVERIADO:
-                            boton.setBackground(Color.ORANGE); // Naranja para impacto
+                            boton.setBackground(Color.ORANGE); 
                             break;
                         case HUNDIDO:
-                            boton.setBackground(Color.RED); // Rojo para hundido
+                            boton.setBackground(Color.RED); 
                             break;
                         default:
-                            boton.setBackground(Color.PINK); // Error
+                            boton.setBackground(Color.PINK);
                     }
                 }
             }

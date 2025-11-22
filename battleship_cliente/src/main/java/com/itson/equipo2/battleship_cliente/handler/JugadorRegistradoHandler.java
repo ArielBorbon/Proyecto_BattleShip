@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.itson.equipo2.battleship_cliente.handler;
 
 import com.google.gson.Gson;
@@ -30,37 +27,31 @@ public class JugadorRegistradoHandler implements IMessageHandler {
 
     @Override
     public void onMessage(EventMessage message) {
-        System.out.println("Cliente: Recibido evento 'JugadorRegistrado'!");
-
-        
         JugadorDTO jugadorInfo = gson.fromJson(message.getPayload(), JugadorDTO.class);
 
-        
         JugadorModel miModelo = partidaModel.getYo();
-        
-        if (miModelo == null) {
-             System.err.println("Error: partidaModel.getYo() es null. Asegúrate de inicializarlo en el main.");
-             miModelo = new JugadorModel();
-             partidaModel.setYo(miModelo);
+        if (miModelo == null || miModelo.getNombre() == null) {
+            return; 
         }
 
- 
+        if (!miModelo.getNombre().equals(jugadorInfo.getNombre())) {
+            System.out.println("Cliente: Ignorando evento 'JugadorRegistrado' de otro usuario (" + jugadorInfo.getNombre() + ")");
+            return; 
+        }
+
+        System.out.println("Cliente: Recibido MI confirmación de registro.");
+
         miModelo.setId(jugadorInfo.getId());
-        miModelo.setNombre(jugadorInfo.getNombre());
-        
-        
+        miModelo.setColor(jugadorInfo.getColor());
+
         if (miModelo.getTablero() != null) {
             miModelo.getTablero().setIdJugaodr(jugadorInfo.getId());
-        } else {
-            System.err.println("Advertencia: El JugadorModel no tenía un TableroModel inicializado.");
         }
 
-        System.out.println("Cliente: ¡Registrado! Mi nombre es " + miModelo.getNombre() + " y mi ID es " + miModelo.getId());
-        System.out.println("Cliente: Mi color elegido localmente es: " + miModelo.getColor());
+        System.out.println("Cliente: ¡Registrado! Mi ID asignado es " + miModelo.getId());
 
-        
         javax.swing.SwingUtilities.invokeLater(() -> {
-            viewController.cambiarPantalla("lobby");
+            viewController.cambiarPantalla("salaPartida");
         });
     }
 }

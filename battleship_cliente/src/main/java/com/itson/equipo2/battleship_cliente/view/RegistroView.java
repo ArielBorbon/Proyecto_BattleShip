@@ -97,17 +97,15 @@ public class RegistroView extends JPanel {
         btnConfirmar.setBounds(650, 450, 156, 41);
         
  
-        btnConfirmar.addActionListener(e -> {
+btnConfirmar.addActionListener(e -> {
             String nombre = txtNombre.getText();
-            ColorJugador color = (ColorJugador) cmbColor.getSelectedItem();
-          
+            ColorJugador color = (ColorJugador) cmbColor.getSelectedItem(); // Obtener color del combo
+
             if (nombre == null || nombre.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: nombre invalido", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Nombre inválido", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-              
-                registroController.registrar(nombre, color);
+                registroController.guardarDatosJugador(nombre, color);
                 
-   
                 viewController.cambiarPantalla("lobby");
             }
         });

@@ -4,38 +4,74 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
-import java.awt.Image;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import com.itson.equipo2.battleship_cliente.controllers.SalaController;
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
+import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
+import com.itson.equipo2.communication.dto.EventMessage;
+import java.net.InetAddress;
+import javax.swing.JPanel;
+import mx.itson.equipo_2.common.broker.BrokerConfig;
 
 /**
  *
  * @author PC Gamer
  */
-public class SalaPartidaView extends javax.swing.JPanel {
+public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
-    /**
-     * Creates new form SalaPartidaView
-     */
-    public SalaPartidaView() {
+    private final SalaController salaController;
+
+    public SalaPartidaView(SalaController salaController) {
+        this.salaController = salaController;
         initComponents();
-        
-        
+        mostrarIpLocal();
 
-            ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/user_icon.png"));
-            
-            int ancho = 120; 
-            int alto = 120;
-            
-            Image scaledImage = originalIcon.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-            
-            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
-            
-            pnlUserIcon.add(imageLabel);
-            
-            pnlUserIcon.revalidate();
-            pnlUserIcon.repaint();
+        btnConfirmar.setEnabled(false);
+    }
 
+    private void mostrarIpLocal() {
+        try {
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            lblIp.setText("IP de Sala: " + ip);
+        } catch (Exception e) {
+            lblIp.setText("IP: Desconocida");
+        }
+    }
+
+
+
+    @Override
+    public JPanel crear(ViewController control) {
+        return this;
+    }
+
+    @Override
+    public void onChange(PartidaModel model) {
+        if (model.getNombreJugador1() != null) {
+            lblJugador1.setText(model.getNombreJugador1());
+        }
+        if (model.getNombreJugador2() != null) {
+            lblJugador2.setText(model.getNombreJugador2());
+        }
+
+        boolean hayRival = model.getNombreJugador2() != null && !model.getNombreJugador2().equals("Esperando...");
+
+        if (model.isSoyHost()) {
+            if (hayRival) {
+                btnConfirmar.setEnabled(true);
+                btnConfirmar.setText("INICIAR JUEGO");
+            } else {
+                btnConfirmar.setEnabled(false);
+                btnConfirmar.setText("Esperando rival...");
+            }
+        } else {
+            btnConfirmar.setEnabled(false);
+            btnConfirmar.setText("Esperando al Host...");
+        }
+
+        this.revalidate();
+        this.repaint();
     }
 
     /**
@@ -47,18 +83,19 @@ public class SalaPartidaView extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblTipoPartida = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
         lblJugador1 = new javax.swing.JLabel();
         btnVolver = new javax.swing.JButton();
         btnConfirmar = new javax.swing.JButton();
         pnlUserIcon = new javax.swing.JPanel();
         lblJugador2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        lblIp = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(83, 111, 137));
 
-        lblTipoPartida.setFont(new java.awt.Font("Arial Black", 0, 48)); // NOI18N
-        lblTipoPartida.setText("---------- Partida");
+        lblTitulo.setFont(new java.awt.Font("Arial Black", 0, 48)); // NOI18N
+        lblTitulo.setText("Sala Partida");
 
         lblJugador1.setFont(new java.awt.Font("Arial Black", 0, 18)); // NOI18N
         lblJugador1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -79,6 +116,11 @@ public class SalaPartidaView extends javax.swing.JPanel {
         btnConfirmar.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         btnConfirmar.setForeground(new java.awt.Color(255, 255, 255));
         btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
 
         pnlUserIcon.setBackground(new java.awt.Color(83, 111, 137));
         pnlUserIcon.setLayout(new java.awt.BorderLayout());
@@ -91,6 +133,9 @@ public class SalaPartidaView extends javax.swing.JPanel {
         jPanel2.setPreferredSize(new java.awt.Dimension(120, 120));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
+        lblIp.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblIp.setText("IP: ....");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,13 +147,8 @@ public class SalaPartidaView extends javax.swing.JPanel {
                 .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(lblTipoPartida))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(300, 300, 300)
-                        .addComponent(lblJugador1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(300, 300, 300)
+                .addComponent(lblJugador1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE)
                 .addComponent(lblJugador2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(300, 300, 300))
@@ -118,19 +158,26 @@ public class SalaPartidaView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(319, 319, 319))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(lblTitulo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblIp, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(243, 243, 243)
+                        .addGap(9, 9, 9)
+                        .addComponent(lblIp)
+                        .addGap(184, 184, 184)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblJugador1)
                             .addComponent(lblJugador2)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(lblTipoPartida)))
+                    .addComponent(lblTitulo))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -144,17 +191,22 @@ public class SalaPartidaView extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // TODO add your handling code here:
+        salaController.volverAlLobby();
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+       salaController.iniciarJuego();
+    }//GEN-LAST:event_btnConfirmarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConfirmar;
     private javax.swing.JButton btnVolver;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblIp;
     private javax.swing.JLabel lblJugador1;
     private javax.swing.JLabel lblJugador2;
-    private javax.swing.JLabel lblTipoPartida;
+    private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel pnlUserIcon;
     // End of variables declaration//GEN-END:variables
 }

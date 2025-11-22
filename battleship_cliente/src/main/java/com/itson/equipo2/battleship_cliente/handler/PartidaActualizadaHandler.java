@@ -7,37 +7,34 @@ package com.itson.equipo2.battleship_cliente.handler;
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
-import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.dto.PartidaDTO;
 
 /**
  *
  * @author PC Gamer
  */
-public class TurnoTickHandler implements IMessageHandler {
-
-    private final Gson gson = new Gson();
+public class PartidaActualizadaHandler implements IMessageHandler {
 
     private final PartidaModel partidaModel;
+    private final Gson gson = new Gson();
 
-    public TurnoTickHandler(PartidaModel partidaModel) {
+    public PartidaActualizadaHandler(PartidaModel partidaModel) {
         this.partidaModel = partidaModel;
     }
 
     @Override
     public boolean canHandle(EventMessage message) {
-        return "TurnoTick".equals(message.getEventType());
+        return "PartidaActualizada".equals(message.getEventType());
     }
 
     @Override
     public void onMessage(EventMessage message) {
-        try {
-            TurnoTickResponse response = gson.fromJson(message.getPayload(), TurnoTickResponse.class);
+        System.out.println("Cliente: Recibido evento 'PartidaActualizada'. Sincronizando...");
 
-            partidaModel.actualizarTick(response);
+        PartidaDTO dto = gson.fromJson(message.getPayload(), PartidaDTO.class);
 
-        } catch (Exception e) {
-            System.err.println("Error en TurnoTickHandler: " + e.getMessage());
-        }
+        // Actualizamos el modelo con la información que llega del servidor
+        partidaModel.sincronizarDatosSala(dto);
     }
 }

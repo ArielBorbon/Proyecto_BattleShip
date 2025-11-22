@@ -5,6 +5,7 @@
 package mx.itson.equipo_2.common.dto.request;
 
 import java.io.Serializable;
+import mx.itson.equipo_2.common.enums.AccionPartida;
 
 /**
  *
@@ -12,9 +13,16 @@ import java.io.Serializable;
  */
 public class RegistrarJugadorRequest implements Serializable {
     private String nombre;
+    private AccionPartida accion; // CREAR o UNIRSE
 
     public RegistrarJugadorRequest() {
     }
+    
+        public RegistrarJugadorRequest(String nombre, AccionPartida accion) {
+        this.nombre = nombre;
+        this.accion = accion;
+    }
+    
 
     public RegistrarJugadorRequest(String nombre) {
         this.nombre = nombre;
@@ -27,4 +35,17 @@ public class RegistrarJugadorRequest implements Serializable {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
+    public AccionPartida getAccion() {
+        return accion;
+    }
+
+    public void setAccion(AccionPartida accion) {
+        this.accion = accion;
+    }
+    
+    
+    
+    
+    
 }
