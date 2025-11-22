@@ -10,7 +10,11 @@ import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import com.itson.equipo2.communication.dto.EventMessage;
+import java.awt.BorderLayout;
+import java.awt.Image;
 import java.net.InetAddress;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 
@@ -21,12 +25,22 @@ import mx.itson.equipo_2.common.broker.BrokerConfig;
 public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
 
     private final SalaController salaController;
+    
+    private final JLabel lblIconoJugador1 = new JLabel();
+    private final JLabel lblIconoJugador2 = new JLabel();
+    
+    private ImageIcon iconUser;
+    private ImageIcon iconWifi;
 
     public SalaPartidaView(SalaController salaController) {
         this.salaController = salaController;
         initComponents();
-        mostrarIpLocal();
 
+        cargarIconos();
+        
+        configurarPanelesIconos();
+        
+        mostrarIpLocal();
         btnConfirmar.setEnabled(false);
     }
 
@@ -55,7 +69,17 @@ public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, 
             lblJugador2.setText(model.getNombreJugador2());
         }
 
-        boolean hayRival = model.getNombreJugador2() != null && !model.getNombreJugador2().equals("Esperando...");
+
+        lblIconoJugador1.setIcon(iconUser);
+
+        String nombreJ2 = model.getNombreJugador2();
+        boolean hayRival = nombreJ2 != null && !nombreJ2.equals("Esperando...");
+
+        if (hayRival) {
+            lblIconoJugador2.setIcon(iconUser);
+        } else {
+            lblIconoJugador2.setIcon(iconWifi);
+        }
 
         if (model.isSoyHost()) {
             if (hayRival) {
@@ -72,6 +96,36 @@ public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, 
 
         this.revalidate();
         this.repaint();
+    }
+    
+    private void cargarIconos() {
+        try {
+
+            ImageIcon originalUser = new ImageIcon(getClass().getResource("/images/user_icon.png"));
+            Image imgUser = originalUser.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            this.iconUser = new ImageIcon(imgUser);
+
+            
+            ImageIcon originalWifi = new ImageIcon(getClass().getResource("/images/wifi_icon.png"));
+            Image imgWifi = originalWifi.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            this.iconWifi = new ImageIcon(imgWifi);
+
+        } catch (Exception e) {
+            System.err.println("Error al cargar iconos en SalaPartidaView: " + e.getMessage());
+        }
+    }
+    
+    private void configurarPanelesIconos() {
+        lblIconoJugador1.setHorizontalAlignment(JLabel.CENTER);
+        pnlUserIcon.removeAll();
+        pnlUserIcon.add(lblIconoJugador1, BorderLayout.CENTER);
+
+        lblIconoJugador2.setHorizontalAlignment(JLabel.CENTER);
+        jPanel2.removeAll();
+        jPanel2.add(lblIconoJugador2, BorderLayout.CENTER);
+        
+        pnlUserIcon.revalidate();
+        jPanel2.revalidate();
     }
 
     /**

@@ -31,7 +31,9 @@ public class RegistroController {
     }
 
     public void registrar(String nombre, AccionPartida accion) {
-        service.registrar(nombre, accion);
+        ColorJugador colorElegido = partidaModel.getYo().getColor();
+        
+        service.registrar(nombre, colorElegido, accion);
     }
 
     public void guardarDatosJugador(String nombre, ColorJugador color) {
@@ -42,6 +44,8 @@ public class RegistroController {
         }
         yo.setNombre(nombre);
         yo.setColor(color);
+        
+        partidaModel.notifyObservers();
     }
 
     public void configurarConexion(String ipHost) {

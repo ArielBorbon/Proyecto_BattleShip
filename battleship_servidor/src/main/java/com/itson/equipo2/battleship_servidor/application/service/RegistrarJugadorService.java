@@ -62,31 +62,31 @@ public class RegistrarJugadorService {
 
             // 2. PROCESAMIENTO
             String nuevoId = UUID.randomUUID().toString();
-            ColorJugador colorAsignado;
+
+            // USAMOS EL COLOR DEL REQUEST
+            ColorJugador colorAsignado = request.getColor() != null ? request.getColor() : ColorJugador.AZUL;
+
             Jugador nuevoJugador;
 
             if (request.getAccion() == AccionPartida.CREAR) {
-                // Lógica de CREAR (Jugador 1)
-                colorAsignado = ColorJugador.AZUL;
+
                 nuevoJugador = new Jugador(nuevoId, request.getNombre(), colorAsignado);
                 nuevoJugador.setEstado(EstadoJugador.POSICIONANDO);
 
                 Partida nuevaPartida = new Partida(nuevoJugador);
                 partidaRepository.guardar(nuevaPartida);
-                System.out.println("Partida CREADA por: " + request.getNombre());
+                System.out.println("Partida CREADA por: " + request.getNombre() + " con color " + colorAsignado);
 
             } else {
-                // Lógica de UNIRSE (Jugador 2)
-                colorAsignado = ColorJugador.ROJO;
+
                 nuevoJugador = new Jugador(nuevoId, request.getNombre(), colorAsignado);
                 nuevoJugador.setEstado(EstadoJugador.POSICIONANDO);
 
                 partidaActual.setJugador2(nuevoJugador);
                 partidaRepository.guardar(partidaActual);
-                System.out.println("Jugador UNIDO: " + request.getNombre());
+                System.out.println("Jugador UNIDO: " + request.getNombre() + " con color " + colorAsignado);
             }
 
-            // respueesta para un juegador y sepa cual es su id
             JugadorDTO jugadorDto = new JugadorDTO();
             jugadorDto.setId(nuevoId);
             jugadorDto.setNombre(request.getNombre());

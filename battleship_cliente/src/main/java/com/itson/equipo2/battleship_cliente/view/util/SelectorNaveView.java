@@ -59,6 +59,9 @@ public class SelectorNaveView extends JPanel {
      * (MVC).
      */
     private final PosicionarController posicionarController;
+    
+    
+    private Color colorJugador = Color.GRAY; // Color del jugador por defecto
 
     // --- CONSTRUCTOR ---
     /**
@@ -109,7 +112,7 @@ public class SelectorNaveView extends JPanel {
                 JLayeredPane layered = frame.getLayeredPane();
 
                 // 2.2. Crear la vista arrastrable
-                NaveView nave = new NaveView(tipo, tablero, posicionarController);
+                NaveView nave = new NaveView(tipo, tablero, posicionarController, colorJugador);
 
                 // 2.3. Posición inicial: centrar la nave bajo el cursor
                 // Convierte las coordenadas del clic de este SelectorNaveView a las del JLayeredPane
@@ -149,6 +152,16 @@ public class SelectorNaveView extends JPanel {
         barcosRestantes++;
         lblCantidad.setText("Disponibles: " + barcosRestantes);
     }
+
+    public Color getColorJugador() {
+        return colorJugador;
+    }
+
+    public void setColorJugador(Color colorJugador) {
+        this.colorJugador = colorJugador;
+    }
+    
+    
 
     /**
      * Obtiene la cantidad de naves de este tipo que quedan por posicionar.

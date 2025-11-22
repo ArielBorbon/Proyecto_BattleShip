@@ -50,6 +50,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private TableroModel tableroEnemigo;
 
     private PartidaModel partidaModel;
+    
+    private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
+    private final Color COLOR_DESTRUIDO = Color.BLACK;                 
+    private final Color COLOR_DANIADO = Color.DARK_GRAY;               
+    private final Color COLOR_MAR_OCULTO = new Color(50, 70, 100);     
 
     public DispararView() {
         initComponents();
@@ -78,19 +83,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTimer(model.getSegundosRestantes());
 
         if (this.miTablero != null) {
-            Color colorJugador = Color.GRAY;
-
-            if (model.getYo() != null
-                    && model.getYo().getColor() != null) {
+            // Obtenemos el color elegido por el jugador para pintar SUS naves intactas
+            Color colorJugador = Color.GRAY; 
+            if (model.getYo() != null && model.getYo().getColor() != null) {
                 colorJugador = model.getYo().getColor().getColor();
             }
-
             repintarPropio(this.miTablero, colorJugador);
         }
         
         if (this.tableroEnemigo != null) {
             repintarEnemigo(this.tableroEnemigo);
         }
+        
 
         revalidate();
         repaint();
@@ -100,7 +104,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             btnDisparar.setEnabled(false);
             btnRendirse.setEnabled(false);
         }
-
     }
 
     private void actualizarLabelTurno() {
@@ -108,9 +111,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             lblTurno.setText("Cargando partida...");
             return;
         }
-
         boolean esMiTurno = partidaModel.getTurnoDe().equals(partidaModel.getYo().getId());
-
         if (esMiTurno) {
             lblTurno.setText("¡ES TU TURNO!");
             lblTurno.setForeground(Color.GREEN);
@@ -125,7 +126,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private void actualizarLabelTimer(Integer segundos) {
         if (segundos != null) {
             lblTimer.setText(segundos + "s");
-
             if (segundos <= 10) {
                 lblTimer.setForeground(Color.ORANGE);
             } else {
@@ -283,19 +283,14 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private void crearCeldas() {
         botonesEnemigo = new JButton[10][10];
         botonesPropio = new JButton[10][10];
-
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
-
                 JButton celdaEnemigo = new JButton();
-                celdaEnemigo.setBackground(new Color(50, 70, 100));
+                celdaEnemigo.setBackground(COLOR_MAR_OCULTO);
                 celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
-
                 final int f = fila;
                 final int c = col;
-
                 celdaEnemigo.addActionListener(e -> {
-
                     if (tableroEnemigo != null) {
                         CeldaModel celdaModelo = tableroEnemigo.getCelda(f, c);
                         if (celdaModelo != null && celdaModelo.getEstado() == EstadoCelda.DISPARADA) {
@@ -303,25 +298,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                             return;
                         }
                     }
-
                     if (ultimaSeleccionada != null) {
                         ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
                     }
-
                     ultimaSeleccionada = celdaEnemigo;
-
                     celdaEnemigo.setBorder(new LineBorder(Color.GRAY, 3));
-
                     coordSeleccionada = new CoordenadaDTO(f, c);
                 });
-
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
-
                 JButton celdaPropio = new JButton();
-                celdaPropio.setBackground(new Color(50, 70, 100));
+                celdaPropio.setBackground(COLOR_MAR_OCULTO);
                 celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
-
                 panelTableroPropio.add(celdaPropio);
                 botonesPropio[fila][col] = celdaPropio;
             }
@@ -372,20 +360,13 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         mostrarTableroPropio(miTablero);
     }
 
-    public void mostrarNotificacion(ResultadoDisparo resultado) {
+   public void mostrarNotificacion(ResultadoDisparo resultado) {
         Color color;
-
         switch (resultado) {
-            case AGUA ->
-                color = Color.CYAN;
-
-            case IMPACTO_SIN_HUNDIMIENTO ->
-                color = Color.ORANGE;
-
-            case IMPACTO_CON_HUNDIMIENTO ->
-                color = Color.RED;
-            default ->
-                throw new AssertionError();
+            case AGUA -> color = Color.CYAN; // Texto azul claro
+            case IMPACTO_SIN_HUNDIMIENTO -> color = Color.ORANGE;
+            case IMPACTO_CON_HUNDIMIENTO -> color = Color.RED; // Texto rojo para la alerta
+            default -> throw new AssertionError();
         }
         lblResultado.setText(resultado.getMensaje());
         lblResultado.setForeground(color);
@@ -394,13 +375,11 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         if (timerNotificacion != null && timerNotificacion.isRunning()) {
             timerNotificacion.stop();
         }
-
         timerNotificacion = new javax.swing.Timer(2000, e -> {
             lblResultado.setText("");
             lblResultado.setBackground(new Color(0, 0, 0, 0));
             lblResultado.setVisible(false);
         });
-
         timerNotificacion.setRepeats(false);
         timerNotificacion.start();
     }
@@ -413,10 +392,9 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         this.lblResultado = lblResultado;
     }
 
-    private void repintarPropio(TableroModel tablero, Color color) {
-        if (tablero == null) {
-            return; 
-        }
+    private void repintarPropio(TableroModel tablero, Color colorUsuario) {
+        if (tablero == null) return;
+        
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
@@ -425,26 +403,24 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
                 if (celda.getEstado() == EstadoCelda.DISPARADA) {
                     if (celda.tieneNave()) {
-                        boton.setBackground(Color.RED);
+                        boton.setBackground(COLOR_DESTRUIDO); 
                     } else {
-                        boton.setBackground(Color.CYAN);
+                        boton.setBackground(COLOR_AGUA_IMPACTO);
                     }
                 } 
                 else if (celda.tieneNave()) {
-                    boton.setBackground(color); 
-                }
+                    boton.setBackground(colorUsuario); 
+                } 
                 else {
-                    boton.setBackground(new Color(50, 70, 100));
+                    boton.setBackground(COLOR_MAR_OCULTO); 
                 }
             }
         }
     }
 
     public void repintarEnemigo(TableroModel tablero) {
-        if (tablero == null) {
-            return;
-        }
-
+        if (tablero == null) return;
+        
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
@@ -452,26 +428,21 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                 JButton boton = botonesEnemigo[fila][col];
 
                 if (celda.getEstado() == EstadoCelda.NO_DISPARADA) {
-                    boton.setBackground(new Color(50, 70, 100));
+                    boton.setBackground(COLOR_MAR_OCULTO);
                     boton.setEnabled(true);
-                    continue; 
+                    continue;
                 }
 
                 EstadoNave estadoNave = celda.getEstadoNave();
                 boton.setEnabled(false);
 
                 if (estadoNave == null) {
-                    boton.setBackground(Color.BLUE);
+                    boton.setBackground(COLOR_AGUA_IMPACTO);
                 } else {
                     switch (estadoNave) {
-                        case AVERIADO:
-                            boton.setBackground(Color.ORANGE); 
-                            break;
-                        case HUNDIDO:
-                            boton.setBackground(Color.RED); 
-                            break;
-                        default:
-                            boton.setBackground(Color.PINK);
+                        case AVERIADO -> boton.setBackground(COLOR_DANIADO);
+                        case HUNDIDO -> boton.setBackground(COLOR_DESTRUIDO);
+                        default -> boton.setBackground(Color.PINK);
                     }
                 }
             }
