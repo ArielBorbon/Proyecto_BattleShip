@@ -43,6 +43,7 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.UnirseAPartidaViewFa
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
+import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
 import javax.swing.JPanel;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
@@ -115,6 +116,7 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("registro", new RegistroViewFactory(registroController));
         viewController.registrarPantalla("lobby", new LobbyViewFactory(registroController));
         viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(registroController));
+        viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
 
         // Registro manual de SalaPartida usando clase anónima o Factory
         viewController.registrarPantalla("salaPartida", new ViewFactory() {
@@ -131,7 +133,6 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
-
         // Handler clave para el flujo de registro - sala
         eventDispatcher.subscribe("JugadorRegistrado", new JugadorRegistradoHandler(viewController, partidaModel));
 
