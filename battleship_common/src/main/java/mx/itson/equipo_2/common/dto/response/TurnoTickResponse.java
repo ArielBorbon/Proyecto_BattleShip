@@ -5,16 +5,17 @@
 package mx.itson.equipo_2.common.dto.response;
 
 import java.io.Serializable;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
  *
  * @author PC Gamer
  */
-
 public class TurnoTickResponse implements Serializable {
 
     private String jugadorEnTurnoId;
     private int tiempoRestante;
+    private EstadoPartida estadoPartida;
 
     public TurnoTickResponse(String jugadorEnTurnoId, int tiempoRestante) {
         this.jugadorEnTurnoId = jugadorEnTurnoId;
@@ -36,4 +37,13 @@ public class TurnoTickResponse implements Serializable {
     public void setTiempoRestante(int tiempoRestante) {
         this.tiempoRestante = tiempoRestante;
     }
+    
+    public EstadoPartida getEstadoPartida() {
+        return estadoPartida;
+    }
+
+    public void setEstadoPartida(EstadoPartida estadoPartida) {
+        this.estadoPartida = estadoPartida;
+    }
+    
 }

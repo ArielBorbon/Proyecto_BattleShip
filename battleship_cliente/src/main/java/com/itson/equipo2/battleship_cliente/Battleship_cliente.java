@@ -4,6 +4,7 @@
 package com.itson.equipo2.battleship_cliente;
 
 import com.google.gson.Gson;
+import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.communication.impl.RedisConnection;
@@ -14,10 +15,13 @@ import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
+import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
+import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
@@ -68,12 +72,12 @@ public class Battleship_cliente {
         // Creamos el modelo raíz. Al hacerlo aquí, tú controlas su ciclo de vida.
         PartidaModel partidaModel = new PartidaModel();
         //TableroModel tableroModel = new TableroModel();
-        TableroModel miTablero = new TableroModel(JUGADOR_HUMANO_ID); 
+        TableroModel miTablero = new TableroModel(JUGADOR_HUMANO_ID);
         TableroModel tableroEnemigo = new TableroModel(JUGADOR_IA_ID);
-        
+
         JugadorModel jugadorModel = new JugadorModel(JUGADOR_HUMANO_ID, "Jonh Doe", ColorJugador.AZUL, EstadoJugador.POSICIONANDO, miTablero, new ArrayList<>());
         JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, EstadoJugador.POSICIONANDO, tableroEnemigo, new ArrayList<>());
-        
+
         partidaModel.setYo(jugadorModel);
         partidaModel.setEnemigo(jugadorModelEnemigo);
 
@@ -87,10 +91,12 @@ public class Battleship_cliente {
 
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
-        
+        AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
+
         // Ejemplo: El controlador de disparo necesita el Modelo para validar y el Publisher para enviar
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
+        AbandonarController abandonarController = new AbandonarController(abandonarService);
 
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
@@ -100,15 +106,15 @@ public class Battleship_cliente {
         // La vista principal recibe el controlador que gestionará la navegación
         DispararView dispararView = new DispararView();
         dispararView.setMediator(gameMediator);
-        
+        gameMediator.setAbandonarController(abandonarController);
+
         PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
-        
+
         EsperandoPosicionamientoVista esperandoPosicionamientoVista = new EsperandoPosicionamientoVista();
-        
+
 //        iniciarPartidaVsIA(publisher, miTablero);
-        
         dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
-        
+
         partidaModel.addObserver(dispararView);
         partidaModel.addObserver(posicionarNaveVista);
 
@@ -118,19 +124,20 @@ public class Battleship_cliente {
         viewController.registrarPantalla("disparar", dispararView);
         viewController.registrarPantalla("posicionar", posicionarNaveVista);
         viewController.registrarPantalla("esperandoPosicionamiento", esperandoPosicionamientoVista);
-        
+        viewController.registrarPantalla("lobby", new LobbyViewFactory());
+
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
-        
+        eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
+
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
         redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
 
-        
         // ---------------------------------------------------------
         // 5. ARRANQUE
         // ---------------------------------------------------------
@@ -147,7 +154,6 @@ public class Battleship_cliente {
 
         // 1. Poblar nuestro modelo local de tablero ANTES de enviar.
 //        tableroModel.posicionarNaves(navesHumano);
-
         CrearPartidaVsIARequest request = new CrearPartidaVsIARequest(
                 JUGADOR_HUMANO_ID,
                 ColorJugador.ROJO,

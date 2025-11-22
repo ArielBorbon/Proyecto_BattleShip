@@ -15,6 +15,7 @@ import mx.itson.equipo_2.common.enums.EstadoPartida;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
+import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
 
 /**
  *
@@ -34,7 +35,7 @@ public class RealizarDisparoService {
     }
 
     public void realizarDisparo(RealizarDisparoRequest request) {
-        
+
         System.out.println("DISPARO PARA PROCESAR EN:" + request.getCoordenada().toString());
         try {
             partidaTimerService.cancelCurrentTimer();
@@ -66,6 +67,30 @@ public class RealizarDisparoService {
             System.out.println("Disparo procesado. Resultado: " + response);
 
             if (partida.getEstado() == EstadoPartida.EN_BATALLA) {
+                partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
+            }
+
+            // 5. VERIFICAR SI LA PARTIDA TERMINÓ (Lógica Nueva)
+            if (partida.getEstado() == EstadoPartida.FINALIZADA) {
+
+                System.out.println("¡Juego terminado por disparo! Ganador: " + request.getJugadorId());
+
+                // Creamos el evento específico que pidió el comentario
+                PartidaFinalizadaResponse finResponse = new PartidaFinalizadaResponse(
+                        request.getJugadorId(), // El que disparó es el ganador
+                        "Todas las naves enemigas fueron destruidas."
+                );
+
+                EventMessage eventoFin = new EventMessage(
+                        "PartidaFinalizada",
+                        gson.toJson(finResponse)
+                );
+
+                // Publicamos el evento de finalización
+                eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, eventoFin);
+
+            } else if (partida.getEstado() == EstadoPartida.EN_BATALLA) {
+                // Si NO terminó, reiniciamos el timer
                 partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
             }
 

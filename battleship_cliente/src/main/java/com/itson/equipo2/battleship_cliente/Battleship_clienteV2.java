@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package com.itson.equipo2.battleship_cliente;
+import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
@@ -10,6 +11,7 @@ import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
@@ -34,6 +36,7 @@ import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.RegistroViewFactory;
+import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
 
 
@@ -65,6 +68,7 @@ public class Battleship_clienteV2 {
 
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
+        AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
 
    
         RegistroController registroController = new RegistroController(partidaModel); 
@@ -72,9 +76,11 @@ public class Battleship_clienteV2 {
 
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
+        AbandonarController abandonarController = new AbandonarController(abandonarService);
 
         GameMediator gameMediator = new GameMediator();
         gameMediator.setPartidaController(disparoController);
+        gameMediator.setAbandonarController(abandonarController);
 
 
         DispararView dispararView = new DispararView();
@@ -97,6 +103,7 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
+        eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
       
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
         redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);

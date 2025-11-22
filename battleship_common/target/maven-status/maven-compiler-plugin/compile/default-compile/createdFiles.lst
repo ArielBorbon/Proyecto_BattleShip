@@ -1,6 +1,7 @@
 mx\itson\equipo_2\common\dto\request\RegistrarJugadorRequest.class
 mx\itson\equipo_2\common\dto\response\TurnoTickResponse.class
 mx\itson\equipo_2\common\enums\ColorJugador.class
+mx\itson\equipo_2\common\dto\request\AbandonarPartidaRequest.class
 mx\itson\equipo_2\common\dto\DisparoDTO.class
 mx\itson\equipo_2\common\dto\CoordenadaDTO.class
 mx\itson\equipo_2\common\dto\PartidaDTO.class
@@ -17,6 +18,7 @@ mx\itson\equipo_2\common\enums\ResultadoDisparo.class
 mx\itson\equipo_2\common\dto\CeldaDTO.class
 mx\itson\equipo_2\common\dto\response\ResultadoDisparoReponse.class
 mx\itson\equipo_2\common\enums\EstadoNave.class
+mx\itson\equipo_2\common\dto\response\PartidaFinalizadaResponse.class
 mx\itson\equipo_2\common\dto\request\PosicionarFlotaRequest.class
 mx\itson\equipo_2\common\dto\response\NavesPosicionadasResponse.class
 mx\itson\equipo_2\common\dto\response\ErrorResponse.class
