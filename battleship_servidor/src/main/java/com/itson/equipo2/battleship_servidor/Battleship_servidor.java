@@ -7,10 +7,8 @@ import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.application.handler.AbandonarPartidaHandler;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
-import com.itson.equipo2.battleship_servidor.application.service.CrearPartidaVsIAService;
 import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerService;
 import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
-import com.itson.equipo2.battleship_servidor.application.handler.CrearPartidaVsIAHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.PosicionarNaveHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RegistrarJugadorHandler;
@@ -19,7 +17,6 @@ import com.itson.equipo2.battleship_servidor.application.service.PosicionarNaveS
 import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.service.AIService;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
@@ -60,12 +57,6 @@ public class Battleship_servidor {
                 timerService
         );
 
-        CrearPartidaVsIAService crearPartidaService = new CrearPartidaVsIAService(
-                partidaRepository,
-                publisher,
-                timerService,
-                gson
-        );
                 
         AbandonarPartidaService abandonarService = new AbandonarPartidaService(
                 partidaRepository, 

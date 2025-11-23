@@ -84,18 +84,12 @@ public class PartidaModel {
         }
 
         if (this.yo != null && this.yo.getId() != null && this.idJugador1 != null) {
-
             if (this.yo.getId().equals(this.idJugador1)) {
-                // Soy Host entonces  Mi enemigo es el J2 (si existe)
-                if (dto.getJugador2() != null) {
-                    actualizarEnemigo(dto.getJugador2());
-                }
+                if (dto.getJugador2() != null) actualizarEnemigo(dto.getJugador2());
             } else if (dto.getJugador2() != null && this.yo.getId().equals(dto.getJugador2().getId())) {
-                // Soy Guest entonces Mi enemigo es el J1
                 actualizarEnemigo(dto.getJugador1());
             }
         }
-
         notifyObservers();
     }
 
@@ -106,28 +100,32 @@ public class PartidaModel {
         this.enemigo.setId(enemigoDTO.getId());
         this.enemigo.setNombre(enemigoDTO.getNombre());
         this.enemigo.setColor(enemigoDTO.getColor());
-        this.enemigo.setEstado(EstadoJugador.POSICIONANDO);
+        this.enemigo.setEstado(EstadoJugador.EN_BATALLA); // Ya estamos jugando
 
+        // IMPORTANTE: Asegurar que el enemigo tenga un tablero (vacío/oculto)
         if (this.enemigo.getTablero() == null) {
             this.enemigo.setTablero(new TableroModel(enemigoDTO.getId()));
         }
     }
 
     public void procesarResultadoDisparo(ResultadoDisparoReponse response) {
-
-
         TableroModel tableroAfectado;
 
-        if (response.getJugadorId().equals(this.getYo().getId())) {
-            tableroAfectado = this.getEnemigo().getTablero();
+        boolean fuiYo = response.getJugadorId().equals(this.getYo().getId());
+
+        if (fuiYo) {
+            if (this.getEnemigo() != null) {
+                tableroAfectado = this.getEnemigo().getTablero();
+            } else {
+                System.err.println("Error Crítico: Enemigo es NULL al procesar disparo.");
+                return;
+            }
             
+            // Actualizar Marcador si hubo hundimiento
             if (response.getResultado() == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
-                // El servidor nos manda la lista de coordenadas del barco hundido.
-                // Usamos su tamaño (.size()) para deducir qué tipo de barco era 
                 int tamanioNave = response.getCoordenadasBarcoHundido().size();
                 registrarHundimientoEnemigo(tamanioNave); 
             }
-            // -----------------------------------------------
             
         } else {
             tableroAfectado = this.getYo().getTablero();
@@ -144,19 +142,29 @@ public class PartidaModel {
         this.setTurnoDe(response.getTurnoActual()); 
         this.setEstado(response.getEstadoPartida());
 
-
         notifyObservers();
     }
 
     public void iniciarPartida(PartidaIniciadaResponse response) {
-
         this.setId(response.getPartidaId());
 
         JugadorDTO yoDTO = response.getYo(getYo().getId());
+        if (yoDTO != null) {
+            this.getYo().setColor(yoDTO.getColor());
+            this.getYo().setNombre(yoDTO.getNombre());
+        }
+
         JugadorDTO enemigoDTO = response.getEnemigo(getYo().getId());
+        if (enemigoDTO != null) {
+            actualizarEnemigo(enemigoDTO);
+        }
+
+        inicializarNavesEnemigas();
 
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstado());
+        
+        notifyObservers();
     }
 
     public void actualizarTick(TurnoTickResponse response) {
@@ -206,7 +214,6 @@ public class PartidaModel {
         return exito;
     }
 
-
     private void inicializarNavesEnemigas() {
         navesEnemigas.clear();
         for (TipoNave tipo : TipoNave.values()) {
@@ -216,7 +223,6 @@ public class PartidaModel {
             }
             navesEnemigas.put(tipo, listaEstados);
         }
-        System.out.println("Flota enemiga inicializada en el marcador.");
     }
 
     /**

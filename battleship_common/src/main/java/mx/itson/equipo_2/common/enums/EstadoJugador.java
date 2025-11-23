@@ -12,5 +12,5 @@ public enum EstadoJugador {
 
     POSICIONANDO,
     LISTO,
-    EN_BATALLA;
+    EN_BATALLA, EN_PARTIDA;
 }

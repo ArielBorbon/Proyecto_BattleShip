@@ -38,11 +38,6 @@ public class PosicionarNaveService {
      */
     private final Gson gson = new Gson();
 
-    /**
-     * Dependencia de otro servicio para iniciar el juego si ambos jugadores
-     * están listos.
-     */
-    private CrearPartidaVsIAService crearPartidaVsIAService;
 
     private PartidaTimerService partidaTimerService;
 

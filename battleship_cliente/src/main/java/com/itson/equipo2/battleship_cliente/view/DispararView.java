@@ -55,7 +55,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     private PartidaModel partidaModel; // refeerencia local
     private MarcadorView marcadorView;
-    private ViewController viewController;
+    
     private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
     private final Color COLOR_DESTRUIDO = Color.BLACK;                 
     private final Color COLOR_DANIADO = Color.DARK_GRAY;               
@@ -69,47 +69,52 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     public void setModels(PartidaModel partidaModel, TableroModel miTablero, TableroModel tableroEnemigo) {
         this.partidaModel = partidaModel;
-        this.miTablero = miTablero;
-        this.tableroEnemigo = tableroEnemigo;
 
-        System.out.println("DispararView: Modelos inyectados.");
-        actualizarLabelTurno();
 
-//        mostrarTableroPropio(this.miTablero);
-        //////////////////////////////////////////////////
+        if (this.partidaModel != null) {
+            this.partidaModel.addObserver(this);
+            System.out.println("DispararView: Suscrito a actualizaciones.");
+            
+
+            onChange(this.partidaModel); 
+        }
     }
 
     @Override
     public void onChange(PartidaModel model) {
-        System.out.println("Observer notificado: Repintando vista.");
         this.partidaModel = model;
 
         actualizarLabelTurno();
         actualizarLabelTimer(model.getSegundosRestantes());
 
-        if (this.miTablero != null) {
-            // Obtenemos el color elegido por el jugador para pintar SUS naves intactas
-            Color colorJugador = Color.GRAY; 
+        TableroModel miTableroActual = model.getTableroPropio();
+        if (miTableroActual != null) {
+            Color colorJugador = Color.GRAY;
             if (model.getYo() != null && model.getYo().getColor() != null) {
                 colorJugador = model.getYo().getColor().getColor();
             }
-            repintarPropio(this.miTablero, colorJugador);
+            repintarPropio(miTableroActual, colorJugador);
         }
-        
-        if (this.tableroEnemigo != null) {
-            repintarEnemigo(this.tableroEnemigo);
-        }
-        
 
+        if (model.getEnemigo() != null) {
+            TableroModel tableroEnemigoActual = model.getEnemigo().getTablero();
+            if (tableroEnemigoActual != null) {
+                repintarEnemigo(tableroEnemigoActual);
+            }
+        }
+        
         actualizarDatosMarcador();
-        // --------------------------------------------------------------------
 
         revalidate();
         repaint();
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
-            btnDisparar.setEnabled(false);
-            btnRendirse.setEnabled(false);
+            if (btnDisparar.isEnabled()) { 
+                String mensaje = "¡Partida terminada! Ganador: " + model.getTurnoDe();
+                JOptionPane.showMessageDialog(this, mensaje);
+                btnDisparar.setEnabled(false);
+                btnRendirse.setEnabled(false);
+            }
         }
     }
 
@@ -268,7 +273,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
         if (opcion == JOptionPane.YES_OPTION) {
             if (mediator != null) {
-                // La vista da la orden al mediador
                 mediator.abandonarPartida();
             }
         }
@@ -279,12 +283,20 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             mostrarError("Debes seleccionar una casilla para disparar.");
             return;
         }
+        
+        if (tableroEnemigo != null) {
+            CeldaModel celda = tableroEnemigo.getCelda(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
+            if (celda.getEstado() == EstadoCelda.DISPARADA) {
+                mostrarError("Esta casilla ya fue disparada.");
+                return;
+            }
+        }
+
         if (mediator != null) {
             mediator.disparar(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
         }
-
+        
         this.coordSeleccionada = null;
-
         if (this.ultimaSeleccionada != null) {
             this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
             this.ultimaSeleccionada = null;
@@ -355,7 +367,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
     @Override
     public JPanel crear(ViewController control) {
-        this.viewController = control;
         return this;
     }
 
@@ -441,14 +452,16 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
                 if (celda.getEstado() == EstadoCelda.DISPARADA) {
                     if (celda.tieneNave()) {
-                        boton.setBackground(COLOR_DESTRUIDO); 
+                        boton.setBackground(COLOR_DESTRUIDO);
                     } else {
                         boton.setBackground(COLOR_AGUA_IMPACTO);
                     }
                 } 
+                
                 else if (celda.tieneNave()) {
                     boton.setBackground(colorUsuario); 
                 } 
+                
                 else {
                     boton.setBackground(COLOR_MAR_OCULTO); 
                 }
@@ -478,7 +491,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
                     boton.setBackground(COLOR_AGUA_IMPACTO);
                 } else {
                     switch (estadoNave) {
-                        case AVERIADO -> boton.setBackground(COLOR_DANIADO);
+                        case AVERIADO -> boton.setBackground(COLOR_DANIADO); 
                         case HUNDIDO -> boton.setBackground(COLOR_DESTRUIDO);
                         default -> boton.setBackground(Color.PINK);
                     }
