@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
+import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,16 +13,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import mx.itson.equipo_2.common.enums.AccionPartida;
 
 public class LobbyView extends JPanel {
 
-  
     private final Color COLOR_FONDO = new Color(83, 111, 137);
     private final Color COLOR_BOTON = new Color(75, 75, 75);
     private final Color COLOR_TEXTO = new Color(255, 255, 255);
     private final Font FUENTE_BOTON = new Font("Segoe UI Black", 0, 18);
 
-    public LobbyView(ViewController viewController) {
+    private final RegistroController registroController;
+
+    public LobbyView(ViewController viewController, RegistroController registroController) {
+        this.registroController = registroController;
         initComponents(viewController);
     }
 
@@ -32,7 +36,6 @@ public class LobbyView extends JPanel {
         setMaximumSize(new Dimension(1280, 720));
         setMinimumSize(new Dimension(1280, 720));
 
-  
         try {
             ImageIcon shipIcon = new ImageIcon(getClass().getResource("/images/ship.png"));
             JLabel lblShipImage = new JLabel(shipIcon);
@@ -42,7 +45,6 @@ public class LobbyView extends JPanel {
             System.err.println("No se pudo cargar la imagen del barco: " + e.getMessage());
         }
 
-     
         JButton btnCrear = new JButton("Crear Partida");
         btnCrear.setBackground(COLOR_BOTON);
         btnCrear.setFont(FUENTE_BOTON);
@@ -51,13 +53,13 @@ public class LobbyView extends JPanel {
         btnCrear.setFocusPainted(false);
         btnCrear.setBounds(540, 400, 200, 41);
         btnCrear.addActionListener(e -> {
-          
-            System.out.println("Comando 'Crear Partida' no implementado.");
-         
+            String nombre = registroController.getPartidaModel().getYo().getNombre();
+
+            registroController.registrar(nombre, AccionPartida.CREAR);
+
         });
         add(btnCrear);
 
-     
         JButton btnUnirse = new JButton("Unirse a Partida");
         btnUnirse.setBackground(COLOR_BOTON);
         btnUnirse.setFont(FUENTE_BOTON);
@@ -66,13 +68,10 @@ public class LobbyView extends JPanel {
         btnUnirse.setFocusPainted(false);
         btnUnirse.setBounds(540, 460, 200, 41);
         btnUnirse.addActionListener(e -> {
-           
-            System.out.println("Comando 'Unirse a Partida' no implementado.");
-         
+            viewController.cambiarPantalla("unirse");
         });
         add(btnUnirse);
 
-  
         JButton btnVolver = new JButton("+ Volver");
         btnVolver.setBackground(COLOR_BOTON);
         btnVolver.setFont(FUENTE_BOTON);
@@ -83,4 +82,5 @@ public class LobbyView extends JPanel {
         btnVolver.addActionListener(e -> viewController.cambiarPantalla("menu"));
         add(btnVolver);
     }
+
 }

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
+import mx.itson.equipo_2.common.dto.PartidaDTO;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
@@ -33,6 +34,12 @@ public class PartidaModel {
     private String turnoDe; // id del jugador con turno actual
     private Integer segundosRestantes;
     private EstadoPartida estado;
+    private String idJugador1; //ID del Host
+
+    private String nombreJugador1;
+    private String nombreJugador2;
+
+    private boolean soyHost = false;
 
     private Map<TipoNave, List<EstadoNave>> navesEnemigas;
 
@@ -57,9 +64,58 @@ public class PartidaModel {
         });
     }
 
+    /**
+     * Actualiza los datos de la sala basándose en el DTO global del servidor.
+     *
+     * @param dto
+     */
+    public void sincronizarDatosSala(PartidaDTO dto) {
+        this.estado = dto.getEstado();
+
+        if (dto.getJugador1() != null) {
+            this.nombreJugador1 = dto.getJugador1().getNombre();
+            this.idJugador1 = dto.getJugador1().getId(); 
+        }
+
+        if (dto.getJugador2() != null) {
+            this.nombreJugador2 = dto.getJugador2().getNombre();
+        } else {
+            this.nombreJugador2 = "Esperando...";
+        }
+
+        if (this.yo != null && this.yo.getId() != null && this.idJugador1 != null) {
+
+            if (this.yo.getId().equals(this.idJugador1)) {
+                // Soy Host entonces  Mi enemigo es el J2 (si existe)
+                if (dto.getJugador2() != null) {
+                    actualizarEnemigo(dto.getJugador2());
+                }
+            } else if (dto.getJugador2() != null && this.yo.getId().equals(dto.getJugador2().getId())) {
+                // Soy Guest entonces Mi enemigo es el J1
+                actualizarEnemigo(dto.getJugador1());
+            }
+        }
+
+        notifyObservers();
+    }
+
+    private void actualizarEnemigo(JugadorDTO enemigoDTO) {
+        if (this.enemigo == null) {
+            this.enemigo = new JugadorModel();
+        }
+        this.enemigo.setId(enemigoDTO.getId());
+        this.enemigo.setNombre(enemigoDTO.getNombre());
+        this.enemigo.setColor(enemigoDTO.getColor());
+        this.enemigo.setEstado(EstadoJugador.POSICIONANDO);
+
+        if (this.enemigo.getTablero() == null) {
+            this.enemigo.setTablero(new TableroModel(enemigoDTO.getId()));
+        }
+    }
+
     public void procesarResultadoDisparo(ResultadoDisparoReponse response) {
 
-        // 1. Determinar qué tablero actualizar
+
         TableroModel tableroAfectado;
 
         if (response.getJugadorId().equals(this.getYo().getId())) {
@@ -76,6 +132,7 @@ public class PartidaModel {
         } else {
             tableroAfectado = this.getYo().getTablero();
         }
+
         if (tableroAfectado != null) {
             tableroAfectado.actualizarCelda(
                     response.getCoordenada(),
@@ -83,40 +140,30 @@ public class PartidaModel {
                     response.getCoordenadasBarcoHundido()
             );
         }
-
-        this.setTurnoDe(response.getTurnoActual());
+      
+        this.setTurnoDe(response.getTurnoActual()); 
         this.setEstado(response.getEstadoPartida());
+
 
         notifyObservers();
     }
 
     public void iniciarPartida(PartidaIniciadaResponse response) {
 
-        // 1. Sincronizar el ID de la partida
         this.setId(response.getPartidaId());
 
-        // 2. Sincronizar al enemigo
         JugadorDTO yoDTO = response.getYo(getYo().getId());
         JugadorDTO enemigoDTO = response.getEnemigo(getYo().getId());
 
-        // 3. Sincronizar el tablero propio
-//        yo.setTablero(yoDTO.getTablero());
-        // 4. Sincronizar el estado de la partida
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstado());
     }
 
     public void actualizarTick(TurnoTickResponse response) {
 
-        // 1. Actualizamos los campos privados directamente
-        //    (Evitamos los setters para no disparar 2 notificaciones)
         this.turnoDe = response.getJugadorEnTurnoId();
-        this.segundosRestantes = response.getTiempoRestante();
-        
+        this.segundosRestantes = response.getTiempoRestante();	//asd
         this.estado = response.getEstadoPartida();
-        
-        // 2. Notificamos a los observadores UNA SOLA VEZ
-        //    con el estado ya actualizado.
         this.notifyObservers();
     }
 
@@ -139,15 +186,21 @@ public class PartidaModel {
 
     }
 
+    public boolean isSoyHost() {
+        return yo != null && yo.getId() != null && idJugador1 != null && yo.getId().equals(idJugador1);
+    }
+
+    public void setSoyHost(boolean soyHost) {
+        this.soyHost = soyHost;
+    }
+
     public boolean intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) {
 
-        // 1. Delega la petición al modelo "trabajador"
         TableroModel tableroPropio = this.getTableroPropio();
         boolean exito = tableroPropio.agregarNave(tipo, fila, col, esHorizontal); //
 
-        // 2. Si el trabajador tuvo éxito, notifica a los observadores
         if (exito) {
-            this.notifyObservers();//
+            this.notifyObservers();
         }
 
         return exito;
@@ -205,10 +258,7 @@ public class PartidaModel {
     }
 
     public TableroModel getTableroPropio() {
-        // Asumimos que 'this.yo' NUNCA es nulo aquí. 
-        // 'this.yo' debe ser asignado cuando la partida se crea o el jugador se une.
         if (this.yo.getTablero() == null) {
-            // Si el jugador 'yo' no tiene un tablero, se lo creamos.
             this.yo.setTablero(new TableroModel(this.yo.getId()));
         }
         return this.yo.getTablero();
@@ -277,6 +327,22 @@ public class PartidaModel {
     @Override
     public String toString() {
         return "PartidaModel{" + "id=" + id + ", yo=" + yo + ", enemigo=" + enemigo + ", enCurso=" + enCurso + ", turnoDe=" + turnoDe + ", segundosRestantes=" + segundosRestantes + ", estado=" + estado + '}';
+    }
+
+    public String getNombreJugador1() {
+        return nombreJugador1;
+    }
+
+    public void setNombreJugador1(String nombreJugador1) {
+        this.nombreJugador1 = nombreJugador1;
+    }
+
+    public String getNombreJugador2() {
+        return nombreJugador2;
+    }
+
+    public void setNombreJugador2(String nombreJugador2) {
+        this.nombreJugador2 = nombreJugador2;
     }
 
 }

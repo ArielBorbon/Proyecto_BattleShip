@@ -68,6 +68,18 @@ public class RedisConnection {
         }
         return subscriberExecutor;
     }
+    
+    
+    
+    public static synchronized void setHost(String newHost) {
+        System.out.println("Cambiando Host de Redis a: " + newHost);
+        RedisConfig.REDIS_HOST = newHost;
+        
+        if (jedisPool != null) {
+            jedisPool.close();
+            jedisPool = null; 
+        }
+    }
 
     /**
      * Cierra y libera todos los recursos de los pools.

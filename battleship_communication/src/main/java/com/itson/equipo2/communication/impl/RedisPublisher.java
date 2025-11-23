@@ -16,8 +16,7 @@ public class RedisPublisher implements IMessagePublisher {
     /**
      * Pool de conexiones para obtener recursos de conexión a Redis.
      */
-    private final JedisPool jedisPool;
-
+//    private final JedisPool jedisPool;
     /**
      * Serializador JSON para convertir el mensaje a String.
      */
@@ -29,7 +28,6 @@ public class RedisPublisher implements IMessagePublisher {
      * @param jedisPool El pool de conexiones de Redis.
      */
     public RedisPublisher(JedisPool jedisPool) {
-        this.jedisPool = jedisPool;
     }
 
     /**
@@ -41,8 +39,6 @@ public class RedisPublisher implements IMessagePublisher {
     @Override
     public void publish(String channel, EventMessage message) {
         String jsonMessage;
-
-        // 1. Serializar el mensaje DTO a JSON
         try {
             jsonMessage = gson.toJson(message);
         } catch (Exception e) {
@@ -50,16 +46,11 @@ public class RedisPublisher implements IMessagePublisher {
             return;
         }
 
-        // 2. Obtener un recurso de conexión y publicar
-        try (Jedis jedis = jedisPool.getResource()) {
-
+        try (Jedis jedis = RedisConnection.getJedisPool().getResource()) {
             jedis.publish(channel, jsonMessage);
-
         } catch (JedisConnectionException e) {
-            // Manejo de error si la conexión a Redis falla
             System.err.println("Error publicando en Redis (Canal: " + channel + "): " + e.getMessage());
         } catch (Exception e) {
-            // Manejo de errores inesperados
             System.err.println("Error inesperado al publicar mensaje: " + e.getMessage());
             e.printStackTrace();
         }

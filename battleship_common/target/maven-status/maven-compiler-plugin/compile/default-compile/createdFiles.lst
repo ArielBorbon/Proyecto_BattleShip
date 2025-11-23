@@ -13,6 +13,7 @@ mx\itson\equipo_2\common\enums\OrientacionNave.class
 mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.class
 mx\itson\equipo_2\common\dto\TableroDTO.class
 mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.class
+mx\itson\equipo_2\common\enums\AccionPartida.class
 mx\itson\equipo_2\common\enums\EstadoPartida.class
 mx\itson\equipo_2\common\enums\ResultadoDisparo.class
 mx\itson\equipo_2\common\dto\CeldaDTO.class

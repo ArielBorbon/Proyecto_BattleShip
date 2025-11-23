@@ -78,10 +78,8 @@ public class ViewController implements ViewManager {
     }
 
     public void mostrarResultadoDisparo(ResultadoDisparo resultado) {
-        // Verificamos si la pantalla actual es la que sabe mostrar notificaciones
         if (pantallaActual instanceof DispararView) {
 
-            // Usamos invokeLater para asegurar que se ejecute en el hilo de Swing
             javax.swing.SwingUtilities.invokeLater(() -> {
                 DispararView vista = (DispararView) pantallaActual;
                 vista.mostrarNotificacion(resultado);

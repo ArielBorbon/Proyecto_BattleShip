@@ -30,8 +30,6 @@ import com.itson.equipo2.communication.impl.RedisConnection;
 import com.itson.equipo2.communication.impl.RedisPublisher;
 import com.itson.equipo2.communication.impl.RedisSubscriber;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
-import mx.itson.equipo_2.common.enums.ColorJugador;
-import mx.itson.equipo_2.common.enums.EstadoJugador;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -43,37 +41,29 @@ public class Battleship_servidor {
     public static void main(String[] args) {
         System.out.println("Iniciando Battleship Servidor...");
 
-    
+        // 1. Infraestructura
         JedisPool pool = RedisConnection.getJedisPool();
         ExecutorService executor = RedisConnection.getSubscriberExecutor();
-
-        Jugador jugador = new Jugador("JUGADOR_1", "Jonh Doe", ColorJugador.AZUL);
-        Jugador jugador2 = new Jugador("JUGADOR_IA_01", "IA", ColorJugador.ROJO);
-        jugador2.setEstado(EstadoJugador.POSICIONANDO);
-      
         IMessagePublisher publisher = new RedisPublisher(pool);
-        IPartidaRepository partidaRepository = new PartidaRepository(new Partida(jugador)); 
-        partidaRepository.getPartida().unirseAPartida(jugador2, "JUGADOR_1");
         Gson gson = new Gson();
-        AIService aiService = new AIService(partidaRepository, publisher);
 
-        
+        // 2. Repositorio
+        IPartidaRepository partidaRepository = new PartidaRepository(null);
+
+        // 3. Servicios de Aplicación
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-        
         PartidaTimerService timerService = new PartidaTimerService();
-        
-       
+
         RealizarDisparoService disparoService = new RealizarDisparoService(
-                partidaRepository, 
-                publisher, 
+                partidaRepository,
+                publisher,
                 timerService
         );
-        
-        
+
         CrearPartidaVsIAService crearPartidaService = new CrearPartidaVsIAService(
-                partidaRepository, 
-                publisher, 
-                timerService, 
+                partidaRepository,
+                publisher,
+                timerService,
                 gson
         );
                 
@@ -83,38 +73,30 @@ public class Battleship_servidor {
                 timerService
         );
     
+
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(
-                publisher, 
-                gson
+                publisher,
+                gson,
+                partidaRepository
         );
-        
+
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(
-                partidaRepository, 
+                partidaRepository,
                 publisher
         );
-        
-        posicionarNaveService.setCrearPartidaVsIAService(crearPartidaService);
 
-    
-        eventDispatcher.subscribe(
-                "RealizarDisparo", 
-                new RealizarDisparoHandler(disparoService)
-        );
 
-        eventDispatcher.subscribe(
-                "CrearPartidaVsIA", 
-                new CrearPartidaVsIAHandler(crearPartidaService)
-        );
+//        eventDispatcher.subscribe(
+ //               "CrearPartidaVsIA", 
+  //              new CrearPartidaVsIAHandler(crearPartidaService)
+  //      );
         
        eventDispatcher.subscribe(
                 "AbandonarPartida", 
                 new AbandonarPartidaHandler(abandonarService)
         );
        
-        eventDispatcher.subscribe(
-                "RegistrarJugador", 
-                new RegistrarJugadorHandler(registrarJugadorService)
-        );
+
         
         eventDispatcher.subscribe(
                 "PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
@@ -132,19 +114,40 @@ public class Battleship_servidor {
             }
         });
         
+
+    //    posicionarNaveService.setCrearPartidaVsIAService(crearPartidaService);
+
+        eventDispatcher.subscribe("RealizarDisparo", new RealizarDisparoHandler(disparoService));
+       // eventDispatcher.subscribe("CrearPartidaVsIA", new CrearPartidaVsIAHandler(crearPartidaService));
+        eventDispatcher.subscribe("RegistrarJugador", new RegistrarJugadorHandler(registrarJugadorService));
+        eventDispatcher.subscribe("PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
+
+        eventDispatcher.subscribe("SolicitarInicioPosicionamiento", new IMessageHandler() {
+            @Override
+            public boolean canHandle(EventMessage message) {
+                return "SolicitarInicioPosicionamiento".equals(message.getEventType());
+            }
+
+            @Override
+            public void onMessage(EventMessage message) {
+                System.out.println("Servidor: El Host inició la partida. Notificando a todos...");
+                // Rebotamos la señal como un evento público
+                EventMessage eventoInicio = new EventMessage("InicioPosicionamiento", "GO");
+                publisher.publish(BrokerConfig.CHANNEL_EVENTOS, eventoInicio);
+            }
+        });
+
+        // 5. Suscripción a Redis (Entrada de comandos)
         IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
         commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);
 
-        
-     
+        // (Opcional) El servidor también puede escuchar eventos si es necesario para log o depuración
         IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
         eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
 
-
         System.out.println("************************************************************");
-        System.out.println("Battleship Servidor listo.");
-        System.out.println("Escuchando comandos en: '" + BrokerConfig.CHANNEL_COMANDOS + "'");
-        System.out.println("Escuchando eventos en:  '" + BrokerConfig.CHANNEL_EVENTOS + "'");
+        System.out.println("Battleship Servidor LISTO para recibir jugadores.");
+        System.out.println("Esperando comandos en: '" + BrokerConfig.CHANNEL_COMANDOS + "'");
         System.out.println("************************************************************");
     }
 }

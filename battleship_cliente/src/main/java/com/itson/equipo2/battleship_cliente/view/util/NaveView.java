@@ -86,7 +86,7 @@ public class NaveView extends JPanel {
      * @param controller El controlador de posicionamiento para la lógica de
      * negocio (MVC).
      */
-    public NaveView(TipoNave tipo, JPanel tablero, PosicionarController controller) {
+    public NaveView(TipoNave tipo, JPanel tablero, PosicionarController controller, Color colorJugador) {
         this.tipo = tipo;
         this.tablero = tablero;
         this.partidaController = controller; // Asigna el controlador para la interacción MVC
@@ -97,8 +97,14 @@ public class NaveView extends JPanel {
 
         setSize(ancho, alto);
         setPreferredSize(new Dimension(ancho, alto));
-        setBackground(new Color(100, 100, 100, 200)); // Color con transparencia
-        setOpaque(false); // Necesario para que el fondo del contenedor se vea
+
+        if (colorJugador != null) {
+            Color colorConTransparencia = new Color(colorJugador.getRed(), colorJugador.getGreen(), colorJugador.getBlue(), 200);
+            setBackground(colorConTransparencia);
+        } else {
+            setBackground(new Color(100, 100, 100, 200));
+        }
+        setOpaque(false);
 
         // 2. Lógica de Eventos Globales (Arrastre y Rotación)
         // Se añade un listener que captura eventos de mouse y teclado EN TODA LA APLICACIÓN.

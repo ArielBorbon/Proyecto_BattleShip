@@ -1,0 +1,57 @@
+
+package com.itson.equipo2.battleship_cliente.handler;
+
+import com.google.gson.Gson;
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.models.JugadorModel;
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
+import com.itson.equipo2.communication.broker.IMessageHandler;
+import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.dto.JugadorDTO;
+
+public class JugadorRegistradoHandler implements IMessageHandler {
+
+    private final ViewController viewController;
+    private final PartidaModel partidaModel;
+    private final Gson gson = new Gson();
+
+    public JugadorRegistradoHandler(ViewController viewController, PartidaModel partidaModel) {
+        this.viewController = viewController;
+        this.partidaModel = partidaModel;
+    }
+
+    @Override
+    public boolean canHandle(EventMessage message) {
+        return "JugadorRegistrado".equals(message.getEventType());
+    }
+
+    @Override
+    public void onMessage(EventMessage message) {
+        JugadorDTO jugadorInfo = gson.fromJson(message.getPayload(), JugadorDTO.class);
+
+        JugadorModel miModelo = partidaModel.getYo();
+        if (miModelo == null || miModelo.getNombre() == null) {
+            return; 
+        }
+
+        if (!miModelo.getNombre().equals(jugadorInfo.getNombre())) {
+            System.out.println("Cliente: Ignorando evento 'JugadorRegistrado' de otro usuario (" + jugadorInfo.getNombre() + ")");
+            return; 
+        }
+
+        System.out.println("Cliente: Recibido MI confirmación de registro.");
+
+        miModelo.setId(jugadorInfo.getId());
+        miModelo.setColor(jugadorInfo.getColor());
+
+        if (miModelo.getTablero() != null) {
+            miModelo.getTablero().setIdJugaodr(jugadorInfo.getId());
+        }
+
+        System.out.println("Cliente: ¡Registrado! Mi ID asignado es " + miModelo.getId());
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            viewController.cambiarPantalla("salaPartida");
+        });
+    }
+}

@@ -56,6 +56,10 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private PartidaModel partidaModel; // refeerencia local
     private MarcadorView marcadorView;
     private ViewController viewController;
+    private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
+    private final Color COLOR_DESTRUIDO = Color.BLACK;                 
+    private final Color COLOR_DANIADO = Color.DARK_GRAY;               
+    private final Color COLOR_MAR_OCULTO = new Color(50, 70, 100);     
 
     public DispararView() {
         initComponents();
@@ -84,11 +88,18 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         actualizarLabelTimer(model.getSegundosRestantes());
 
         if (this.miTablero != null) {
-            repintarPropio(this.miTablero, model.getYo().getColor().getColor());
+            // Obtenemos el color elegido por el jugador para pintar SUS naves intactas
+            Color colorJugador = Color.GRAY; 
+            if (model.getYo() != null && model.getYo().getColor() != null) {
+                colorJugador = model.getYo().getColor().getColor();
+            }
+            repintarPropio(this.miTablero, colorJugador);
         }
+        
         if (this.tableroEnemigo != null) {
             repintarEnemigo(this.tableroEnemigo);
         }
+        
 
         actualizarDatosMarcador();
         // --------------------------------------------------------------------
@@ -100,7 +111,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             btnDisparar.setEnabled(false);
             btnRendirse.setEnabled(false);
         }
-
     }
 
     /**
@@ -122,9 +132,7 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
             lblTurno.setText("Cargando partida...");
             return;
         }
-
         boolean esMiTurno = partidaModel.getTurnoDe().equals(partidaModel.getYo().getId());
-
         if (esMiTurno) {
             lblTurno.setText("¡ES TU TURNO!");
             lblTurno.setForeground(Color.GREEN);
@@ -139,7 +147,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private void actualizarLabelTimer(Integer segundos) {
         if (segundos != null) {
             lblTimer.setText(segundos + "s");
-
             if (segundos <= 10) {
                 lblTimer.setForeground(Color.ORANGE);
             } else {
@@ -279,7 +286,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         this.coordSeleccionada = null;
 
         if (this.ultimaSeleccionada != null) {
-            // Restaurar el borde original (negro)
             this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
             this.ultimaSeleccionada = null;
         }
@@ -314,46 +320,33 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
     private void crearCeldas() {
         botonesEnemigo = new JButton[10][10];
         botonesPropio = new JButton[10][10];
-
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
-
                 JButton celdaEnemigo = new JButton();
-                celdaEnemigo.setBackground(new Color(50, 70, 100));
+                celdaEnemigo.setBackground(COLOR_MAR_OCULTO);
                 celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
-
                 final int f = fila;
                 final int c = col;
-
                 celdaEnemigo.addActionListener(e -> {
-
                     if (tableroEnemigo != null) {
                         CeldaModel celdaModelo = tableroEnemigo.getCelda(f, c);
                         if (celdaModelo != null && celdaModelo.getEstado() == EstadoCelda.DISPARADA) {
                             mostrarError("Ya has disparado en esta casilla.");
-                            return; // No permitir seleccionar
+                            return;
                         }
                     }
-
                     if (ultimaSeleccionada != null) {
                         ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
                     }
-
                     ultimaSeleccionada = celdaEnemigo;
-
                     celdaEnemigo.setBorder(new LineBorder(Color.GRAY, 3));
-
                     coordSeleccionada = new CoordenadaDTO(f, c);
                 });
-
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
-
                 JButton celdaPropio = new JButton();
-                //celdaPropio.setEnabled(false);
-                celdaPropio.setBackground(new Color(50, 70, 100));
+                celdaPropio.setBackground(COLOR_MAR_OCULTO);
                 celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
-
                 panelTableroPropio.add(celdaPropio);
                 botonesPropio[fila][col] = celdaPropio;
             }
@@ -405,36 +398,26 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         mostrarTableroPropio(miTablero);
     }
 
-    public void mostrarNotificacion(ResultadoDisparo resultado) {
+   public void mostrarNotificacion(ResultadoDisparo resultado) {
         Color color;
-
         switch (resultado) {
-            case AGUA ->
-                color = Color.CYAN;
-
-            case IMPACTO_SIN_HUNDIMIENTO ->
-                color = Color.ORANGE;
-
-            case IMPACTO_CON_HUNDIMIENTO ->
-                color = Color.RED;
-            default ->
-                throw new AssertionError();
+            case AGUA -> color = Color.CYAN; // Texto azul claro
+            case IMPACTO_SIN_HUNDIMIENTO -> color = Color.ORANGE;
+            case IMPACTO_CON_HUNDIMIENTO -> color = Color.RED; // Texto rojo para la alerta
+            default -> throw new AssertionError();
         }
         lblResultado.setText(resultado.getMensaje());
         lblResultado.setForeground(color);
-//        lblResultado.setBackground(colorFondo);
         lblResultado.setVisible(true);
 
         if (timerNotificacion != null && timerNotificacion.isRunning()) {
             timerNotificacion.stop();
         }
-
         timerNotificacion = new javax.swing.Timer(2000, e -> {
             lblResultado.setText("");
             lblResultado.setBackground(new Color(0, 0, 0, 0));
             lblResultado.setVisible(false);
         });
-
         timerNotificacion.setRepeats(false);
         timerNotificacion.start();
     }
@@ -447,73 +430,57 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
         this.lblResultado = lblResultado;
     }
 
-    private void repintarPropio(TableroModel tablero, Color color) {
-        if (tablero == null) {
-            return; // Seguridad
-        }
+    private void repintarPropio(TableroModel tablero, Color colorUsuario) {
+        if (tablero == null) return;
+        
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
                 CeldaModel celda = tablero.getCelda(fila, col);
                 JButton boton = botonesPropio[fila][col];
 
-                // 1. Si la celda YA FUE DISPARADA (por el enemigo)
                 if (celda.getEstado() == EstadoCelda.DISPARADA) {
                     if (celda.tieneNave()) {
-                        // ¡Nos dieron!
-                        boton.setBackground(Color.RED);
+                        boton.setBackground(COLOR_DESTRUIDO); 
                     } else {
-                        // Dispararon agua
-                        boton.setBackground(Color.CYAN);
+                        boton.setBackground(COLOR_AGUA_IMPACTO);
                     }
-                } // 2. Si NO ha sido disparada, PERO tiene nave
+                } 
                 else if (celda.tieneNave()) {
-                    boton.setBackground(color); // Muestra tu nave intacta
-                } // 3. Si es solo agua (sin disparar y sin nave)
+                    boton.setBackground(colorUsuario); 
+                } 
                 else {
-                    boton.setBackground(new Color(50, 70, 100)); // Color base del mar
+                    boton.setBackground(COLOR_MAR_OCULTO); 
                 }
             }
         }
     }
 
     public void repintarEnemigo(TableroModel tablero) {
-        if (tablero == null) {
-            return;
-        }
-
+        if (tablero == null) return;
+        
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
                 CeldaModel celda = tablero.getCelda(fila, col);
                 JButton boton = botonesEnemigo[fila][col];
 
-                // 1. Si NO ha sido disparada, es "Niebla de Guerra"
                 if (celda.getEstado() == EstadoCelda.NO_DISPARADA) {
-                    boton.setBackground(new Color(50, 70, 100)); // Mar oculto
+                    boton.setBackground(COLOR_MAR_OCULTO);
                     boton.setEnabled(true);
-                    continue; // Siguiente celda
+                    continue;
                 }
 
-                // 2. Si SÍ fue disparada, leemos el ESTADO DE LA NAVE
                 EstadoNave estadoNave = celda.getEstadoNave();
                 boton.setEnabled(false);
 
-                // 3. Decidimos el color
                 if (estadoNave == null) {
-                    // Si el estadoNave es null, significa que fue AGUA
-                    boton.setBackground(Color.BLUE);
+                    boton.setBackground(COLOR_AGUA_IMPACTO);
                 } else {
-                    // Si el estadoNave NO es null, fue un impacto
                     switch (estadoNave) {
-                        case AVERIADO:
-                            boton.setBackground(Color.ORANGE); // Naranja para impacto
-                            break;
-                        case HUNDIDO:
-                            boton.setBackground(Color.RED); // Rojo para hundido
-                            break;
-                        default:
-                            boton.setBackground(Color.PINK); // Error
+                        case AVERIADO -> boton.setBackground(COLOR_DANIADO);
+                        case HUNDIDO -> boton.setBackground(COLOR_DESTRUIDO);
+                        default -> boton.setBackground(Color.PINK);
                     }
                 }
             }

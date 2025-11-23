@@ -4,9 +4,11 @@
  */
 package com.itson.equipo2.battleship_cliente.controllers;
 
+import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
-import java.util.UUID;
+import com.itson.equipo2.communication.impl.RedisConnection;
+import mx.itson.equipo_2.common.enums.AccionPartida;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
@@ -14,35 +16,66 @@ import mx.itson.equipo_2.common.enums.ColorJugador;
  * @author Cricri
  */
 public class RegistroController {
-    
-    private final PartidaModel partidaModel;
 
-    
-    public RegistroController(PartidaModel partidaModel) {
+    private final PartidaModel partidaModel;
+    private final RegistrarJugadorService service;
+    private AccionPartida accionActual;
+
+    public RegistroController(PartidaModel partidaModel, RegistrarJugadorService service) {
         this.partidaModel = partidaModel;
+        this.service = service;
     }
 
-    
-    public void registrar(String nombre, ColorJugador color) {
+    public void registrar(String nombre) {
+        this.registrar(nombre, this.accionActual);
+    }
+
+    public void registrar(String nombre, AccionPartida accion) {
+        ColorJugador colorElegido = partidaModel.getYo().getColor();
         
-        if (partidaModel.getYo() == null) {
-             System.err.println("Error: partidaModel.getYo() es null en RegistroController.");
-             return;
+        service.registrar(nombre, colorElegido, accion);
+    }
+
+    public void guardarDatosJugador(String nombre, ColorJugador color) {
+        JugadorModel yo = partidaModel.getYo();
+        if (yo == null) {
+            yo = new JugadorModel();
+            partidaModel.setYo(yo);
         }
+        yo.setNombre(nombre);
+        yo.setColor(color);
+        
+        partidaModel.notifyObservers();
+    }
 
-        
-        String idLocal = UUID.randomUUID().toString();
+    public void configurarConexion(String ipHost) {
+        if (ipHost != null && !ipHost.trim().isEmpty()) {
 
-       
-        partidaModel.getYo().setId(idLocal);
-        partidaModel.getYo().setNombre(nombre);
-        partidaModel.getYo().setColor(color);
-        
-     
-        System.out.println("--- Jugador registrado localmente (Flujo Local) ---");
-        System.out.println("  ID: " + partidaModel.getYo().getId());
-        System.out.println("  Nombre: " + partidaModel.getYo().getNombre());
-        System.out.println("  Color: " + partidaModel.getYo().getColor());
-        
+            RedisConnection.setHost(ipHost);
+
+            try {
+                RedisConnection.getJedisPool();
+                System.out.println("RegistroController: Conexión reconfigurada a " + ipHost);
+            } catch (Exception e) {
+                System.err.println("RegistroController: Error al intentar conectar con " + ipHost + ": " + e.getMessage());
             }
+        }
+    }
+
+    public PartidaModel getPartidaModel() {
+        return partidaModel;
+    }
+
+    public RegistrarJugadorService getService() {
+        return service;
+    }
+
+    public AccionPartida getAccionActual() {
+        return accionActual;
+    }
+
+    public void setAccionActual(AccionPartida accionActual) {
+        this.accionActual = accionActual;
+    }
+
 }

@@ -6,7 +6,7 @@ package com.itson.equipo2.communication.impl;
 public class RedisConfig {
 
     /** Host o dirección IP donde se ejecuta el servidor Redis. */
-    public static final String REDIS_HOST = "localhost";
+    public static String REDIS_HOST = "localhost";
     
     /** Puerto predeterminado para el servicio de Redis. */
     public static final int REDIS_PORT = 6379;
