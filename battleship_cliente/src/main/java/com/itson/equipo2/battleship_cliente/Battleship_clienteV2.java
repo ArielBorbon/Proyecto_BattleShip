@@ -22,7 +22,6 @@ import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
-import java.util.ArrayList;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
 import com.itson.equipo2.communication.impl.EventDispatcher;
@@ -32,7 +31,6 @@ import com.itson.equipo2.communication.impl.RedisSubscriber;
 import java.util.concurrent.ExecutorService;
 import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
-import mx.itson.equipo_2.common.enums.ColorJugador;
 import redis.clients.jedis.JedisPool;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.SalaController;
@@ -50,11 +48,9 @@ import com.itson.equipo2.battleship_cliente.service.SalaService;
 import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
 import javax.swing.JPanel;
-import mx.itson.equipo_2.common.enums.EstadoJugador;
 
 public class Battleship_clienteV2 {
 
-    //private static final String JUGADOR_IA_ID = "IA-123";
 
     public static void main(String[] args) {
         System.out.println("Iniciando Cliente Battleship (Arquitectura Limpia)...");
@@ -67,14 +63,11 @@ public class Battleship_clienteV2 {
         // 2. Modelos
         PartidaModel partidaModel = new PartidaModel();
         TableroModel miTablero = new TableroModel((String) null);
-        TableroModel tableroEnemigo = new TableroModel(JUGADOR_IA_ID);
 
         JugadorModel jugadorModel = new JugadorModel();
         jugadorModel.setTablero(miTablero);
         partidaModel.setYo(jugadorModel);
 
-        JugadorModel jugadorModelEnemigo = new JugadorModel(JUGADOR_IA_ID, "IA", ColorJugador.ROJO, EstadoJugador.LISTO, tableroEnemigo, new ArrayList<>());
-        partidaModel.setEnemigo(jugadorModelEnemigo);
 
         // 3. Servicios
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
@@ -111,7 +104,7 @@ public class Battleship_clienteV2 {
         SalaPartidaView salaPartidaView = new SalaPartidaView(salaController);
 
         // Configuración de Vistas y Observadores
-        dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
+//        dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         partidaModel.addObserver(dispararView);
         partidaModel.addObserver(posicionarNaveVista);
         // Importante: Agregar SalaPartidaView como observador para que reaccione a cambios de jugadores

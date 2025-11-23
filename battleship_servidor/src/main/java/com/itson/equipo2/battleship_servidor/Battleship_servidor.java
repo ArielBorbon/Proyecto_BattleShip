@@ -103,7 +103,7 @@ public class Battleship_servidor {
      
         
         
-        eventDispatcher.subscribe("TurnoTick", aiService);
+//        eventDispatcher.subscribe("TurnoTick", aiService);
         
         eventDispatcher.subscribe("DisparoRealizado", new IMessageHandler() {
             @Override
