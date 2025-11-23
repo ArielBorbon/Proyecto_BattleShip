@@ -59,8 +59,7 @@ public class SelectorNaveView extends JPanel {
      * (MVC).
      */
     private final PosicionarController posicionarController;
-    
-    
+
     private Color colorJugador = Color.GRAY; // Color del jugador por defecto
 
     // --- CONSTRUCTOR ---
@@ -160,8 +159,6 @@ public class SelectorNaveView extends JPanel {
     public void setColorJugador(Color colorJugador) {
         this.colorJugador = colorJugador;
     }
-    
-    
 
     /**
      * Obtiene la cantidad de naves de este tipo que quedan por posicionar.
@@ -170,6 +167,13 @@ public class SelectorNaveView extends JPanel {
      */
     public int getBarcosRestantes() {
         return barcosRestantes;
+    }
+
+    public void reiniciarSelector() {
+        this.barcosRestantes = tipo.getCantidadInicial();
+        lblCantidad.setText("Disponibles: " + barcosRestantes);
+        this.revalidate();
+        this.repaint();
     }
 
 }

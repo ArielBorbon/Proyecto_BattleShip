@@ -92,19 +92,45 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
             System.out.println("tablero nulo");
             return;
         }
-        
-        // 1. Obtener el color del jugador desde el modelo
+
+        if (tableroPropio.getNavesPosicionadas().isEmpty()) {
+            if (nave1 instanceof SelectorNaveView) {
+                ((SelectorNaveView) nave1).reiniciarSelector();
+            }
+            if (nave2 instanceof SelectorNaveView) {
+                ((SelectorNaveView) nave2).reiniciarSelector();
+            }
+            if (nave3 instanceof SelectorNaveView) {
+                ((SelectorNaveView) nave3).reiniciarSelector();
+            }
+            if (nave4 instanceof SelectorNaveView) {
+                ((SelectorNaveView) nave4).reiniciarSelector();
+            }
+
+            nave1.setEnabled(true);
+            nave2.setEnabled(true);
+            nave3.setEnabled(true);
+            nave4.setEnabled(true);
+            btnConfirmar.setEnabled(false); 
+        }   
+
         Color colorJugador = Color.GRAY; // Default
         if (model.getYo() != null && model.getYo().getColor() != null) {
             colorJugador = model.getYo().getColor().getColor();
         }
 
-        // 2. Actualizar el color en los selectores de naves
-        // Hacemos casting porque en el diseño generado suelen declararse como JPanel
-        if (nave1 instanceof SelectorNaveView) ((SelectorNaveView) nave1).setColorJugador(colorJugador);
-        if (nave2 instanceof SelectorNaveView) ((SelectorNaveView) nave2).setColorJugador(colorJugador);
-        if (nave3 instanceof SelectorNaveView) ((SelectorNaveView) nave3).setColorJugador(colorJugador);
-        if (nave4 instanceof SelectorNaveView) ((SelectorNaveView) nave4).setColorJugador(colorJugador);
+        if (nave1 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave1).setColorJugador(colorJugador);
+        }
+        if (nave2 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave2).setColorJugador(colorJugador);
+        }
+        if (nave3 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave3).setColorJugador(colorJugador);
+        }
+        if (nave4 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave4).setColorJugador(colorJugador);
+        }
 
         // Recorre las celdas y sincroniza el color con el estado del modelo.
         for (int f = 0; f < 10; f++) {

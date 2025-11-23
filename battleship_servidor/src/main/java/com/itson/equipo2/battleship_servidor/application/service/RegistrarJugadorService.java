@@ -19,6 +19,7 @@ import mx.itson.equipo_2.common.dto.response.ErrorResponse;
 import mx.itson.equipo_2.common.enums.AccionPartida;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 public class RegistrarJugadorService {
 
@@ -41,23 +42,28 @@ public class RegistrarJugadorService {
 
             Partida partidaActual = partidaRepository.getPartida();
 
-            // VALIDACIONES DE LÓGICA
-            if (request.getAccion() == AccionPartida.CREAR && partidaActual != null) {
-                sendError("Ya existe una partida creada. Intenta unirte.");
-                return;
-            }
 
             if (request.getAccion() == AccionPartida.CREAR && partidaActual != null) {
-                sendError("Ya existe una partida creada. Intenta unirte.");
-                return;
+                if (partidaActual.getEstado() != EstadoPartida.FINALIZADA) {
+                    sendError("Ya existe una partida en curso. No puedes crear otra hasta que termine.");
+                    return;
+                }
             }
+
             if (request.getAccion() == AccionPartida.UNIRSE && partidaActual == null) {
                 sendError("No hay partida para unirse. Crea una primero.");
                 return;
             }
-            if (request.getAccion() == AccionPartida.UNIRSE && partidaActual != null && partidaActual.getJugador2() != null) {
-                sendError("La sala está llena.");
-                return;
+
+            if (request.getAccion() == AccionPartida.UNIRSE && partidaActual != null) {
+                if (partidaActual.getEstado() == EstadoPartida.FINALIZADA) {
+                    sendError("La partida anterior ya terminó. Crea una nueva.");
+                    return;
+                }
+                if (partidaActual.getJugador2() != null) {
+                    sendError("La sala está llena.");
+                    return;
+                }
             }
 
             // 2. PROCESAMIENTO

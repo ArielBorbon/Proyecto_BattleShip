@@ -74,7 +74,7 @@ public class PartidaModel {
 
         if (dto.getJugador1() != null) {
             this.nombreJugador1 = dto.getJugador1().getNombre();
-            this.idJugador1 = dto.getJugador1().getId(); 
+            this.idJugador1 = dto.getJugador1().getId();
         }
 
         if (dto.getJugador2() != null) {
@@ -85,7 +85,9 @@ public class PartidaModel {
 
         if (this.yo != null && this.yo.getId() != null && this.idJugador1 != null) {
             if (this.yo.getId().equals(this.idJugador1)) {
-                if (dto.getJugador2() != null) actualizarEnemigo(dto.getJugador2());
+                if (dto.getJugador2() != null) {
+                    actualizarEnemigo(dto.getJugador2());
+                }
             } else if (dto.getJugador2() != null && this.yo.getId().equals(dto.getJugador2().getId())) {
                 actualizarEnemigo(dto.getJugador1());
             }
@@ -120,13 +122,13 @@ public class PartidaModel {
                 System.err.println("Error Crítico: Enemigo es NULL al procesar disparo.");
                 return;
             }
-            
+
             // Actualizar Marcador si hubo hundimiento
             if (response.getResultado() == ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO) {
                 int tamanioNave = response.getCoordenadasBarcoHundido().size();
-                registrarHundimientoEnemigo(tamanioNave); 
+                registrarHundimientoEnemigo(tamanioNave);
             }
-            
+
         } else {
             tableroAfectado = this.getYo().getTablero();
         }
@@ -138,8 +140,8 @@ public class PartidaModel {
                     response.getCoordenadasBarcoHundido()
             );
         }
-      
-        this.setTurnoDe(response.getTurnoActual()); 
+
+        this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstadoPartida());
 
         notifyObservers();
@@ -163,7 +165,7 @@ public class PartidaModel {
 
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstado());
-        
+
         notifyObservers();
     }
 
@@ -268,6 +270,28 @@ public class PartidaModel {
             this.yo.setTablero(new TableroModel(this.yo.getId()));
         }
         return this.yo.getTablero();
+    }
+
+    public void reiniciarPartida() {
+        this.estado = EstadoPartida.CONFIGURACION;
+        this.id = null;
+        this.idJugador1 = null;
+        this.turnoDe = null;
+        this.nombreJugador2 = "Esperando...";
+        this.segundosRestantes = 30;
+
+        if (this.yo != null) {
+            this.yo.setTablero(new TableroModel(this.yo.getId()));
+            this.yo.setEstado(EstadoJugador.POSICIONANDO);
+            this.yo.setDisparos(new ArrayList<>());
+        }
+
+        this.enemigo = null;
+
+        this.navesEnemigas.clear();
+        inicializarNavesEnemigas();
+
+        notifyObservers();
     }
 
     public String getId() {

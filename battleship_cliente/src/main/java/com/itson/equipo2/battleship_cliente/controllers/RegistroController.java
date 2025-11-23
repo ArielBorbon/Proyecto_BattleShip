@@ -31,6 +31,10 @@ public class RegistroController {
     }
 
     public void registrar(String nombre, AccionPartida accion) {
+        
+        System.out.println("Limpiando estado de partida anterior...");
+        partidaModel.reiniciarPartida();
+        
         ColorJugador colorElegido = partidaModel.getYo().getColor();
         
         service.registrar(nombre, colorElegido, accion);
