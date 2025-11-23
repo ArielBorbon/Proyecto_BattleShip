@@ -50,6 +50,7 @@ public class RedisPublisher implements IMessagePublisher {
             jedis.publish(channel, jsonMessage);
         } catch (JedisConnectionException e) {
             System.err.println("Error publicando en Redis (Canal: " + channel + "): " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Error inesperado al publicar mensaje: " + e.getMessage());
             e.printStackTrace();

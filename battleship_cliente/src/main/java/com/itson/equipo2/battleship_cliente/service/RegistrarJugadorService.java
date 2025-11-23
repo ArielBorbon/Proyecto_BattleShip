@@ -26,8 +26,6 @@ public class RegistrarJugadorService {
             System.err.println("El nombre no puede estar vacío");
             return;
         }
-
-
         RegistrarJugadorRequest req = new RegistrarJugadorRequest(nombre, accion, color, jugadorId);
         String payload = gson.toJson(req);
         EventMessage message = new EventMessage("RegistrarJugador", payload);
@@ -35,4 +33,21 @@ public class RegistrarJugadorService {
         System.out.println("Cliente: Enviando comando 'RegistrarJugador' [" + accion + "] con color: " + color + " e ID: " + jugadorId);
         publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
     }
+    
+    
+    public void configurarRed(String ipHost) {
+        if (ipHost != null && !ipHost.trim().isEmpty()) {
+            try {
+                com.itson.equipo2.communication.impl.RedisConnection.setHost(ipHost);
+                
+                com.itson.equipo2.communication.impl.RedisConnection.getJedisPool(); 
+                System.out.println("Servicio: Red configurada a " + ipHost);
+            } catch (Exception e) {
+                System.err.println("Error configurando red: " + e.getMessage());
+            }
+        }
+    }
+    
+ 
 }
+

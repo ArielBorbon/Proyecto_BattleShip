@@ -61,18 +61,9 @@ public class RegistroController {
     }
 
     public void configurarConexion(String ipHost) {
-        if (ipHost != null && !ipHost.trim().isEmpty()) {
-
-            RedisConnection.setHost(ipHost);
-
-            try {
-                RedisConnection.getJedisPool();
-                System.out.println("RegistroController: Conexión reconfigurada a " + ipHost);
-            } catch (Exception e) {
-                System.err.println("RegistroController: Error al intentar conectar con " + ipHost + ": " + e.getMessage());
-            }
+        service.configurarRed(ipHost);
         }
-    }
+    
 
     public PartidaModel getPartidaModel() {
         return partidaModel;
