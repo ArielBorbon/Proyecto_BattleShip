@@ -81,7 +81,7 @@ public class Tablero {
     }
 
     public void posicionarNave(Nave nave) {
-        this.naves.add(nave);
+        
         for (Coordenada coord : nave.getCoordenadas()) {
             Celda celda = getCelda(coord.getFila(), coord.getColumna());
             if (celda == null) {
@@ -95,10 +95,8 @@ public class Tablero {
             }
         }
         
-        // 2. Si pasó la validación, AHORA SÍ la guardamos
         this.naves.add(nave);
         for (Coordenada coord : nave.getCoordenadas()) {
-            // Ya no necesitamos 'if (celda != null)' porque la validación ya lo garantizó
             getCelda(coord.getFila(), coord.getColumna()).setNave(nave);
         }
     }

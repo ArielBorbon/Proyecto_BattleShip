@@ -9,7 +9,6 @@ import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
-import javax.swing.JOptionPane;
 import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 
@@ -18,7 +17,7 @@ import mx.itson.equipo_2.common.enums.EstadoPartida;
  * @author Alberto Jimenez
  */
 public class PartidaFinalizadaHandler implements IMessageHandler{
-    
+
     private final ViewController viewController;
     private final PartidaModel partidaModel;
     private final Gson gson = new Gson();
@@ -36,19 +35,19 @@ public class PartidaFinalizadaHandler implements IMessageHandler{
     @Override
     public void onMessage(EventMessage message) {
         PartidaFinalizadaResponse response = gson.fromJson(message.getPayload(), PartidaFinalizadaResponse.class);
-        
-        // 1. Actualizar modelo (para que deje de contar tiempo, etc.)
-        partidaModel.setEstado(EstadoPartida.FINALIZADA);
-        partidaModel.setTurnoDe(response.getGanadorId());
 
-        // 2. EJECUTAR LA LÓGICA DE UI (Lo que antes hacía la Vista)
+        partidaModel.setEstado(EstadoPartida.FINALIZADA);
+        partidaModel.setTurnoDe(response.getGanadorId()); 
+
+        String miId = partidaModel.getYo().getId();
+        String ganadorId = response.getGanadorId();
+
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, 
-                "¡Juego Terminado!\nGanador: " + response.getGanadorId() + 
-                "\nMotivo: " + response.getMotivo());
-            
-            // Navegar al menú
-            viewController.cambiarPantalla("lobby");
+            if (miId.equals(ganadorId)) {
+                viewController.cambiarPantalla("victoria");
+            } else {
+                viewController.cambiarPantalla("derrota");
+            }
         });
     }
 }

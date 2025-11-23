@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
+import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -13,17 +14,23 @@ import javax.swing.JLabel;
  */
 public class DerrotaView extends javax.swing.JPanel {
 
+    private final ViewController viewController;
+    
+    
     /**
      * Creates new form DerrotaView
      */
-    public DerrotaView() {
+    public DerrotaView(ViewController viewController) {
+        this.viewController = viewController;
         initComponents();
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("/images/derrota_img.png"));
-
-        JLabel lblImagen = new JLabel(icon);
-
-        pnlDefeat.add(lblImagen, java.awt.BorderLayout.CENTER);
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/derrota_img.png"));
+            JLabel lblImagen = new JLabel(icon);
+            pnlDefeat.add(lblImagen, java.awt.BorderLayout.CENTER);
+        } catch (Exception e) {
+            System.err.println("Error cargando imagen derrota: " + e.getMessage());
+        }
     }
 
     /**
@@ -87,7 +94,7 @@ public class DerrotaView extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContinuarActionPerformed
-        // TODO add your handling code here:
+        viewController.cambiarPantalla("lobby");
     }//GEN-LAST:event_btnContinuarActionPerformed
 
 

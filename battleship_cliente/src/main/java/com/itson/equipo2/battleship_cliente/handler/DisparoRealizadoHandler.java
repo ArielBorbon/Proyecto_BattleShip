@@ -10,6 +10,7 @@ import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.response.ResultadoDisparoReponse;
 import com.itson.equipo2.communication.dto.EventMessage;
+import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
  *
@@ -33,17 +34,13 @@ public class DisparoRealizadoHandler implements IMessageHandler {
 
     @Override
     public void onMessage(EventMessage message) {
-        System.out.println("Handler 'DisparoRealizado' activado.");
 
-        // 1. Deserializar
         ResultadoDisparoReponse response = gson.fromJson(message.getPayload(), ResultadoDisparoReponse.class);
-
-        // 2. DELEGAR (Una sola línea)
-        // El Handler dice: "Modelo, llegó este resultado, actualízate tú mismo".
         partidaModel.procesarResultadoDisparo(response);
-        
+
         if (partidaModel.getYo().getId().equals(response.getJugadorId())) {
             viewController.mostrarResultadoDisparo(response.getResultado());
         }
+
     }
 }

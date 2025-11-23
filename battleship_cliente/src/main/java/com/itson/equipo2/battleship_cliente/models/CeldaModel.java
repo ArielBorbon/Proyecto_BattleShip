@@ -18,7 +18,6 @@ public class CeldaModel {
 
     private EstadoCelda estadoDisparo; // NO_DISPARADA, DISPARADA
 
-    // --- ESTOS SON LOS CAMBIOS ---
     private TipoNave tipoNave; // Qué nave hay aquí (null si es agua)
     private EstadoNave estadoNave; // Cuál es su estado (INTACTO, AVERIADO, HUNDIDO)
 

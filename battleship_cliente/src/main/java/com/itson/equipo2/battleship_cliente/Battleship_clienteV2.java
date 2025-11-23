@@ -37,11 +37,13 @@ import com.itson.equipo2.battleship_cliente.controllers.SalaController;
 import com.itson.equipo2.battleship_cliente.handler.JugadorRegistradoHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
+import com.itson.equipo2.battleship_cliente.pattern.factory.DerrotaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.RegistroViewFactory;
 import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.pattern.factory.UnirseAPartidaViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VictoriaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
@@ -118,8 +120,9 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("lobby", new LobbyViewFactory(registroController));
         viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(registroController));
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
+        viewController.registrarPantalla("victoria", new VictoriaViewFactory());
+        viewController.registrarPantalla("derrota", new DerrotaViewFactory());
 
-        // Registro manual de SalaPartida usando clase anónima o Factory
         viewController.registrarPantalla("salaPartida", new ViewFactory() {
             @Override
             public JPanel crear(ViewController control) {

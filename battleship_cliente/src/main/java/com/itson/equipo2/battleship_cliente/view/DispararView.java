@@ -110,8 +110,6 @@ public class DispararView extends javax.swing.JPanel implements ViewFactory, Par
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
             if (btnDisparar.isEnabled()) { 
-                String mensaje = "¡Partida terminada! Ganador: " + model.getTurnoDe();
-                JOptionPane.showMessageDialog(this, mensaje);
                 btnDisparar.setEnabled(false);
                 btnRendirse.setEnabled(false);
             }
