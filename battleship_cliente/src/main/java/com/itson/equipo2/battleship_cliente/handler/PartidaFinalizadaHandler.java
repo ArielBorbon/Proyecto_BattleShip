@@ -16,7 +16,7 @@ import mx.itson.equipo_2.common.enums.EstadoPartida;
  *
  * @author Alberto Jimenez
  */
-public class PartidaFinalizadaHandler implements IMessageHandler{
+public class PartidaFinalizadaHandler implements IMessageHandler {
 
     private final ViewController viewController;
     private final PartidaModel partidaModel;
@@ -37,12 +37,15 @@ public class PartidaFinalizadaHandler implements IMessageHandler{
         PartidaFinalizadaResponse response = gson.fromJson(message.getPayload(), PartidaFinalizadaResponse.class);
 
         partidaModel.setEstado(EstadoPartida.FINALIZADA);
-        partidaModel.setTurnoDe(response.getGanadorId()); 
+        partidaModel.setTurnoDe(response.getGanadorId());
 
-        String miId = partidaModel.getYo().getId();
         String ganadorId = response.getGanadorId();
+        String miId = (partidaModel.getYo() != null) ? partidaModel.getYo().getId() : "";
+
+        System.out.println("Partida Finalizada. Ganador: " + ganadorId + " | Motivo: " + response.getMotivo());
 
         javax.swing.SwingUtilities.invokeLater(() -> {
+
             if (miId.equals(ganadorId)) {
                 viewController.cambiarPantalla("victoria");
             } else {
