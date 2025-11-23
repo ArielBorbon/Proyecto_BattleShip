@@ -13,6 +13,9 @@ public class RedisConnection {
 
     private static JedisPool jedisPool;
     private static ExecutorService subscriberExecutor;
+    
+    private static String currentHost = "localhost"; 
+    private static final int REDIS_PORT = 6379;
 
     /** Constructor privado para evitar la instanciación externa. */
     private RedisConnection() {
@@ -46,8 +49,8 @@ public class RedisConnection {
             // Crea el pool utilizando la configuración y las constantes de conexión
             jedisPool = new JedisPool(
                     poolConfig,
-                    RedisConfig.REDIS_HOST,
-                    RedisConfig.REDIS_PORT
+                    currentHost, // <-- Aquí entra la IP que escribas
+                    REDIS_PORT
             );
         }
         return jedisPool;
@@ -73,10 +76,13 @@ public class RedisConnection {
     
     public static synchronized void setHost(String newHost) {
         System.out.println("Cambiando Host de Redis a: " + newHost);
-        RedisConfig.REDIS_HOST = newHost;
+        currentHost = newHost;
         
-        if (jedisPool != null) {
-            jedisPool.close();
+        // Si ya había una conexión, la matamos para que se cree la nueva
+        if (jedisPool != null && !jedisPool.isClosed()) {
+            try {
+                jedisPool.close();
+            } catch (Exception e) { /* Ignorar error de cierre */ }
             jedisPool = null; 
         }
     }

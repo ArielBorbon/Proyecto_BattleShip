@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_cliente;
 
 import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
+import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
@@ -46,6 +47,7 @@ import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.pattern.factory.UnirseAPartidaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VictoriaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.service.NetworkService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
 import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
@@ -74,6 +76,7 @@ public class Battleship_clienteV2 {
 
         // 3. Servicios
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
+        NetworkService networkService = new NetworkService();
         SalaService salaService = new SalaService(publisher);
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
@@ -84,6 +87,7 @@ public class Battleship_clienteV2 {
 
         // 5. Controladores de Negocio
         RegistroController registroController = new RegistroController(partidaModel, registrarJugadorService);
+        ConfiguracionController configController = new ConfiguracionController(networkService);
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         AbandonarController abandonarController = new AbandonarController(abandonarService);
@@ -118,7 +122,7 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("menu", new MenuPrincipalViewFactory());
         viewController.registrarPantalla("registro", new RegistroViewFactory(registroController));
         viewController.registrarPantalla("lobby", new LobbyViewFactory(registroController));
-        viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(registroController));
+        viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(registroController, configController));
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());
