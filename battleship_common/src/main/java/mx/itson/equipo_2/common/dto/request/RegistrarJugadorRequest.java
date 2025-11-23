@@ -16,6 +16,7 @@ public class RegistrarJugadorRequest implements Serializable {
     private String nombre;
     private AccionPartida accion; // CREAR o UNIRSE
     private ColorJugador color;
+    private String jugadorId; 
 
     public RegistrarJugadorRequest() {
     }
@@ -25,7 +26,28 @@ public class RegistrarJugadorRequest implements Serializable {
         this.color = color;
         this.accion = accion;
     }
+
+    public RegistrarJugadorRequest(String nombre, AccionPartida accion, ColorJugador color, String jugadorId) {
+        this.nombre = nombre;
+        this.accion = accion;
+        this.color = color;
+        this.jugadorId = jugadorId;
+    }
+        
+        
+        
+
+    public String getJugadorId() {
+        return jugadorId;
+    }
+
+    public void setJugadorId(String jugadorId) {
+        this.jugadorId = jugadorId;
+    }
     
+        
+        
+        
 
     public RegistrarJugadorRequest(String nombre) {
         this.nombre = nombre;

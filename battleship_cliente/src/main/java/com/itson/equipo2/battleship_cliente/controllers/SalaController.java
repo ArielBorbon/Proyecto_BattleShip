@@ -1,9 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.itson.equipo2.battleship_cliente.controllers;
 
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
+import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
 
 /**
@@ -14,10 +13,14 @@ public class SalaController {
 
     private final SalaService salaService;
     private final ViewController viewController;
+    private final AbandonarPartidaService abandonarService; 
+    private final PartidaModel partidaModel;
 
-    public SalaController(SalaService salaService, ViewController viewController) {
+    public SalaController(SalaService salaService, ViewController viewController, AbandonarPartidaService abandonarService, PartidaModel partidaModel) {
         this.salaService = salaService;
         this.viewController = viewController;
+        this.abandonarService = abandonarService;
+        this.partidaModel = partidaModel;
     }
 
     public void iniciarJuego() {
@@ -29,6 +32,13 @@ public class SalaController {
     }
 
     public void volverAlLobby() {
+        if (partidaModel.getYo() != null && partidaModel.getYo().getId() != null) {
+            System.out.println("Enviando petición de abandonar sala...");
+            abandonarService.abandonarPartida(partidaModel.getYo().getId());
+        }
+
+        partidaModel.reiniciarPartida();
+
         viewController.cambiarPantalla("lobby");
     }
 }

@@ -8,6 +8,7 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.communication.impl.RedisConnection;
+import java.util.UUID;
 import mx.itson.equipo_2.common.enums.AccionPartida;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
@@ -31,13 +32,20 @@ public class RegistroController {
     }
 
     public void registrar(String nombre, AccionPartida accion) {
-        
         System.out.println("Limpiando estado de partida anterior...");
         partidaModel.reiniciarPartida();
-        
+
+        String miNuevoId = UUID.randomUUID().toString();
+
+        if (partidaModel.getYo() == null) {
+            partidaModel.setYo(new JugadorModel());
+        }
+        partidaModel.getYo().setId(miNuevoId);
+        partidaModel.getYo().setNombre(nombre);
+
         ColorJugador colorElegido = partidaModel.getYo().getColor();
-        
-        service.registrar(nombre, colorElegido, accion);
+
+        service.registrar(nombre, colorElegido, accion, miNuevoId);
     }
 
     public void guardarDatosJugador(String nombre, ColorJugador color) {
@@ -48,7 +56,7 @@ public class RegistroController {
         }
         yo.setNombre(nombre);
         yo.setColor(color);
-        
+
         partidaModel.notifyObservers();
     }
 

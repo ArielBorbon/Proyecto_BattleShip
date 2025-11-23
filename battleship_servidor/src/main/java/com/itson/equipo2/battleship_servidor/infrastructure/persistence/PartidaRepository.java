@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.itson.equipo2.battleship_servidor.infrastructure.persistence;
 
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
@@ -29,4 +26,12 @@ public class PartidaRepository implements IPartidaRepository {
     public void guardar(Partida partida) {
         this.partida = partida;
     }
+    
+    @Override
+    public void eliminarPartida() {
+        this.partida = null;
+        System.out.println("Repositorio: La partida ha sido eliminada.");
+    }
+    
+    
 }

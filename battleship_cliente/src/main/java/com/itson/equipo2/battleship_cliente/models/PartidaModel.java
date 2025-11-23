@@ -79,8 +79,12 @@ public class PartidaModel {
 
         if (dto.getJugador2() != null) {
             this.nombreJugador2 = dto.getJugador2().getNombre();
+            if (isSoyHost()) {
+                actualizarEnemigo(dto.getJugador2());
+            }
         } else {
             this.nombreJugador2 = "Esperando...";
+            this.enemigo = null; 
         }
 
         if (this.yo != null && this.yo.getId() != null && this.idJugador1 != null) {

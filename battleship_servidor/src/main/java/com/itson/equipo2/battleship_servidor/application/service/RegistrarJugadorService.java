@@ -42,16 +42,15 @@ public class RegistrarJugadorService {
 
             Partida partidaActual = partidaRepository.getPartida();
 
-
             if (request.getAccion() == AccionPartida.CREAR && partidaActual != null) {
                 if (partidaActual.getEstado() != EstadoPartida.FINALIZADA) {
-                    sendError("Ya existe una partida en curso. No puedes crear otra hasta que termine.");
+                    //    sendError("Ya existe una partida en curso. No puedes crear otra hasta que termine.");
                     return;
                 }
             }
 
             if (request.getAccion() == AccionPartida.UNIRSE && partidaActual == null) {
-                sendError("No hay partida para unirse. Crea una primero.");
+                //    sendError("No hay partida para unirse. Crea una primero.");
                 return;
             }
 
@@ -66,9 +65,8 @@ public class RegistrarJugadorService {
                 }
             }
 
-            // 2. PROCESAMIENTO
-            String nuevoId = UUID.randomUUID().toString();
-
+            // 2. PROCESAMIENTO            
+            String nuevoId = request.getJugadorId();
             // USAMOS EL COLOR DEL REQUEST
             ColorJugador colorAsignado = request.getColor() != null ? request.getColor() : ColorJugador.AZUL;
 

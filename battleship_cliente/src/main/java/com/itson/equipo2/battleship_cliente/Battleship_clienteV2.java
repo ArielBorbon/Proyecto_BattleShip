@@ -37,6 +37,7 @@ import com.itson.equipo2.battleship_cliente.controllers.SalaController;
 import com.itson.equipo2.battleship_cliente.handler.JugadorRegistradoHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
+import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
 import com.itson.equipo2.battleship_cliente.pattern.factory.DerrotaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
@@ -87,7 +88,7 @@ public class Battleship_clienteV2 {
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         AbandonarController abandonarController = new AbandonarController(abandonarService);
 
-        SalaController salaController = new SalaController(salaService, viewController);
+        SalaController salaController = new SalaController(salaService, viewController, abandonarService , partidaModel);
 
         posicionarController.setViewController(viewController);
 
@@ -109,7 +110,6 @@ public class Battleship_clienteV2 {
 //        dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
         partidaModel.addObserver(dispararView);
         partidaModel.addObserver(posicionarNaveVista);
-        // Importante: Agregar SalaPartidaView como observador para que reaccione a cambios de jugadores
         partidaModel.addObserver(salaPartidaView);
 
         // 8. Registro de Pantallas
@@ -122,6 +122,7 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());
+        
 
         viewController.registrarPantalla("salaPartida", new ViewFactory() {
             @Override
@@ -140,6 +141,7 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
         // Handler clave para el flujo de registro - sala
         eventDispatcher.subscribe("JugadorRegistrado", new JugadorRegistradoHandler(viewController, partidaModel));
+        eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
         // Para actualizar la lista de jugadores en la sala
         eventDispatcher.subscribe("PartidaActualizada", new PartidaActualizadaHandler(partidaModel));
@@ -159,6 +161,26 @@ public class Battleship_clienteV2 {
                 });
             }
         });
+        
+        eventDispatcher.subscribe("PartidaCancelada", new com.itson.equipo2.communication.broker.IMessageHandler() {
+            @Override
+            public boolean canHandle(com.itson.equipo2.communication.dto.EventMessage message) {
+                return "PartidaCancelada".equals(message.getEventType());
+            }
+
+            @Override
+            public void onMessage(com.itson.equipo2.communication.dto.EventMessage message) {
+                System.out.println("Cliente: La sala fue cancelada por el host.");
+                
+                partidaModel.reiniciarPartida();
+
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    javax.swing.JOptionPane.showMessageDialog(null, "El Host ha cerrado la sala.");
+                    viewController.cambiarPantalla("lobby");
+                });
+            }
+        });
+        
 
         IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
         redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);

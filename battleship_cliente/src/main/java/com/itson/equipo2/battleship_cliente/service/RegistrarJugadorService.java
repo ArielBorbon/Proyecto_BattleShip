@@ -21,19 +21,18 @@ public class RegistrarJugadorService {
         this.publisher = publisher;
     }
 
-    public void registrar(String nombre, ColorJugador color, AccionPartida accion) {
+    public void registrar(String nombre, ColorJugador color, AccionPartida accion, String jugadorId) {
         if (nombre == null || nombre.trim().isEmpty()) {
             System.err.println("El nombre no puede estar vacío");
             return;
         }
 
-        // Enviamos el color en el request
-        RegistrarJugadorRequest req = new RegistrarJugadorRequest(nombre, color, accion );
 
+        RegistrarJugadorRequest req = new RegistrarJugadorRequest(nombre, accion, color, jugadorId);
         String payload = gson.toJson(req);
         EventMessage message = new EventMessage("RegistrarJugador", payload);
 
-        System.out.println("Cliente: Enviando comando 'RegistrarJugador' [" + accion + "] con color: " + color);
+        System.out.println("Cliente: Enviando comando 'RegistrarJugador' [" + accion + "] con color: " + color + " e ID: " + jugadorId);
         publisher.publish(BrokerConfig.CHANNEL_COMANDOS, message);
     }
 }

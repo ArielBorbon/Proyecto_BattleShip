@@ -15,4 +15,6 @@ public interface IPartidaRepository {
     Partida getPartida();
 
     void guardar(Partida partida);
+    
+    public void eliminarPartida();
 }

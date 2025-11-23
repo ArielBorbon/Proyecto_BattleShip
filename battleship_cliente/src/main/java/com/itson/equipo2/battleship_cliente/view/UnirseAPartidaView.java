@@ -121,7 +121,7 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
     }//GEN-LAST:event_txtIpActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // TODO add your handling code here:
+       viewController.cambiarPantalla("lobby");
     }//GEN-LAST:event_btnVolverActionPerformed
 
 
