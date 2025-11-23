@@ -84,7 +84,7 @@ public class PartidaModel {
             }
         } else {
             this.nombreJugador2 = "Esperando...";
-            this.enemigo = null; 
+            this.enemigo = null;
         }
 
         if (this.yo != null && this.yo.getId() != null && this.idJugador1 != null) {
@@ -296,6 +296,33 @@ public class PartidaModel {
         inicializarNavesEnemigas();
 
         notifyObservers();
+    }
+
+    /**
+     * Método auxiliar: Recibe un ID (ej: "a1b2...") y devuelve el Nombre (ej:
+     * "Pedro").
+     */
+    public String obtenerNombrePorId(String idBusqueda) {
+        if (idBusqueda == null) {
+            return "Desconocido";
+        }
+
+        // 1. Verificar si soy YO
+        if (this.yo != null && this.yo.getId() != null && this.yo.getId().equals(idBusqueda)) {
+            return this.yo.getNombre() != null ? this.yo.getNombre() : "Tú";
+        }
+
+        // 2. Verificar si es el ENEMIGO
+        if (this.enemigo != null && this.enemigo.getId() != null && this.enemigo.getId().equals(idBusqueda)) {
+            return this.enemigo.getNombre() != null ? this.enemigo.getNombre() : "Enemigo";
+        }
+
+        return "Jugador Desconocido";
+    }
+
+    // Para usarlo en la etiqueta de turno también
+    public String getNombreJugadorEnTurno() {
+        return obtenerNombrePorId(this.turnoDe);
     }
 
     public String getId() {

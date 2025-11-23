@@ -39,10 +39,12 @@ public class PartidaFinalizadaHandler implements IMessageHandler {
         partidaModel.setEstado(EstadoPartida.FINALIZADA);
         partidaModel.setTurnoDe(response.getGanadorId());
 
+        String nombreGanador = partidaModel.obtenerNombrePorId(response.getGanadorId());
+        
         String ganadorId = response.getGanadorId();
         String miId = (partidaModel.getYo() != null) ? partidaModel.getYo().getId() : "";
 
-        System.out.println("Partida Finalizada. Ganador: " + ganadorId + " | Motivo: " + response.getMotivo());
+        System.out.println("Partida Finalizada. Ganador: " +nombreGanador+ " " + ganadorId + " | Motivo: " + response.getMotivo());
 
         javax.swing.SwingUtilities.invokeLater(() -> {
 
