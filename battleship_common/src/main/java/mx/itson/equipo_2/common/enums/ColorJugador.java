@@ -16,7 +16,7 @@ public enum ColorJugador {
     AZUL(Color.BLUE),
     VERDE(Color.GREEN),
     AMARILLO(Color.YELLOW),
-    NARANJA(Color.ORANGE),
+    NARANJA(new Color(252, 144, 3)),
     MORADO(Color.MAGENTA);
 
     private Color color;
