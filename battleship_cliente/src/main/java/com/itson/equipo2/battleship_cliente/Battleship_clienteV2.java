@@ -146,7 +146,7 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
         
-        eventDispatcher.subscribe("JugadorRegistrado", new JugadorRegistradoHandler(viewController, partidaModel));
+        eventDispatcher.subscribe("JugadorRegistrado", new JugadorUnidoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("JugadorUnido", new JugadorUnidoHandler (viewController, partidaModel));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
