@@ -186,8 +186,9 @@ public class Battleship_clienteV2 {
         });
         
 
-        IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
-        redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+//        IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
+//        redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+        networkService.inicializar(eventDispatcher, executor);
 
         // 11. Arranque
         SwingUtilities.invokeLater(() -> {
