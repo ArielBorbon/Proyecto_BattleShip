@@ -37,6 +37,7 @@ import com.itson.equipo2.battleship_cliente.handler.JugadorUnidoHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
+import com.itson.equipo2.battleship_cliente.handler.PosicionamientoHandler;
 import com.itson.equipo2.battleship_cliente.pattern.factory.DerrotaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
@@ -134,6 +135,9 @@ public class Battleship_clienteV2 {
         });
 
         // 9. Configuración de Eventos (Handlers)
+        
+        // Handlers existentes     
+        
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
@@ -141,47 +145,14 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
-        // Handler clave para el flujo de registro - sala
-        eventDispatcher.subscribe("JugadorRegistrado", new JugadorUnidoHandler(viewController, partidaModel));
+        
+        eventDispatcher.subscribe("JugadorRegistrado", new JugadorRegistradoHandler(viewController, partidaModel));
+        eventDispatcher.subscribe("JugadorUnido", new JugadorUnidoHandler (viewController, partidaModel));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
-        // Para actualizar la lista de jugadores en la sala
         eventDispatcher.subscribe("PartidaActualizada", new PartidaActualizadaHandler(partidaModel));
-
-        eventDispatcher.subscribe("InicioPosicionamiento", new com.itson.equipo2.communication.broker.IMessageHandler() {
-            @Override
-            public boolean canHandle(com.itson.equipo2.communication.dto.EventMessage message) {
-                return "InicioPosicionamiento".equals(message.getEventType());
-            }
-
-            @Override
-            public void onMessage(com.itson.equipo2.communication.dto.EventMessage message) {
-                System.out.println("Cliente: ¡El juego comienza! Cambiando a pantalla de posicionamiento.");
-
-                javax.swing.SwingUtilities.invokeLater(() -> {
-                    viewController.cambiarPantalla("posicionar");
-                });
-            }
-        });
-        
-        eventDispatcher.subscribe("PartidaCancelada", new com.itson.equipo2.communication.broker.IMessageHandler() {
-            @Override
-            public boolean canHandle(com.itson.equipo2.communication.dto.EventMessage message) {
-                return "PartidaCancelada".equals(message.getEventType());
-            }
-
-            @Override
-            public void onMessage(com.itson.equipo2.communication.dto.EventMessage message) {
-                System.out.println("Cliente: La sala fue cancelada por el host.");
-                
-                partidaModel.reiniciarPartida();
-
-                javax.swing.SwingUtilities.invokeLater(() -> {
-                    javax.swing.JOptionPane.showMessageDialog(null, "El Host ha cerrado la sala.");
-                    viewController.cambiarPantalla("lobby");
-                });
-            }
-        });
+        eventDispatcher.subscribe("InicioPosicionamiento", new PosicionamientoHandler(viewController));
+        eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
         
 
 //        IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);

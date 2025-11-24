@@ -12,35 +12,27 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author PC Gamer
+ * @author sonic
  */
-public class PartidaCanceladaHandler implements IMessageHandler {
+public class PosicionamientoHandler implements IMessageHandler {
 
     private final ViewController viewController;
-    private final PartidaModel partidaModel;
 
-    public PartidaCanceladaHandler(ViewController viewController, PartidaModel partidaModel) {
+    public PosicionamientoHandler(ViewController viewController) {
         this.viewController = viewController;
-        this.partidaModel = partidaModel;
     }
 
     @Override
     public boolean canHandle(EventMessage message) {
-        return "PartidaCancelada".equals(message.getEventType());
+        return "InicioPosicionamiento".equals(message.getEventType());
     }
 
     @Override
     public void onMessage(EventMessage message) {
-        System.out.println("La partida ha sido cancelada por el servidor.");
-        
+        System.out.println("Cliente (Handler): ¡Todos listos! Iniciando fase de posicionamiento.");
+
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, 
-                "La partida ha sido cancelada (el rival se desconecto o abandono).", 
-                "Partida Terminada", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-            partidaModel.reiniciarPartida();
-            viewController.cambiarPantalla("menu");
+            viewController.cambiarPantalla("posicionar");
         });
     }
 }
