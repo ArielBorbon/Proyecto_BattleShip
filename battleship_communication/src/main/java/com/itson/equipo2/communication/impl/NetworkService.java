@@ -2,14 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_cliente.service;
+package com.itson.equipo2.communication.impl;
 
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
-import com.itson.equipo2.communication.impl.EventDispatcher;
-import com.itson.equipo2.communication.impl.RedisConnection;
-import com.itson.equipo2.communication.impl.RedisSubscriber;
 import java.util.concurrent.ExecutorService;
-import mx.itson.equipo_2.common.broker.BrokerConfig;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -25,6 +21,12 @@ public class NetworkService {
     private EventDispatcher eventDispatcher;
     private ExecutorService executor;
 
+    private final String eventChannel;
+
+    public NetworkService(String eventChannel) {
+        this.eventChannel = eventChannel;
+    }
+    
     // Método inicial para arrancar en localhost (llamado desde Main)
     public void inicializar(EventDispatcher dispatcher, ExecutorService exec) {
         this.eventDispatcher = dispatcher;
@@ -75,7 +77,7 @@ public class NetworkService {
                     executor,
                     eventDispatcher
             );
-            currentSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+            currentSubscriber.subscribe(eventChannel);
             System.out.println("Suscriptor reiniciado y escuchando eventos.");
         }
     }

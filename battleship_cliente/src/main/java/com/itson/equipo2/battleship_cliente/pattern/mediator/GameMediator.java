@@ -2,19 +2,17 @@ package com.itson.equipo2.battleship_cliente.pattern.mediator;
 
 import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
-import com.itson.equipo2.battleship_cliente.models.JugadorModel;
-import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 /**
  *
  * @author PC Gamer
  */
 public class GameMediator {
 
-    private DisparoController partidaController;
+    private DisparoController disparoController;
     private AbandonarController abandonarController;
     
     public DisparoController getPartidaController() {
-        return partidaController;
+        return disparoController;
     }
 
     public AbandonarController getAbandonarController() {
@@ -25,15 +23,9 @@ public class GameMediator {
         this.abandonarController = abandonarController;
     }
     
-    
-    
-    public void setPartidaController(DisparoController controller) {
-        this.partidaController = controller;
-    }
-    
     public void disparar(int fila, int columna) {
-        if (partidaController != null) {
-            partidaController.disparar(fila, columna);
+        if (disparoController != null) {
+            disparoController.disparar(fila, columna);
         }
     }
     
@@ -41,5 +33,9 @@ public class GameMediator {
         if (abandonarController != null) {
             abandonarController.abandonar();
         }
+    }
+    
+    public void setPartidaController(DisparoController controller) {
+        this.disparoController = controller;
     }
 }

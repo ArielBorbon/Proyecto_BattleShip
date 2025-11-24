@@ -8,13 +8,13 @@ import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.dto.JugadorDTO;
 
-public class JugadorRegistradoHandler implements IMessageHandler {
+public class JugadorUnidoHandler implements IMessageHandler {
 
     private final ViewController viewController;
     private final PartidaModel partidaModel;
     private final Gson gson = new Gson();
 
-    public JugadorRegistradoHandler(ViewController viewController, PartidaModel partidaModel) {
+    public JugadorUnidoHandler(ViewController viewController, PartidaModel partidaModel) {
         this.viewController = viewController;
         this.partidaModel = partidaModel;
     }

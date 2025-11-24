@@ -15,7 +15,6 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.request.PosicionarFlotaRequest;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
-import mx.itson.equipo_2.common.enums.EstadoPartida;
 
 /**
  * Servicio de aplicación encargado de procesar la solicitud de posicionamiento
@@ -37,7 +36,6 @@ public class PosicionarNaveService {
      * Instancia de Gson para serialización.
      */
     private final Gson gson = new Gson();
-
 
     private PartidaTimerService partidaTimerService;
 
@@ -96,55 +94,39 @@ public class PosicionarNaveService {
 
         if (j1Listo && j2Listo) {
             System.out.println("Servidor: ¡AMBOS JUGADORES LISTOS! Iniciando batalla...");
-            iniciarBatalla(partida);
-        } else {
-            // Opcional: Notificar al otro que estamos esperando
-            System.out.println("Servidor: Esperando al otro jugador...");
+
+            partida.iniciarBatalla();
+
+            JugadorDTO j1DTO = new JugadorDTO(
+                    partida.getJugador1().getId(),
+                    partida.getJugador1().getNombre(),
+                    partida.getJugador1().getColor(),
+                    null, null
+            );
+
+            JugadorDTO j2DTO = new JugadorDTO(
+                    partida.getJugador2().getId(),
+                    partida.getJugador2().getNombre(),
+                    partida.getJugador2().getColor(),
+                    null, null
+            );
+
+            PartidaIniciadaResponse response = new PartidaIniciadaResponse(
+                    partida.getId().toString(),
+                    j1DTO,
+                    j2DTO,
+                    partida.getEstado(),
+                    partida.getTurnoActual()
+            );
+
+            EventMessage evento = new EventMessage("PartidaIniciada", gson.toJson(response));
+            eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, evento);
+
+            if (partidaTimerService != null) {
+                partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
+            }
         }
 
         partidaRepository.guardar(partida);
     }
-
-    private void iniciarBatalla(Partida partida) {
-        partida.iniciarBatalla();
-
-        JugadorDTO j1DTO = new JugadorDTO(
-                partida.getJugador1().getId(),
-                partida.getJugador1().getNombre(),
-                partida.getJugador1().getColor(),
-                null, null
-        );
-
-        JugadorDTO j2DTO = new JugadorDTO(
-                partida.getJugador2().getId(),
-                partida.getJugador2().getNombre(),
-                partida.getJugador2().getColor(),
-                null, null
-        );
-
-        PartidaIniciadaResponse response = new PartidaIniciadaResponse(
-                partida.getId().toString(),
-                j1DTO,
-                j2DTO,
-                partida.getEstado(),
-                partida.getTurnoActual()
-        );
-
-        EventMessage evento = new EventMessage("PartidaIniciada", gson.toJson(response));
-        eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, evento);
-
-        if (partidaTimerService != null) {
-            partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
-        }
-    }
-
-    /**
-     * Setter para inyectar el servicio de inicio de partida.
-     *
-     * @param crearPartidaVsIAService El servicio para iniciar la lógica del
-     * juego.
-     */
-//    public void setCrearPartidaVsIAService(CrearPartidaVsIAService crearPartidaVsIAService) {
-//        this.crearPartidaVsIAService = crearPartidaVsIAService;
-//    }
 }

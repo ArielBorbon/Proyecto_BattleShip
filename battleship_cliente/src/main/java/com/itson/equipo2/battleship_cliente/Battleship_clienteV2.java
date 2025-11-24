@@ -24,18 +24,16 @@ import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
 import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
-import com.itson.equipo2.communication.broker.IMessageSubscriber;
 import com.itson.equipo2.communication.impl.EventDispatcher;
 import com.itson.equipo2.communication.impl.RedisConnection;
 import com.itson.equipo2.communication.impl.RedisPublisher;
-import com.itson.equipo2.communication.impl.RedisSubscriber;
 import java.util.concurrent.ExecutorService;
 import javax.swing.SwingUtilities;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import redis.clients.jedis.JedisPool;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.SalaController;
-import com.itson.equipo2.battleship_cliente.handler.JugadorRegistradoHandler;
+import com.itson.equipo2.battleship_cliente.handler.JugadorUnidoHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
@@ -47,7 +45,7 @@ import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.pattern.factory.UnirseAPartidaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VictoriaViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
-import com.itson.equipo2.battleship_cliente.service.NetworkService;
+import com.itson.equipo2.communication.impl.NetworkService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
 import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
@@ -76,7 +74,7 @@ public class Battleship_clienteV2 {
 
         // 3. Servicios
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
-        NetworkService networkService = new NetworkService();
+        NetworkService networkService = new NetworkService(BrokerConfig.CHANNEL_EVENTOS);
         SalaService salaService = new SalaService(publisher);
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
@@ -144,7 +142,7 @@ public class Battleship_clienteV2 {
         eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
         // Handler clave para el flujo de registro - sala
-        eventDispatcher.subscribe("JugadorRegistrado", new JugadorRegistradoHandler(viewController, partidaModel));
+        eventDispatcher.subscribe("JugadorRegistrado", new JugadorUnidoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
         // Para actualizar la lista de jugadores en la sala
