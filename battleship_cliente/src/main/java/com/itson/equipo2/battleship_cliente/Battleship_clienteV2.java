@@ -127,14 +127,7 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());
-        
-
-        viewController.registrarPantalla("salaPartida", new ViewFactory() {
-            @Override
-            public JPanel crear(ViewController control) {
-                return salaPartidaView;
-            }
-        });
+        viewController.registrarPantalla("salaPartida", salaPartidaView);
 
         // 9. Configuración de Eventos (Handlers)
         
