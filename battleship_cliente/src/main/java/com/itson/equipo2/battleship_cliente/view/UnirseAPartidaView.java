@@ -3,6 +3,7 @@ package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
+import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import javax.swing.JOptionPane;
 import mx.itson.equipo_2.common.enums.AccionPartida;
@@ -14,12 +15,12 @@ import mx.itson.equipo_2.common.enums.AccionPartida;
 public class UnirseAPartidaView extends javax.swing.JPanel {
 
     private final ViewController viewController;
-    private final RegistroController registroController;
+    private final UnirsePartidaController unirseController;
     private final ConfiguracionController configController;
 
-    public UnirseAPartidaView(ViewController viewController, RegistroController registroController, ConfiguracionController configController) {
+    public UnirseAPartidaView(ViewController viewController, UnirsePartidaController unirseController, ConfiguracionController configController) {
         this.viewController = viewController;
-        this.registroController = registroController;
+        this.unirseController = unirseController;
         this.configController = configController;
         initComponents();
 
@@ -28,31 +29,16 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
     
     private void confirmarAccion() {
         String ip = txtIp.getText().trim();
-        
         if (ip.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa una IP válida", "Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa una IP válida");
             return;
         }
 
-        // 1. INTENTAR CONECTAR
         if (configController.intentarConexion(ip)) {
-            
-            // 2. SI CONECTA, UNIRSE A LA PARTIDA
-            String nombre = registroController.getPartidaModel().getYo().getNombre();
-            
-            if (nombre == null || nombre.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: No tienes nombre registrado.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Enviar solicitud al servidor remoto
-            registroController.registrar(nombre, AccionPartida.UNIRSE);
-            
+            unirseController.solicitarAcceso(AccionPartida.UNIRSE);
             JOptionPane.showMessageDialog(this, "Conectado a " + ip + ". Enviando solicitud...");
-
         } else {
-            // 3. SI FALLA
-            JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor en: " + ip + "\nVerifica que la otra PC tenga el servidor prendido.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error conectando a " + ip);
         }
     }
 

@@ -33,6 +33,7 @@ import mx.itson.equipo_2.common.broker.BrokerConfig;
 import redis.clients.jedis.JedisPool;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.SalaController;
+import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.handler.JugadorUnidoHandler;
 import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
@@ -85,8 +86,9 @@ public class Battleship_clienteV2 {
         ViewController viewController = new ViewController();
 
         // 5. Controladores de Negocio
-        RegistroController registroController = new RegistroController(partidaModel, registrarJugadorService);
         ConfiguracionController configController = new ConfiguracionController(networkService);
+        RegistroController registroController = new RegistroController(partidaModel);
+        UnirsePartidaController unirseController = new UnirsePartidaController(registrarJugadorService, partidaModel);
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         AbandonarController abandonarController = new AbandonarController(abandonarService);
@@ -120,8 +122,8 @@ public class Battleship_clienteV2 {
         viewController.registrarPantalla("posicionar", posicionarNaveVista);
         viewController.registrarPantalla("menu", new MenuPrincipalViewFactory());
         viewController.registrarPantalla("registro", new RegistroViewFactory(registroController));
-        viewController.registrarPantalla("lobby", new LobbyViewFactory(registroController));
-        viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(registroController, configController));
+        viewController.registrarPantalla("lobby", new LobbyViewFactory(unirseController));
+        viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(unirseController, configController));
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());

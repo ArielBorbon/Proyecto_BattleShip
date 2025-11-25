@@ -5,6 +5,7 @@
 package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
+import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,10 +23,10 @@ public class LobbyView extends JPanel {
     private final Color COLOR_TEXTO = new Color(255, 255, 255);
     private final Font FUENTE_BOTON = new Font("Segoe UI Black", 0, 18);
 
-    private final RegistroController registroController;
+    private final UnirsePartidaController unirsePartidaController;
 
-    public LobbyView(ViewController viewController, RegistroController registroController) {
-        this.registroController = registroController;
+    public LobbyView(ViewController viewController, UnirsePartidaController unirsePartidaController) {
+        this.unirsePartidaController = unirsePartidaController;
         initComponents(viewController);
     }
 
@@ -53,10 +54,7 @@ public class LobbyView extends JPanel {
         btnCrear.setFocusPainted(false);
         btnCrear.setBounds(540, 400, 200, 41);
         btnCrear.addActionListener(e -> {
-            String nombre = registroController.getPartidaModel().getYo().getNombre();
-
-            registroController.registrar(nombre, AccionPartida.CREAR);
-
+            unirsePartidaController.solicitarAcceso(AccionPartida.CREAR);
         });
         add(btnCrear);
 

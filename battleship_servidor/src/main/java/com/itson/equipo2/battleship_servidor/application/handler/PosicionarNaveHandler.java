@@ -25,7 +25,6 @@ public class PosicionarNaveHandler implements IMessageHandler {
      */
     private final Gson gson = new Gson();
 
-    // --- CONSTRUCTOR ---
     /**
      * Inicializa el manejador con el servicio de posicionamiento.
      *
@@ -57,11 +56,19 @@ public class PosicionarNaveHandler implements IMessageHandler {
      */
     @Override
     public void onMessage(EventMessage message) {
-        // 1. Deserializa el JSON del payload a un objeto PosicionarFlotaRequest.
-        PosicionarFlotaRequest req = gson.fromJson(message.getPayload(), PosicionarFlotaRequest.class);
+        try {
+            PosicionarFlotaRequest req = gson.fromJson(message.getPayload(), PosicionarFlotaRequest.class);
+            service.posicionarNaves(req);
 
-        // 2. Delega la lógica de dominio al servicio.
-        service.posicionarNaves(req);
+            System.out.println("Naves posicionadas para: " + req.getJugadorId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(">> Aviso de juego: " + e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println("Error inesperado: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

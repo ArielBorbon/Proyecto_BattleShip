@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_cliente.pattern.factory;
 
 import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
-import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
+import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.controllers.ViewController;
 import com.itson.equipo2.battleship_cliente.view.UnirseAPartidaView;
 import javax.swing.JPanel;
@@ -16,17 +16,16 @@ import javax.swing.JPanel;
  */
 public class UnirseAPartidaViewFactory implements ViewFactory {
 
-    private final RegistroController registroController;
+    private final UnirsePartidaController unirseController;
     private final ConfiguracionController configController;
 
-    public UnirseAPartidaViewFactory(RegistroController registroController, ConfiguracionController configController) {
-        this.registroController = registroController;
+    public UnirseAPartidaViewFactory(UnirsePartidaController unirseController, ConfiguracionController configController) {
+        this.unirseController = unirseController;
         this.configController = configController;
     }
 
     @Override
     public JPanel crear(ViewController control) {
-        // ViewController para volver atrás y el RegistroController para logica de unirse
-        return new UnirseAPartidaView(control, registroController, configController);
+        return new UnirseAPartidaView(control, unirseController, configController);
     }
 }
