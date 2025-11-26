@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_servidor.application.handler;
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
+import com.itson.equipo2.battleship_servidor.application.service.UnirJugadorService;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.dto.request.RegistrarJugadorRequest;
@@ -12,11 +12,11 @@ import mx.itson.equipo_2.common.dto.request.RegistrarJugadorRequest;
  *
  * @author Cricri
  */
-public class RegistrarJugadorHandler implements IMessageHandler {
-    private final RegistrarJugadorService service;
+public class UnirJugadorHandler implements IMessageHandler {
+    private final UnirJugadorService service;
     private final Gson gson = new Gson();
 
-    public RegistrarJugadorHandler(RegistrarJugadorService service) {
+    public UnirJugadorHandler(UnirJugadorService service) {
         this.service = service;
     }
 

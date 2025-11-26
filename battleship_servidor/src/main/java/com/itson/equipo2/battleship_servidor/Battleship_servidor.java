@@ -11,10 +11,10 @@ import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerSer
 import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
 import com.itson.equipo2.battleship_servidor.application.handler.PosicionarNaveHandler;
 import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
-import com.itson.equipo2.battleship_servidor.application.handler.RegistrarJugadorHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.UnirJugadorHandler;
 import com.itson.equipo2.battleship_servidor.application.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_servidor.application.service.PosicionarNaveService;
-import com.itson.equipo2.battleship_servidor.application.service.RegistrarJugadorService;
+import com.itson.equipo2.battleship_servidor.application.service.UnirJugadorService;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.communication.broker.IMessageHandler;
@@ -65,7 +65,7 @@ public class Battleship_servidor {
         );
     
 
-        RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(
+        UnirJugadorService registrarJugadorService = new UnirJugadorService(
                 publisher,
                 gson,
                 partidaRepository
@@ -110,7 +110,7 @@ public class Battleship_servidor {
 
         eventDispatcher.subscribe("RealizarDisparo", new RealizarDisparoHandler(disparoService));
        // eventDispatcher.subscribe("CrearPartidaVsIA", new CrearPartidaVsIAHandler(crearPartidaService));
-        eventDispatcher.subscribe("RegistrarJugador", new RegistrarJugadorHandler(registrarJugadorService));
+        eventDispatcher.subscribe("RegistrarJugador", new UnirJugadorHandler(registrarJugadorService));
         eventDispatcher.subscribe("PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
 
         eventDispatcher.subscribe("SolicitarInicioPosicionamiento", new IMessageHandler() {

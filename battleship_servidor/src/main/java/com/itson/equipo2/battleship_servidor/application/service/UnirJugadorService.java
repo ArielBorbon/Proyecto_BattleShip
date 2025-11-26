@@ -21,13 +21,13 @@ import mx.itson.equipo_2.common.enums.ColorJugador;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 
-public class RegistrarJugadorService {
+public class UnirJugadorService {
 
     private final IMessagePublisher eventPublisher;
     private final Gson gson;
     private final IPartidaRepository partidaRepository;
 
-    public RegistrarJugadorService(IMessagePublisher eventPublisher, Gson gson, IPartidaRepository partidaRepository) {
+    public UnirJugadorService(IMessagePublisher eventPublisher, Gson gson, IPartidaRepository partidaRepository) {
         this.eventPublisher = eventPublisher;
         this.gson = gson;
         this.partidaRepository = partidaRepository;
