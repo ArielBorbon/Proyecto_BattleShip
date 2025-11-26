@@ -33,11 +33,9 @@ public class RegistroController {
         yo.setNombre(nombre);
         yo.setColor(color);
 
-        partidaModel.notifyObservers();
+        
     }
 
-    public PartidaModel getPartidaModel() {
-        return partidaModel;
-    }
+ 
 
 }
