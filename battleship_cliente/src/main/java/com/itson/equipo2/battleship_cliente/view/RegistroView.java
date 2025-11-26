@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
 public class RegistroView extends JPanel {
@@ -105,6 +104,7 @@ btnConfirmar.addActionListener(e -> {
                 JOptionPane.showMessageDialog(this, "Nombre inválido", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 registroController.guardarDatosJugador(nombre, color);
+                limpiarFormulario();
                 
                 viewController.cambiarPantalla("lobby");
             }
@@ -119,8 +119,15 @@ btnConfirmar.addActionListener(e -> {
         btnVolver.setBorder(null);
         btnVolver.setFocusPainted(false);
         btnVolver.setBounds(470, 450, 156, 41);
-        btnVolver.addActionListener(e -> viewController.cambiarPantalla("menu"));
-        add(btnVolver);
+        btnVolver.addActionListener(e -> {
+            limpiarFormulario(); 
+            viewController.cambiarPantalla("menu");
+        });
+        add(btnVolver); 
     }
+    private void limpiarFormulario() {
+        txtNombre.setText(""); 
+        cmbColor.setSelectedIndex(0); 
+  }
 }
 
