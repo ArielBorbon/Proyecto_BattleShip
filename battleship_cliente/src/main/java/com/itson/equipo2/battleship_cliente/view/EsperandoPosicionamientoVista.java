@@ -4,25 +4,20 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
-import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  *
  * @author skyro
  */
-public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements VistaFactory {
+
+public class EsperandoPosicionamientoVista extends javax.swing.JPanel {
 
     /**
      * Creates new form PosicionarNaveVista
@@ -62,11 +57,6 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements
         add(jLabel2);
         jLabel2.setBounds(380, 40, 480, 480);
     }// </editor-fold>//GEN-END:initComponents
-
-    @Override
-    public JPanel crear(VistaController control) {
-        return this;
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JLabel jLabel1;

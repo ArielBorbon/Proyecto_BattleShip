@@ -34,7 +34,7 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
  * la vista y sincronizar el estado visual del tablero con el
  * {@code PartidaModel}.
  */
-public class PosicionarNaveVista extends javax.swing.JPanel implements VistaFactory, PartidaObserver {
+public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaObserver {
 
     // --- Variables de Referencia y Modelo ---
     /**
@@ -61,17 +61,6 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements VistaFact
     }
 
     // --- MÉTODOS DE LA INTERFAZ ---
-    /**
-     * Implementación del patrón Factory. Devuelve esta instancia de JPanel.
-     *
-     * @param control Referencia al {@code VistaController} (no utilizada
-     * directamente en esta clase).
-     * @return Esta instancia de {@code JPanel}.
-     */
-    @Override
-    public JPanel crear(VistaController control) {
-        return this;
-    }
 
     /**
      * Implementación del patrón Observer. Se llama cuando el

@@ -1,7 +1,7 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaManager;
+import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 
 /**
  *
@@ -20,12 +21,16 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.VistaManager;
 public class VistaController implements VistaManager {
 
     private final JFrame frame;
-    private Map<String, VistaFactory> factories;
-    private Map<String, JPanel> pantallas;
+    private final Map<String, VistaFactory> factories;
+    private final Map<String, JPanel> pantallas;
 
     private JPanel pantallaActual;
+    
+    private final PartidaModel partidaModel;
 
-    public VistaController() {
+    public VistaController(PartidaModel partidaModel) {
+        this.partidaModel = partidaModel;
+        
         frame = new JFrame("Battleship");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,6 +58,10 @@ public class VistaController implements VistaManager {
                 throw new IllegalArgumentException("Pantalla no registrada: " + nombre);
             }
             panel = factory.crear(this);
+            
+            if (panel instanceof PartidaObserver observer) {
+                partidaModel.addObserver(observer);
+            }
             pantallas.put(nombre, panel);
         }
 

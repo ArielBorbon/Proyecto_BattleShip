@@ -1,10 +1,11 @@
 package com.itson.equipo2.battleship_cliente.view;
 
+import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
+import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.models.CeldaModel;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
-import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import java.awt.Color;
@@ -24,7 +25,6 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
-import mx.itson.equipo_2.common.dto.DisparoDTO;
 import mx.itson.equipo_2.common.enums.EstadoCelda;
 import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
@@ -46,38 +46,28 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
 
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
-    private JugadorModel jugador;
     private Timer timerNotificacion;
-    private GameMediator mediator;
+
+    private final DisparoController disparoController;
+    private final AbandonarController abandonarController;
 
     private TableroModel miTablero;
     private TableroModel tableroEnemigo;
 
     private PartidaModel partidaModel; // refeerencia local
     private MarcadorView marcadorView;
-    
-    private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
-    private final Color COLOR_DESTRUIDO = Color.BLACK;                 
-    private final Color COLOR_DANIADO = Color.DARK_GRAY;               
-    private final Color COLOR_MAR_OCULTO = new Color(50, 70, 100);     
 
-    public DispararView() {
+    private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
+    private final Color COLOR_DESTRUIDO = Color.BLACK;
+    private final Color COLOR_DANIADO = Color.DARK_GRAY;
+    private final Color COLOR_MAR_OCULTO = new Color(50, 70, 100);
+
+    public DispararView(DisparoController disparoController, AbandonarController abandonarController) {
+        this.disparoController = disparoController;
+        this.abandonarController = abandonarController;
         initComponents();
         crearCeldas();
 
-    }
-
-    public void setModels(PartidaModel partidaModel, TableroModel miTablero, TableroModel tableroEnemigo) {
-        this.partidaModel = partidaModel;
-
-
-        if (this.partidaModel != null) {
-            this.partidaModel.addObserver(this);
-            System.out.println("DispararView: Suscrito a actualizaciones.");
-            
-
-            onChange(this.partidaModel); 
-        }
     }
 
     @Override
@@ -102,14 +92,14 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
                 repintarEnemigo(tableroEnemigoActual);
             }
         }
-        
+
         actualizarDatosMarcador();
 
         revalidate();
         repaint();
 
         if (model.getEstado() == EstadoPartida.FINALIZADA) {
-            if (btnDisparar.isEnabled()) { 
+            if (btnDisparar.isEnabled()) {
                 btnDisparar.setEnabled(false);
                 btnRendirse.setEnabled(false);
             }
@@ -263,16 +253,14 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
 
     private void btnRendirseActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         int opcion = JOptionPane.showConfirmDialog(
-            this, 
-            "¿Estás seguro que deseas rendirte?", 
-            "Confirmación", 
-            JOptionPane.YES_NO_OPTION
+                this,
+                "¿Estás seguro que deseas rendirte?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION
         );
 
         if (opcion == JOptionPane.YES_OPTION) {
-            if (mediator != null) {
-                mediator.abandonarPartida();
-            }
+            abandonarController.abandonar();
         }
     }//GEN-LAST:event_btnRendirseActionPerformed
 
@@ -281,7 +269,7 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
             mostrarError("Debes seleccionar una casilla para disparar.");
             return;
         }
-        
+
         if (tableroEnemigo != null) {
             CeldaModel celda = tableroEnemigo.getCelda(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
             if (celda.getEstado() == EstadoCelda.DISPARADA) {
@@ -290,10 +278,8 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
             }
         }
 
-        if (mediator != null) {
-            mediator.disparar(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
-        }
-        
+        disparoController.disparar(coordSeleccionada.getFila(), coordSeleccionada.getColumna());
+
         this.coordSeleccionada = null;
         if (this.ultimaSeleccionada != null) {
             this.ultimaSeleccionada.setBorder(new LineBorder(Color.BLACK, 1));
@@ -309,7 +295,7 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
             JFrame frame = (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this);
             marcadorView = new MarcadorView(frame);
         }
-        
+
         actualizarDatosMarcador();
 
         marcadorView.setVisible(true);
@@ -385,19 +371,10 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
     }
 
     public void setJugador(JugadorModel jugador) {
-        this.jugador = jugador;
     }
 
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
-    }
-
-    public GameMediator getMediator() {
-        return mediator;
-    }
-
-    public void setMediator(GameMediator mediator) {
-        this.mediator = mediator;
     }
 
     public void setTableros(TableroModel miTablero, TableroModel tableroEnemigo) {
@@ -407,13 +384,17 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
         mostrarTableroPropio(miTablero);
     }
 
-   public void mostrarNotificacion(ResultadoDisparo resultado) {
+    public void mostrarNotificacion(ResultadoDisparo resultado) {
         Color color;
         switch (resultado) {
-            case AGUA -> color = Color.CYAN; // Texto azul claro
-            case IMPACTO_SIN_HUNDIMIENTO -> color = Color.ORANGE;
-            case IMPACTO_CON_HUNDIMIENTO -> color = Color.RED; // Texto rojo para la alerta
-            default -> throw new AssertionError();
+            case AGUA ->
+                color = Color.CYAN; // Texto azul claro
+            case IMPACTO_SIN_HUNDIMIENTO ->
+                color = Color.ORANGE;
+            case IMPACTO_CON_HUNDIMIENTO ->
+                color = Color.RED; // Texto rojo para la alerta
+            default ->
+                throw new AssertionError();
         }
         lblResultado.setText(resultado.getMensaje());
         lblResultado.setForeground(color);
@@ -440,8 +421,10 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
     }
 
     private void repintarPropio(TableroModel tablero, Color colorUsuario) {
-        if (tablero == null) return;
-        
+        if (tablero == null) {
+            return;
+        }
+
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
@@ -454,22 +437,20 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
                     } else {
                         boton.setBackground(COLOR_AGUA_IMPACTO);
                     }
-                } 
-                
-                else if (celda.tieneNave()) {
-                    boton.setBackground(colorUsuario); 
-                } 
-                
-                else {
-                    boton.setBackground(COLOR_MAR_OCULTO); 
+                } else if (celda.tieneNave()) {
+                    boton.setBackground(colorUsuario);
+                } else {
+                    boton.setBackground(COLOR_MAR_OCULTO);
                 }
             }
         }
     }
 
     public void repintarEnemigo(TableroModel tablero) {
-        if (tablero == null) return;
-        
+        if (tablero == null) {
+            return;
+        }
+
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
 
@@ -489,9 +470,12 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
                     boton.setBackground(COLOR_AGUA_IMPACTO);
                 } else {
                     switch (estadoNave) {
-                        case AVERIADO -> boton.setBackground(COLOR_DANIADO); 
-                        case HUNDIDO -> boton.setBackground(COLOR_DESTRUIDO);
-                        default -> boton.setBackground(Color.PINK);
+                        case AVERIADO ->
+                            boton.setBackground(COLOR_DANIADO);
+                        case HUNDIDO ->
+                            boton.setBackground(COLOR_DESTRUIDO);
+                        default ->
+                            boton.setBackground(Color.PINK);
                     }
                 }
             }

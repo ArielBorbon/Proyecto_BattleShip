@@ -18,11 +18,8 @@ import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
-import com.itson.equipo2.battleship_cliente.pattern.mediator.GameMediator;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
-import com.itson.equipo2.battleship_cliente.view.DispararView;
-import com.itson.equipo2.battleship_cliente.view.PosicionarNaveVista;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.impl.EventDispatcher;
 import com.itson.equipo2.communication.impl.RedisConnection;
@@ -40,8 +37,11 @@ import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PosicionamientoHandler;
 import com.itson.equipo2.battleship_cliente.pattern.factory.impl.DerrotaViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.DispararFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.EsperandoPosicionamientoFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.impl.LobbyViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.impl.MenuPrincipalViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.PosicionarNaveFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.impl.RegistroViewFactory;
 import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.pattern.factory.impl.UnirseAPartidaViewFactory;
@@ -49,11 +49,9 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.impl.VictoriaViewFac
 import com.itson.equipo2.communication.impl.NetworkService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
-import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
 
 public class Battleship_cliente {
-
 
     public static void main(String[] args) {
         System.out.println("Iniciando Cliente Battleship (Arquitectura Limpia)...");
@@ -71,7 +69,6 @@ public class Battleship_cliente {
         jugadorModel.setTablero(miTablero);
         partidaModel.setYo(jugadorModel);
 
-
         // 3. Servicios
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
         NetworkService networkService = new NetworkService(BrokerConfig.CHANNEL_EVENTOS);
@@ -81,7 +78,7 @@ public class Battleship_cliente {
         AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
 
         // 4. Controlador Principal de Vistas
-        VistaController viewController = new VistaController();
+        VistaController viewController = new VistaController(partidaModel);
 
         // 5. Controladores de Negocio
         ConfiguracionController configController = new ConfiguracionController(networkService);
@@ -91,46 +88,32 @@ public class Battleship_cliente {
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         AbandonarController abandonarController = new AbandonarController(abandonarService);
 
-        SalaController salaController = new SalaController(salaService, viewController, abandonarService , partidaModel);
+        SalaController salaController = new SalaController(salaService, viewController, abandonarService, partidaModel);
 
         posicionarController.setViewController(viewController);
 
-        // 6. Mediadores
-        GameMediator gameMediator = new GameMediator();
-        gameMediator.setPartidaController(disparoController);
-        gameMediator.setAbandonarController(abandonarController);
-
         // 7. Vistas
-        DispararView dispararView = new DispararView();
-        dispararView.setMediator(gameMediator);
+        DispararFactory dispararFactory = new DispararFactory(disparoController, abandonarController);
 
-        PosicionarNaveVista posicionarNaveVista = new PosicionarNaveVista(posicionarController);
+        PosicionarNaveFactory posicionarNaveFactory = new PosicionarNaveFactory(posicionarController);
 
         // Inyectamos el controlador en lugar del publisher
         SalaPartidaView salaPartidaView = new SalaPartidaView(salaController);
 
-        // Configuración de Vistas y Observadores
-//        dispararView.setModels(partidaModel, miTablero, tableroEnemigo);
-        partidaModel.addObserver(dispararView);
-        partidaModel.addObserver(posicionarNaveVista);
-        partidaModel.addObserver(salaPartidaView);
-
         // 8. Registro de Pantallas
-        viewController.registrarPantalla("disparar", dispararView);
-        viewController.registrarPantalla("posicionar", posicionarNaveVista);
+        viewController.registrarPantalla("disparar", dispararFactory);
+        viewController.registrarPantalla("posicionar", posicionarNaveFactory);
         viewController.registrarPantalla("menu", new MenuPrincipalViewFactory());
         viewController.registrarPantalla("registro", new RegistroViewFactory(registroController));
         viewController.registrarPantalla("lobby", new LobbyViewFactory(unirseController));
         viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(unirseController, configController));
-        viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoVista());
+        viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoFactory());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());
         viewController.registrarPantalla("salaPartida", salaPartidaView);
 
         // 9. Configuración de Eventos (Handlers)
-        
         // Handlers existentes     
-        
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
@@ -138,15 +121,14 @@ public class Battleship_cliente {
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
-        
+
         eventDispatcher.subscribe("JugadorRegistrado", new JugadorUnidoHandler(viewController, partidaModel));
-        eventDispatcher.subscribe("JugadorUnido", new JugadorUnidoHandler (viewController, partidaModel));
+        eventDispatcher.subscribe("JugadorUnido", new JugadorUnidoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
         eventDispatcher.subscribe("PartidaActualizada", new PartidaActualizadaHandler(partidaModel));
         eventDispatcher.subscribe("InicioPosicionamiento", new PosicionamientoHandler(viewController));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
-        
 
 //        IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
 //        redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);

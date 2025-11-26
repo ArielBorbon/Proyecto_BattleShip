@@ -6,6 +6,7 @@ package com.itson.equipo2.battleship_cliente.models;
 
 import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
+import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaSubject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import mx.itson.equipo_2.common.enums.TipoNave;
  *
  * @author skyro
  */
-public class PartidaModel {
+public class PartidaModel implements PartidaSubject {
 
     private String id;
     private JugadorModel yo;
@@ -46,16 +47,19 @@ public class PartidaModel {
 
     private final transient List<PartidaObserver> observers = new ArrayList<>();
 
+    @Override
     public void addObserver(PartidaObserver observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
+    @Override
     public void removeObserver(PartidaObserver observer) {
         observers.remove(observer);
     }
 
+    @Override
     public void notifyObservers() {
         System.out.println("PartidaModel notificando a " + observers.size() + " observadores...");
         javax.swing.SwingUtilities.invokeLater(() -> {
