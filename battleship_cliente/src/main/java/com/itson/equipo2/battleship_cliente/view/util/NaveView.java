@@ -193,6 +193,10 @@ public class NaveView extends JPanel {
                             } catch (PosicionarNaveException ex) {
                                 firePropertyChange("naveDevuelta", false, true);
                             }
+                        } else {
+                            // AGREGAR ESTE BLOQUE ELSE
+                            // Si se soltó FUERA de los límites visuales del tablero, devolvemos la nave
+                            firePropertyChange("naveDevuelta", false, true);
                         }
 
                         // 4. AUTO-DESTRUCCIÓN

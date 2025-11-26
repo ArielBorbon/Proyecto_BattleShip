@@ -164,6 +164,8 @@ public class TableroModel {
             if (esCoordenadaValida(f, c)) {
                 this.celdas[f][c].setTipoNave(tipo);
                 this.celdas[f][c].setEstadoNave(EstadoNave.SIN_DANIOS);
+            } else {
+                throw new PosicionarNaveException("La posición de la nave no es válida");
             }
         }
 

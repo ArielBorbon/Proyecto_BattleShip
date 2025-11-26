@@ -47,7 +47,7 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
     private Timer timerNotificacion;
-
+    
     private final DisparoController disparoController;
     private final AbandonarController abandonarController;
 
@@ -68,6 +68,17 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, Pa
         initComponents();
         crearCeldas();
 
+    }
+
+    public void setModels(PartidaModel partidaModel, TableroModel miTablero, TableroModel tableroEnemigo) {
+        this.partidaModel = partidaModel;
+
+        if (this.partidaModel != null) {
+            this.partidaModel.addObserver(this);
+            System.out.println("DispararView: Suscrito a actualizaciones.");
+
+            onChange(this.partidaModel);
+        }
     }
 
     @Override

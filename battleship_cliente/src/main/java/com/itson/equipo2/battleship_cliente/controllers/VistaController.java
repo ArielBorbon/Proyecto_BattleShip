@@ -62,6 +62,10 @@ public class VistaController implements VistaManager {
             if (panel instanceof PartidaObserver observer) {
                 partidaModel.addObserver(observer);
             }
+            
+            if (panel instanceof DispararView dv) {
+                dv.setModels(partidaModel, partidaModel.getTableroPropio(), partidaModel.getEnemigo().getTablero());
+            }
             pantallas.put(nombre, panel);
         }
 
