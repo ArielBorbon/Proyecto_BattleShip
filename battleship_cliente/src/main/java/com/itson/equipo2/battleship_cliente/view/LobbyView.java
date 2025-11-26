@@ -6,7 +6,7 @@ package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -25,12 +25,12 @@ public class LobbyView extends JPanel {
 
     private final UnirsePartidaController unirsePartidaController;
 
-    public LobbyView(ViewController viewController, UnirsePartidaController unirsePartidaController) {
+    public LobbyView(VistaController viewController, UnirsePartidaController unirsePartidaController) {
         this.unirsePartidaController = unirsePartidaController;
         initComponents(viewController);
     }
 
-    private void initComponents(ViewController viewController) {
+    private void initComponents(VistaController viewController) {
         setBackground(COLOR_FONDO);
         setLayout(null);
         setPreferredSize(new Dimension(1280, 720));

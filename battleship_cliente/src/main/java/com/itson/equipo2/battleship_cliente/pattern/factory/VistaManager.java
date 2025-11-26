@@ -1,7 +1,7 @@
 
-package com.itson.equipo2.battleship_cliente.pattern.mediator;
+package com.itson.equipo2.battleship_cliente.pattern.factory;
 
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  *
@@ -12,7 +12,7 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 * José Eduardo Aguilar García       00000252049
 * José Luis Islas Molina            00000252574
  */
-public interface ViewManager {
-    void registrarPantalla(String nombre, ViewFactory factory);
+public interface VistaManager {
+    void registrarPantalla(String nombre, VistaFactory factory);
     void cambiarPantalla(String nombre);
 }

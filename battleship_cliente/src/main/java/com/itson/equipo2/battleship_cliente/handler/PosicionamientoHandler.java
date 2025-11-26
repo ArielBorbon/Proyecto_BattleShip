@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.handler;
 
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
@@ -16,9 +16,9 @@ import javax.swing.JOptionPane;
  */
 public class PosicionamientoHandler implements IMessageHandler {
 
-    private final ViewController viewController;
+    private final VistaController viewController;
 
-    public PosicionamientoHandler(ViewController viewController) {
+    public PosicionamientoHandler(VistaController viewController) {
         this.viewController = viewController;
     }
 

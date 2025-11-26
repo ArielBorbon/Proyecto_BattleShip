@@ -6,7 +6,7 @@ package com.itson.equipo2.battleship_cliente.view;
 
 
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -31,11 +31,11 @@ public class RegistroView extends JPanel {
     private JTextField txtNombre;
     private JComboBox<ColorJugador> cmbColor;
 
-    public RegistroView(ViewController viewController, RegistroController registroController) {
+    public RegistroView(VistaController viewController, RegistroController registroController) {
         initComponents(viewController, registroController);
     }
 
-    private void initComponents(ViewController viewController, RegistroController registroController) {
+    private void initComponents(VistaController viewController, RegistroController registroController) {
         setBackground(COLOR_FONDO);
         setLayout(null);
         setPreferredSize(new Dimension(1280, 720));

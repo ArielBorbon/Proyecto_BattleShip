@@ -4,8 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -17,12 +16,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  *
  * @author skyro
  */
-public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements ViewFactory {
+public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements VistaFactory {
 
     /**
      * Creates new form PosicionarNaveVista
@@ -64,7 +64,7 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel implements
     }// </editor-fold>//GEN-END:initComponents
 
     @Override
-    public JPanel crear(ViewController control) {
+    public JPanel crear(VistaController control) {
         return this;
     }
 

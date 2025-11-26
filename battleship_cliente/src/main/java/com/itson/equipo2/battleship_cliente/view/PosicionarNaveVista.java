@@ -5,11 +5,10 @@
 package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.models.CeldaModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import com.itson.equipo2.battleship_cliente.view.util.NaveView;
 import com.itson.equipo2.battleship_cliente.view.util.SelectorNaveView;
@@ -27,14 +26,15 @@ import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.enums.TipoNave;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  * Vista principal utilizada para la fase de posicionamiento de naves del
- * jugador. Implementa {@code ViewFactory} y {@code PartidaObserver} para crear
+ * jugador. Implementa {@code VistaFactory} y {@code PartidaObserver} para crear
  * la vista y sincronizar el estado visual del tablero con el
  * {@code PartidaModel}.
  */
-public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
+public class PosicionarNaveVista extends javax.swing.JPanel implements VistaFactory, PartidaObserver {
 
     // --- Variables de Referencia y Modelo ---
     /**
@@ -64,12 +64,12 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements ViewFacto
     /**
      * Implementación del patrón Factory. Devuelve esta instancia de JPanel.
      *
-     * @param control Referencia al {@code ViewController} (no utilizada
+     * @param control Referencia al {@code VistaController} (no utilizada
      * directamente en esta clase).
      * @return Esta instancia de {@code JPanel}.
      */
     @Override
-    public JPanel crear(ViewController control) {
+    public JPanel crear(VistaController control) {
         return this;
     }
 

@@ -2,7 +2,7 @@
 package com.itson.equipo2.battleship_cliente.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
@@ -14,11 +14,11 @@ import com.itson.equipo2.communication.dto.EventMessage;
  */
 public class PartidaIniciadaHandler implements IMessageHandler {
 
-    private final ViewController viewController;
+    private final VistaController viewController;
     private final PartidaModel partidaModel;
     private final Gson gson = new Gson();
 
-    public PartidaIniciadaHandler(ViewController viewController, PartidaModel partidaModel) {
+    public PartidaIniciadaHandler(VistaController viewController, PartidaModel partidaModel) {
         this.viewController = viewController;
         this.partidaModel = partidaModel;
     }

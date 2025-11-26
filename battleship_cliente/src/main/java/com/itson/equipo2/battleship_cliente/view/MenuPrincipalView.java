@@ -1,7 +1,7 @@
 
 package com.itson.equipo2.battleship_cliente.view;
 
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -19,11 +19,11 @@ public class MenuPrincipalView extends JPanel {
     private final Font FUENTE_BOTON = new Font("Segoe UI Black", 0, 18);
     private final Font FUENTE_TITULO = new Font("Segoe UI Black", 1, 48);
 
-    public MenuPrincipalView(ViewController viewController) {
+    public MenuPrincipalView(VistaController viewController) {
         initComponents(viewController);
     }
 
-    private void initComponents(ViewController viewController) {
+    private void initComponents(VistaController viewController) {
         setBackground(COLOR_FONDO);
         setLayout(null);
         setPreferredSize(new Dimension(1280, 720));

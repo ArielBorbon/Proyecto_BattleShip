@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
+import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
 import java.util.ArrayList;
 import java.util.List;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
@@ -137,11 +138,11 @@ public class TableroModel {
     /**
      * Añade la nave al modelo de celdas. (Llamado por PosicionarController)
      */
-    public boolean agregarNave(TipoNave tipo, int fila, int columna, boolean esHorizontal) {
+    public void agregarNave(TipoNave tipo, int fila, int columna, boolean esHorizontal) throws PosicionarNaveException {
 
         // 1. Llama a la lógica de validación interna
         if (!esPosicionValida(tipo, fila, columna, esHorizontal)) {
-            return false; // Falla la validación
+            throw new PosicionarNaveException("La posición de la nave no es válida");
         }
 
         // 2. Si es válido, AHORA SÍ modificamos el estado
@@ -167,7 +168,6 @@ public class TableroModel {
         }
 
         navesPosicionadas.add(new NaveModel(tipo, fila, columna, esHorizontal));
-        return true; // Éxito
     }
 
     private boolean esPosicionValida(TipoNave tipo, int fila, int columna, boolean esHorizontal) {

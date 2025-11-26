@@ -12,8 +12,8 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  */
 public class Disparo {
 
-    private Coordenada coordenada;
-    private ResultadoDisparo resultado;
+    private final Coordenada coordenada;
+    private final ResultadoDisparo resultado;
 
     public Disparo(Coordenada coordenada, ResultadoDisparo resultado) {
         this.coordenada = coordenada;

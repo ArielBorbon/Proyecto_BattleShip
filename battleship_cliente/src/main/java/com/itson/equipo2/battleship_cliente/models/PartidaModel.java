@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
+import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -208,16 +209,13 @@ public class PartidaModel {
         this.soyHost = soyHost;
     }
 
-    public boolean intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) {
+    public void intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) throws PosicionarNaveException {
 
         TableroModel tableroPropio = this.getTableroPropio();
-        boolean exito = tableroPropio.agregarNave(tipo, fila, col, esHorizontal); //
+        tableroPropio.agregarNave(tipo, fila, col, esHorizontal); //
 
-        if (exito) {
-            this.notifyObservers();
-        }
+        this.notifyObservers();
 
-        return exito;
     }
 
     private void inicializarNavesEnemigas() {

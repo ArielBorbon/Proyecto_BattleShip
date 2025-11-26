@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.handler;
 
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
@@ -16,10 +16,10 @@ import javax.swing.JOptionPane;
  */
 public class PartidaCanceladaHandler implements IMessageHandler {
 
-    private final ViewController viewController;
+    private final VistaController viewController;
     private final PartidaModel partidaModel;
 
-    public PartidaCanceladaHandler(ViewController viewController, PartidaModel partidaModel) {
+    public PartidaCanceladaHandler(VistaController viewController, PartidaModel partidaModel) {
         this.viewController = viewController;
         this.partidaModel = partidaModel;
     }

@@ -1,5 +1,6 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
+import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import mx.itson.equipo_2.common.enums.TipoNave;
@@ -18,7 +19,7 @@ public class PosicionarController {
      */
     private final PosicionarNaveService posicionarNaveService;
 
-    private ViewController viewController;
+    private VistaController viewController;
 
     /**
      * Referencia al modelo de datos principal de la partida.
@@ -54,8 +55,8 @@ public class PosicionarController {
      * @return {@code true} si la nave fue posicionada exitosamente en el
      * modelo, {@code false} en caso contrario.
      */
-    public boolean intentarPosicionarNave(TipoNave tipo, int fila, int col, boolean esHorizontal) {
-        return this.partidaModel.intentarPosicionarNavePropia(tipo, fila, col, esHorizontal);
+    public void intentarPosicionarNave(TipoNave tipo, int fila, int col, boolean esHorizontal) throws PosicionarNaveException {
+        this.partidaModel.intentarPosicionarNavePropia(tipo, fila, col, esHorizontal);
     }
 
     /**
@@ -71,7 +72,7 @@ public class PosicionarController {
         }
     }
 
-    public void setViewController(ViewController viewController) {
+    public void setViewController(VistaController viewController) {
         this.viewController = viewController;
     }
 

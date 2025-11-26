@@ -9,7 +9,7 @@ import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 
 import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
 import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
@@ -39,20 +39,18 @@ import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
 import com.itson.equipo2.battleship_cliente.handler.PosicionamientoHandler;
-import com.itson.equipo2.battleship_cliente.pattern.factory.DerrotaViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.LobbyViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.MenuPrincipalViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.RegistroViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.DerrotaViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.LobbyViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.MenuPrincipalViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.RegistroViewFactory;
 import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
-import com.itson.equipo2.battleship_cliente.pattern.factory.UnirseAPartidaViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.VictoriaViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.UnirseAPartidaViewFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.VictoriaViewFactory;
 import com.itson.equipo2.communication.impl.NetworkService;
 import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
 import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
-import javax.swing.JPanel;
 
 public class Battleship_cliente {
 
@@ -83,7 +81,7 @@ public class Battleship_cliente {
         AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
 
         // 4. Controlador Principal de Vistas
-        ViewController viewController = new ViewController();
+        VistaController viewController = new VistaController();
 
         // 5. Controladores de Negocio
         ConfiguracionController configController = new ConfiguracionController(networkService);

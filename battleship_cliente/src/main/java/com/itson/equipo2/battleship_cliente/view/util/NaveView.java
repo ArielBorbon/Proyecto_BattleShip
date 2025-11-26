@@ -2,6 +2,7 @@ package com.itson.equipo2.battleship_cliente.view.util;
 
 // Importaciones necesarias para la interfaz gráfica, manejo de eventos y lógica del juego
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
+import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -185,16 +186,13 @@ public class NaveView extends JPanel {
                             targetCol = Math.max(0, Math.min(targetCol, 10 - numColsNave));
                             targetFila = Math.max(0, Math.min(targetFila, 10 - numFilasNave));
 
-                            // 2. ¡LLAMADA AL CONTROLADOR!
-                            // Se intenta posicionar la nave en la cuadrícula del Modelo.
-                            exito = partidaController.intentarPosicionarNave(tipo, targetFila, targetCol, esHorizontal);
-                        }
-
-                        // 3. Manejo de Fallo
-                        if (!exito) {
-                            // Si el posicionamiento falló (colisión o fuera del tablero),
-                            // se notifica al panel que contiene la lista de naves para que la devuelva.
-                            firePropertyChange("naveDevuelta", false, true);
+                            try {
+                                // 2. ¡LLAMADA AL CONTROLADOR!
+                                // Se intenta posicionar la nave en la cuadrícula del Modelo.
+                                partidaController.intentarPosicionarNave(tipo, targetFila, targetCol, esHorizontal);
+                            } catch (PosicionarNaveException ex) {
+                                firePropertyChange("naveDevuelta", false, true);
+                            }
                         }
 
                         // 4. AUTO-DESTRUCCIÓN

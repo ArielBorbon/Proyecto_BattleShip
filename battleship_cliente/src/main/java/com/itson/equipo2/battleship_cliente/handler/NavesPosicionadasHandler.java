@@ -1,7 +1,7 @@
 package com.itson.equipo2.battleship_cliente.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import com.itson.equipo2.communication.dto.EventMessage;
 
@@ -18,7 +18,7 @@ public class NavesPosicionadasHandler implements IMessageHandler {
     /**
      * Referencia al controlador principal para cambiar de pantalla.
      */
-    private final ViewController viewController;
+    private final VistaController viewController;
 
     // --- CONSTRUCTOR ---
     /**
@@ -26,7 +26,7 @@ public class NavesPosicionadasHandler implements IMessageHandler {
      *
      * @param viewController El controlador principal de vistas.
      */
-    public NavesPosicionadasHandler(ViewController viewController) {
+    public NavesPosicionadasHandler(VistaController viewController) {
         this.viewController = viewController;
     }
 

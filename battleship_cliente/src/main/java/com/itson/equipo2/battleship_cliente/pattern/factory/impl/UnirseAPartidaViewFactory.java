@@ -2,19 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.itson.equipo2.battleship_cliente.pattern.factory;
+package com.itson.equipo2.battleship_cliente.pattern.factory.impl;
 
 import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.view.UnirseAPartidaView;
 import javax.swing.JPanel;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  *
  * @author PC Gamer
  */
-public class UnirseAPartidaViewFactory implements ViewFactory {
+public class UnirseAPartidaViewFactory implements VistaFactory {
 
     private final UnirsePartidaController unirseController;
     private final ConfiguracionController configController;
@@ -25,7 +26,7 @@ public class UnirseAPartidaViewFactory implements ViewFactory {
     }
 
     @Override
-    public JPanel crear(ViewController control) {
+    public JPanel crear(VistaController control) {
         return new UnirseAPartidaView(control, unirseController, configController);
     }
 }

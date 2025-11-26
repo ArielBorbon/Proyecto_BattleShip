@@ -10,8 +10,8 @@ package com.itson.equipo2.battleship_servidor.domain.model;
  */
 public class Coordenada {
 
-    private int fila;
-    private int columna;
+    private final int fila;
+    private final int columna;
 
     public Coordenada(int fila, int columna) {
         this.fila = fila;

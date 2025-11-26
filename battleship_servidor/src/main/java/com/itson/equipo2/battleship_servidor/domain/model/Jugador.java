@@ -18,6 +18,7 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 public class Jugador {
 
     private final String id;
+    
     private String nombre;
     private ColorJugador color;
     private EstadoJugador estado;

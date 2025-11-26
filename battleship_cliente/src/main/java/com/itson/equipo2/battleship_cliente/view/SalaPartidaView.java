@@ -5,9 +5,8 @@
 package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.SalaController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
 import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import com.itson.equipo2.communication.dto.EventMessage;
 import java.awt.BorderLayout;
@@ -17,12 +16,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 
 /**
  *
  * @author PC Gamer
  */
-public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, PartidaObserver {
+public class SalaPartidaView extends javax.swing.JPanel implements VistaFactory, PartidaObserver {
 
     private final SalaController salaController;
     
@@ -56,7 +56,7 @@ public class SalaPartidaView extends javax.swing.JPanel implements ViewFactory, 
 
 
     @Override
-    public JPanel crear(ViewController control) {
+    public JPanel crear(VistaController control) {
         return this;
     }
 

@@ -12,8 +12,8 @@ import mx.itson.equipo_2.common.enums.EstadoCelda;
  */
 public class Celda {
 
-    private Coordenada coordenada;
     private EstadoCelda estado;
+    private Coordenada coordenada;
     private Nave nave;
 
     public Celda(Coordenada coordenada) {

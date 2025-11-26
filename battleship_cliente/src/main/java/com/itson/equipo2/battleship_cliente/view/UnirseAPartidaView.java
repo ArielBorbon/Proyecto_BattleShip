@@ -4,7 +4,7 @@ package com.itson.equipo2.battleship_cliente.view;
 import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import javax.swing.JOptionPane;
 import mx.itson.equipo_2.common.enums.AccionPartida;
 
@@ -14,11 +14,11 @@ import mx.itson.equipo_2.common.enums.AccionPartida;
  */
 public class UnirseAPartidaView extends javax.swing.JPanel {
 
-    private final ViewController viewController;
+    private final VistaController viewController;
     private final UnirsePartidaController unirseController;
     private final ConfiguracionController configController;
 
-    public UnirseAPartidaView(ViewController viewController, UnirsePartidaController unirseController, ConfiguracionController configController) {
+    public UnirseAPartidaView(VistaController viewController, UnirsePartidaController unirseController, ConfiguracionController configController) {
         this.viewController = viewController;
         this.unirseController = unirseController;
         this.configController = configController;

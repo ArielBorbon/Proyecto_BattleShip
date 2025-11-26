@@ -95,6 +95,11 @@ public class SelectorNaveView extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+
+                if (!SwingUtilities.isLeftMouseButton(e)) {
+                    return;
+                }
+
                 // Previene la acción si no quedan barcos disponibles
                 if (barcosRestantes <= 0) {
                     return;

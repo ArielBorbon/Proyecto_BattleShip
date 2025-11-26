@@ -19,13 +19,14 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 public class Partida {
 
     private final UUID id;
+    
+    private String turnoActual;
+    private int tiempoRestante;
     private Jugador jugador1;
     private Jugador jugador2;
-
     private EstadoPartida estado;
-    private String turnoActual;
+
     public static final int DURACION_TURNO = 30;
-    private int tiempoRestante;
 
     public Partida(Jugador jugador1) {
         this.id = UUID.randomUUID();

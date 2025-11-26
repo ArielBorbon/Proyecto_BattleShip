@@ -12,11 +12,11 @@ import com.itson.equipo2.battleship_cliente.service.SalaService;
 public class SalaController {
 
     private final SalaService salaService;
-    private final ViewController viewController;
+    private final VistaController viewController;
     private final AbandonarPartidaService abandonarService; 
     private final PartidaModel partidaModel;
 
-    public SalaController(SalaService salaService, ViewController viewController, AbandonarPartidaService abandonarService, PartidaModel partidaModel) {
+    public SalaController(SalaService salaService, VistaController viewController, AbandonarPartidaService abandonarService, PartidaModel partidaModel) {
         this.salaService = salaService;
         this.viewController = viewController;
         this.abandonarService = abandonarService;

@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -14,13 +14,13 @@ import javax.swing.JLabel;
  */
 public class VictoriaView extends javax.swing.JPanel {
 
-    private final ViewController viewController; 
+    private final VistaController viewController; 
 
     /**
      * Creates new form VictoriaView
      * @param viewController
      */
-    public VictoriaView(ViewController viewController) {
+    public VictoriaView(VistaController viewController) {
         this.viewController = viewController;
         initComponents();
 

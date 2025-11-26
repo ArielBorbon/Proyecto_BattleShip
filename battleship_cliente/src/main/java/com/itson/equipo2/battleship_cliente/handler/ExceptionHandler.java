@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_cliente.handler;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_cliente.controllers.ViewController;
+import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import com.itson.equipo2.communication.broker.IMessageHandler;
 import mx.itson.equipo_2.common.dto.response.ErrorResponse;
 import com.itson.equipo2.communication.dto.EventMessage;
@@ -16,10 +16,10 @@ import com.itson.equipo2.communication.dto.EventMessage;
  */
 public class ExceptionHandler implements IMessageHandler {
 
-    private final ViewController ViewController;
+    private final VistaController ViewController;
     private final Gson gson = new Gson();
 
-    public ExceptionHandler(ViewController ViewController) {
+    public ExceptionHandler(VistaController ViewController) {
         this.ViewController = ViewController;
     }
     

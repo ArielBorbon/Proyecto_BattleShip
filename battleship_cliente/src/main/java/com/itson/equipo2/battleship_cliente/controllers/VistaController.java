@@ -1,7 +1,5 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
-import com.itson.equipo2.battleship_cliente.pattern.factory.ViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.mediator.ViewManager;
 import com.itson.equipo2.battleship_cliente.view.DispararView;
 import java.awt.Color;
 import java.util.HashMap;
@@ -10,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
+import com.itson.equipo2.battleship_cliente.pattern.factory.VistaManager;
 
 /**
  *
@@ -17,19 +17,20 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
  * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
  * 00000252049 José Luis Islas Molina 00000252574
  */
-public class ViewController implements ViewManager {
+public class VistaController implements VistaManager {
 
-    private JFrame frame;
-    private Map<String, ViewFactory> factories;
+    private final JFrame frame;
+    private Map<String, VistaFactory> factories;
     private Map<String, JPanel> pantallas;
 
     private JPanel pantallaActual;
 
-    public ViewController() {
+    public VistaController() {
         frame = new JFrame("Battleship");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
 
         factories = new HashMap<>();
         pantallas = new HashMap<>();
@@ -38,7 +39,7 @@ public class ViewController implements ViewManager {
     }
 
     @Override
-    public void registrarPantalla(String nombre, ViewFactory factory) {
+    public void registrarPantalla(String nombre, VistaFactory factory) {
         factories.put(nombre, factory);
     }
 
@@ -47,7 +48,7 @@ public class ViewController implements ViewManager {
         JPanel panel = pantallas.get(nombre);
 
         if (panel == null) {
-            ViewFactory factory = factories.get(nombre);
+            VistaFactory factory = factories.get(nombre);
             if (factory == null) {
                 throw new IllegalArgumentException("Pantalla no registrada: " + nombre);
             }
