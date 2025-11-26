@@ -54,7 +54,7 @@ import com.itson.equipo2.battleship_cliente.view.EsperandoPosicionamientoVista;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
 import javax.swing.JPanel;
 
-public class Battleship_clienteV2 {
+public class Battleship_cliente {
 
 
     public static void main(String[] args) {
