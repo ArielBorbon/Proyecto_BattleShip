@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaManager;
-import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
+import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 
 /**
  *
@@ -59,7 +59,7 @@ public class VistaController implements VistaManager {
             }
             panel = factory.crear(this);
             
-            if (panel instanceof PartidaObserver observer) {
+            if (panel instanceof IObserver observer) {
                 partidaModel.addObserver(observer);
             }
             

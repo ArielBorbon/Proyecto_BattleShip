@@ -5,8 +5,6 @@
 package com.itson.equipo2.battleship_cliente.models;
 
 import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
-import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
-import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaSubject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,12 +20,14 @@ import mx.itson.equipo_2.common.enums.EstadoNave;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import mx.itson.equipo_2.common.enums.TipoNave;
+import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
+import com.itson.equipo2.battleship_cliente.pattern.observer.ISubject;
 
 /**
  *
  * @author skyro
  */
-public class PartidaModel implements PartidaSubject {
+public class PartidaModel implements ISubject<PartidaModel> {
 
     private String id;
     private JugadorModel yo;
@@ -45,7 +45,7 @@ public class PartidaModel implements PartidaSubject {
 
     private Map<TipoNave, List<EstadoNave>> navesEnemigas;
 
-    private final transient List<PartidaObserver> observers = new ArrayList<>();
+    private final transient List<IObserver<PartidaModel>> observers = new ArrayList<>();
 
     public PartidaModel() {
         this.navesEnemigas = new HashMap<>();
@@ -67,22 +67,22 @@ public class PartidaModel implements PartidaSubject {
     }
 
     @Override
-    public void addObserver(PartidaObserver observer) {
+    public void addObserver(IObserver observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
     @Override
-    public void removeObserver(PartidaObserver observer) {
+    public void removeObserver(IObserver observer) {
         observers.remove(observer);
     }
 
     @Override
-    public void notifyObservers() {
+    public void notifyObservers(PartidaModel model) {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            for (PartidaObserver observer : new ArrayList<>(observers)) {
-                observer.onChange(this);
+            for (IObserver<PartidaModel> observer : observers) {
+                observer.onChange(model);
             }
         });
     }
@@ -233,7 +233,7 @@ public class PartidaModel implements PartidaSubject {
                 actualizarEnemigo(dto.getJugador1());
             }
         }
-        notifyObservers();
+        notifyObservers(this);
     }
 
     private void actualizarEnemigo(JugadorDTO enemigoDTO) {
@@ -285,7 +285,7 @@ public class PartidaModel implements PartidaSubject {
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstadoPartida());
 
-        notifyObservers();
+        notifyObservers(this);
     }
 
     public void iniciarPartida(PartidaIniciadaResponse response) {
@@ -307,7 +307,7 @@ public class PartidaModel implements PartidaSubject {
         this.setTurnoDe(response.getTurnoActual());
         this.setEstado(response.getEstado());
 
-        notifyObservers();
+        notifyObservers(this);
     }
 
     public void actualizarTick(TurnoTickResponse response) {
@@ -315,7 +315,7 @@ public class PartidaModel implements PartidaSubject {
         this.turnoDe = response.getJugadorEnTurnoId();
         this.segundosRestantes = response.getTiempoRestante();	//asd
         this.estado = response.getEstadoPartida();
-        this.notifyObservers();
+        this.notifyObservers(this);
     }
 
     public boolean isSoyHost() {
@@ -327,7 +327,7 @@ public class PartidaModel implements PartidaSubject {
         TableroModel tableroPropio = this.getTableroPropio();
         tableroPropio.agregarNave(tipo, fila, col, esHorizontal); //
 
-        this.notifyObservers();
+        notifyObservers(this);
 
     }
 
@@ -384,7 +384,7 @@ public class PartidaModel implements PartidaSubject {
         this.navesEnemigas.clear();
         inicializarNavesEnemigas();
 
-        notifyObservers();
+        notifyObservers(this);
     }
 
     public String obtenerNombrePorId(String idBusqueda) {

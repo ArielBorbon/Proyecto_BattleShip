@@ -7,7 +7,6 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.controllers.VistaController;
-import com.itson.equipo2.battleship_cliente.pattern.observer.PartidaObserver;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -32,6 +31,7 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import static mx.itson.equipo_2.common.enums.ResultadoDisparo.IMPACTO_CON_HUNDIMIENTO;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
+import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 
 /**
  *
@@ -39,7 +39,7 @@ import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
  * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
  * 00000252049 José Luis Islas Molina 00000252574
  */
-public class DispararView extends javax.swing.JPanel implements VistaFactory, PartidaObserver {
+public class DispararView extends javax.swing.JPanel implements VistaFactory, IObserver<PartidaModel> {
 
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];

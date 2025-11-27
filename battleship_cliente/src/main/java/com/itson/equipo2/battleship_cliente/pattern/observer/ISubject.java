@@ -8,9 +8,9 @@ package com.itson.equipo2.battleship_cliente.pattern.observer;
  *
  * @author skyro
  */
-public interface PartidaSubject {
+public interface ISubject<T> {
     
-    void addObserver(PartidaObserver observer);
-    void removeObserver(PartidaObserver observer);
-    void notifyObservers();
+    void addObserver(IObserver<T> observer);
+    void removeObserver(IObserver<T> observer);
+    void notifyObservers(T model);
 }
