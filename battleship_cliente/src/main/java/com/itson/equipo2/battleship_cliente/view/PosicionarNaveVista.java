@@ -193,12 +193,15 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
         setMaximumSize(new Dimension(1280, 720));
         setMinimumSize(new Dimension(1280, 720));
         setPreferredSize(new Dimension(1280, 720));
+        setLayout(null);
 
         tablero.setBackground(new Color(82, 113, 177));
         tablero.setMaximumSize(new Dimension(570, 570));
         tablero.setMinimumSize(new Dimension(570, 570));
         tablero.setPreferredSize(new Dimension(570, 570));
         tablero.setLayout(new GridLayout(10, 10));
+        add(tablero);
+        tablero.setBounds(40, 40, 570, 570);
 
         btnConfirmar.setBackground(new Color(75, 75, 75));
         btnConfirmar.setFont(new Font("Segoe UI Black", 0, 18)); // NOI18N
@@ -212,6 +215,8 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
                 btnConfirmarActionPerformed(evt);
             }
         });
+        add(btnConfirmar);
+        btnConfirmar.setBounds(1080, 640, 156, 41);
 
         nave1.setMaximumSize(new Dimension(57, 57));
         nave1.setMinimumSize(new Dimension(57, 57));
@@ -221,11 +226,16 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
         GroupLayout nave1Layout = new GroupLayout(nave1);
         nave1.setLayout(nave1Layout);
         nave1Layout.setHorizontalGroup(nave1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         nave1Layout.setVerticalGroup(nave1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        add(nave1);
+        nave1.setBounds(957, 119, 57, 57);
+        nave1.getAccessibleContext().setAccessibleName("");
+        nave1.getAccessibleContext().setAccessibleDescription("");
 
         nave2.setMaximumSize(new Dimension(114, 57));
         nave2.setMinimumSize(new Dimension(114, 57));
@@ -235,11 +245,14 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
         GroupLayout nave2Layout = new GroupLayout(nave2);
         nave2.setLayout(nave2Layout);
         nave2Layout.setHorizontalGroup(nave2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 114, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         nave2Layout.setVerticalGroup(nave2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        add(nave2);
+        nave2.setBounds(929, 234, 114, 57);
 
         nave3.setMaximumSize(new Dimension(171, 57));
         nave3.setMinimumSize(new Dimension(171, 57));
@@ -250,11 +263,14 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
         GroupLayout nave3Layout = new GroupLayout(nave3);
         nave3.setLayout(nave3Layout);
         nave3Layout.setHorizontalGroup(nave3Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 171, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         nave3Layout.setVerticalGroup(nave3Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        add(nave3);
+        nave3.setBounds(898, 362, 171, 57);
 
         nave4.setMaximumSize(new Dimension(228, 57));
         nave4.setMinimumSize(new Dimension(228, 57));
@@ -268,56 +284,11 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
             .addGap(0, 228, Short.MAX_VALUE)
         );
         nave4Layout.setVerticalGroup(nave4Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(1080, 1080, 1080)
-                .addComponent(btnConfirmar, GroupLayout.PREFERRED_SIZE, 156, GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 44, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(tablero, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(nave4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(183, 183, 183))
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(nave3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(211, 211, 211))
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(nave2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(237, 237, 237))
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(nave1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(266, 266, 266))))
-        );
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(tablero, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(119, 119, 119)
-                        .addComponent(nave1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)
-                        .addComponent(nave2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(nave3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(65, 65, 65)
-                        .addComponent(nave4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addGap(99, 99, 99)))
-                .addComponent(btnConfirmar, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE))
-        );
-
-        nave1.getAccessibleContext().setAccessibleName("");
-        nave1.getAccessibleContext().setAccessibleDescription("");
+        add(nave4);
+        nave4.setBounds(871, 492, 228, 57);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
@@ -331,10 +302,10 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements PartidaOb
 
         // Deshabilita todo para que no pueda mover nada más
         btnConfirmar.setEnabled(false);
-        nave1.setEnabled(false);
-        nave2.setEnabled(false);
-        nave3.setEnabled(false);
-        nave4.setEnabled(false);
+        ((SelectorNaveView) nave1).reiniciarSelector();
+        ((SelectorNaveView) nave2).reiniciarSelector();
+        ((SelectorNaveView) nave3).reiniciarSelector();
+        ((SelectorNaveView) nave4).reiniciarSelector();
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
 

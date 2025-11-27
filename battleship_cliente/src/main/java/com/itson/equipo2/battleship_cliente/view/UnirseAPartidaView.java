@@ -37,6 +37,7 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
         if (configController.intentarConexion(ip)) {
             unirseController.solicitarAcceso(AccionPartida.UNIRSE);
             JOptionPane.showMessageDialog(this, "Conectado a " + ip + ". Enviando solicitud...");
+            txtIp.setText("");
         } else {
             JOptionPane.showMessageDialog(this, "Error conectando a " + ip);
         }
@@ -76,6 +77,11 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
         btnConfirmar.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         btnConfirmar.setForeground(new java.awt.Color(255, 255, 255));
         btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
 
         btnVolver.setBackground(new java.awt.Color(0, 102, 204));
         btnVolver.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -130,6 +136,10 @@ public class UnirseAPartidaView extends javax.swing.JPanel {
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
        viewController.cambiarPantalla("lobby");
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnConfirmarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
