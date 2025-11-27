@@ -56,6 +56,13 @@ public class MarcadorView extends JDialog {
     private final Color COLOR_AVERIA = Color.YELLOW;
     private final Color COLOR_HUNDIDO = Color.RED;
 
+    /**
+     * Constructor de la ventana MarcadorView.
+     * Inicializa la interfaz grafica con paneles para mostrar las flotas propia y enemiga,
+     * incluyendo títulos, paneles de contenido y un botón para volver a la partida.
+     *
+     * @param parent El JFrame padre sobre el cual se muestra esta ventana.
+     */
     public MarcadorView(JFrame parent) {
         super(parent, "Marcador de Flota", false);
         setSize(1100, 600);
@@ -65,20 +72,20 @@ public class MarcadorView extends JDialog {
         mainPanel.setBackground(COLOR_FONDO);
         setContentPane(mainPanel);
 
-        // 1. TÍTULOS
+        // TÍTULOS
         JPanel panelTitulos = new JPanel(new GridLayout(1, 2));
         panelTitulos.setBackground(COLOR_FONDO);
         panelTitulos.setBorder(BorderFactory.createEmptyBorder(20, 0, 15, 0));
-        panelTitulos.add(createTitleLabel("Flota Propia"));
-        panelTitulos.add(createTitleLabel("Flota Enemiga"));
+        panelTitulos.add(crearTitulo("Flota Propia"));
+        panelTitulos.add(crearTitulo("Flota Enemiga"));
         mainPanel.add(panelTitulos, BorderLayout.NORTH);
 
-        // 2. PANELES DE NAVES 
+        // PANELES DE NAVES 
         JPanel centerContainer = new JPanel(new GridBagLayout());
         centerContainer.setBackground(COLOR_FONDO);
 
-        panelContenidoPropio = createFleetPanel();
-        panelContenidoEnemigo = createFleetPanel();
+        panelContenidoPropio = crearPanelFlota();
+        panelContenidoEnemigo = crearPanelFlota();
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
@@ -86,12 +93,12 @@ public class MarcadorView extends JDialog {
 
         gbc.gridx = 0;
         gbc.weightx = 0.49;
-        centerContainer.add(createTransparentScrollPane(panelContenidoPropio), gbc);
+        centerContainer.add(crearScroll(panelContenidoPropio), gbc);
 
         gbc.gridx = 2;
         gbc.weightx = 0.49;
         gbc.insets = new Insets(0, 0, 0, 0);
-        centerContainer.add(createTransparentScrollPane(panelContenidoEnemigo), gbc);
+        centerContainer.add(crearScroll(panelContenidoEnemigo), gbc);
 
         mainPanel.add(centerContainer, BorderLayout.CENTER);
 
@@ -111,19 +118,37 @@ public class MarcadorView extends JDialog {
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private JPanel createFleetPanel() {
+    /**
+     * Crea un panel para contener los componentes graficos de una flota.
+     * Utiliza un FlowLayout centrado con margenes para organizar las naves.
+     *
+     * @return Un JPanel configurado para mostrar naves.
+     */
+    private JPanel crearPanelFlota() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
         p.setBackground(COLOR_FONDO);
         return p;
     }
 
+    /**
+     * Actualiza la visualizacion de la flota propia con el estado actual de las naves.
+     * Limpia el panel y vuelve a renderizar las naves basandose en el mapa proporcionado.
+     *
+     * @param estadoMisNaves Un mapa que asocia tipos de naves con listas de sus estados actuales.
+     */
     public void actualizarFlotaPropia(Map<TipoNave, List<EstadoNave>> estadoMisNaves) {
         panelContenidoPropio.removeAll();
         renderizarNaves(panelContenidoPropio, estadoMisNaves);
         panelContenidoPropio.revalidate();
         panelContenidoPropio.repaint();
     }
-
+    
+    /**
+     * Actualiza la visualizacion de la flota enemiga con el estado actual de las naves.
+     * Limpia el panel y vuelve a renderizar las naves basandose en el mapa proporcionado.
+     *
+     * @param estadoNavesEnemigas Un mapa que asocia tipos de naves con listas de sus estados actuales.
+     */
     public void actualizarFlotaEnemiga(Map<TipoNave, List<EstadoNave>> estadoNavesEnemigas) {
         panelContenidoEnemigo.removeAll();
         renderizarNaves(panelContenidoEnemigo, estadoNavesEnemigas);
@@ -133,7 +158,10 @@ public class MarcadorView extends JDialog {
 
     /**
      * Dibuja las naves asegurando que aparezcan TODAS las ranuras disponibles,
-     * estén posicionadas o no.
+     * esten posicionadas o no.
+     * 
+     * @param panel El JPanel donde se agregaran los componentes graficos de las naves.
+     * @param mapaNaves Un mapa que asocia tipos de naves con listas de sus estados.
      */
     private void renderizarNaves(JPanel panel, Map<TipoNave, List<EstadoNave>> mapaNaves) {
         TipoNave[] ordenVisual = {
@@ -162,14 +190,26 @@ public class MarcadorView extends JDialog {
         }
     }
 
-    private JLabel createTitleLabel(String text) {
+    /**
+     * Crea un titulo para el panel de una flota
+     *
+     * @param text El texto del título.
+     * @return Un JLabel configurado como titulo.
+     */
+    private JLabel crearTitulo(String text) {
         JLabel lbl = new JLabel(text, SwingConstants.CENTER);
         lbl.setFont(new Font("Segoe UI Black", Font.BOLD, 24));
         lbl.setForeground(Color.BLACK);
         return lbl;
     }
 
-    private JScrollPane createTransparentScrollPane(JPanel view) {
+     /**
+     * Crea un JScrollPane para contener un panel de vista.
+     *
+     * @param view El JPanel que se colocará dentro del JScrollPane.
+     * @return Un JScrollPane configurado.
+     */
+    private JScrollPane crearScroll(JPanel view) {
         JScrollPane scroll = new JScrollPane(view);
         scroll.setBorder(null);
         scroll.getViewport().setBackground(COLOR_FONDO);
@@ -177,21 +217,33 @@ public class MarcadorView extends JDialog {
         return scroll;
     }
 
-    //componente grafico de las naves
+    /**
+     * Componente gráfico personalizado que representa una nave en el marcador.
+     * Dibuja una bolita de estado y un conjunto de celdas que representan el cuerpo de la nave.
+     */
     private class NaveGraficaComponent extends JComponent {
 
+        //Número de celdas que conforman la nave
         private final int celdasNave;
+        
+        //Estado actual de la nave
         private final EstadoNave estado;
 
-        // Dimensiones
+        // Dimensiones de una celda
         private final int ANCHO_CELDA = 25;
         private final int ALTO_CELDA = 25;
         private final int DIAMETRO_BOLA = 20;
         private final int GAP = 10;
 
-        // altura maxima: 4 celdas (Portaaviones) truco para que todas las naves se alineen
+        // altura maxima: 4 celdas, para que todas las naves se alineen a partir de esta altura
         private final int MAX_CELDAS_VISUALES = 4;
 
+        /**
+         * Constructor del componente gráfico de la nave.
+         *
+         * @param celdasNave Número de celdas que tiene la nave.
+         * @param estado Estado actual de la nave.
+         */
         public NaveGraficaComponent(int celdasNave, EstadoNave estado) {
             this.celdasNave = celdasNave;
             this.estado = estado;
@@ -204,6 +256,11 @@ public class MarcadorView extends JDialog {
             setOpaque(false);
         }
 
+         /**
+         * Dibuja una bolita de color segun el estado y las celdas del cuerpo de la nave.
+         *
+         * @param g El contexto grafico para dibujar.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -212,7 +269,7 @@ public class MarcadorView extends JDialog {
 
             int centerX = getWidth() / 2;
 
-            // 1. DIBUJAR LA BOLITA
+            //DIBUJAR LA BOLITA
             Color colorBola;
             switch (estado) {
                 case SIN_DANIOS ->
@@ -231,7 +288,7 @@ public class MarcadorView extends JDialog {
             g2.setColor(colorBola);
             g2.fillOval(ballX, ballY, DIAMETRO_BOLA, DIAMETRO_BOLA);
 
-            // 2. DIBUJAR EL CUERPO
+            //DIBUJAR EL CUERPO
             int startY = DIAMETRO_BOLA + GAP;
             int rectX = centerX - (ANCHO_CELDA / 2);
 
