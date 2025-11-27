@@ -47,6 +47,25 @@ public class PartidaModel implements PartidaSubject {
 
     private final transient List<PartidaObserver> observers = new ArrayList<>();
 
+    public PartidaModel() {
+        this.navesEnemigas = new HashMap<>();
+        inicializarNavesEnemigas();
+    }
+
+    public PartidaModel(String id, JugadorModel yo, JugadorModel enemigo, boolean enCurso, String turnoDe, Integer segundosRestantes, EstadoPartida estado) {
+        this.id = id;
+        this.yo = yo;
+        this.enemigo = enemigo;
+        this.enCurso = enCurso;
+        this.turnoDe = turnoDe;
+        this.segundosRestantes = segundosRestantes;
+        this.estado = estado;
+
+        this.navesEnemigas = new HashMap<>();
+        inicializarNavesEnemigas();
+
+    }
+
     @Override
     public void addObserver(PartidaObserver observer) {
         if (!observers.contains(observer)) {
@@ -61,7 +80,6 @@ public class PartidaModel implements PartidaSubject {
 
     @Override
     public void notifyObservers() {
-        System.out.println("PartidaModel notificando a " + observers.size() + " observadores...");
         javax.swing.SwingUtilities.invokeLater(() -> {
             for (PartidaObserver observer : new ArrayList<>(observers)) {
                 observer.onChange(this);
@@ -69,11 +87,125 @@ public class PartidaModel implements PartidaSubject {
         });
     }
 
-    /**
-     * Actualiza los datos de la sala basándose en el DTO global del servidor.
-     *
-     * @param dto
-     */
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public JugadorModel getYo() {
+        return yo;
+    }
+
+    public void setYo(JugadorModel yo) {
+        this.yo = yo;
+    }
+
+    public JugadorModel getEnemigo() {
+        return enemigo;
+    }
+
+    public void setEnemigo(JugadorModel enemigo) {
+        this.enemigo = enemigo;
+    }
+
+    public boolean isEnCurso() {
+        return enCurso;
+    }
+
+    public void setEnCurso(boolean enCurso) {
+        this.enCurso = enCurso;
+    }
+
+    public String getTurnoDe() {
+        return turnoDe;
+    }
+
+    public void setTurnoDe(String turnoDe) {
+        this.turnoDe = turnoDe;
+    }
+
+    public Integer getSegundosRestantes() {
+        return segundosRestantes;
+    }
+
+    public void setSegundosRestantes(Integer segundosRestantes) {
+        this.segundosRestantes = segundosRestantes;
+    }
+
+    public EstadoPartida getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoPartida estado) {
+        this.estado = estado;
+    }
+
+    public String getIdJugador1() {
+        return idJugador1;
+    }
+
+    public void setIdJugador1(String idJugador1) {
+        this.idJugador1 = idJugador1;
+    }
+
+    public String getNombreJugador1() {
+        return nombreJugador1;
+    }
+
+    public void setNombreJugador1(String nombreJugador1) {
+        this.nombreJugador1 = nombreJugador1;
+    }
+
+    public String getNombreJugador2() {
+        return nombreJugador2;
+    }
+
+    public void setNombreJugador2(String nombreJugador2) {
+        this.nombreJugador2 = nombreJugador2;
+    }
+
+    public Map<TipoNave, List<EstadoNave>> getNavesEnemigas() {
+        return navesEnemigas;
+    }
+
+    public void setNavesEnemigas(Map<TipoNave, List<EstadoNave>> navesEnemigas) {
+        this.navesEnemigas = navesEnemigas;
+    }
+
+    public void setSoyHost(boolean soyHost) {
+        this.soyHost = soyHost;
+    }
+
+    public Map<TipoNave, List<EstadoNave>> getEstadoMisNaves() {
+        if (this.getTableroPropio() != null) {
+            return this.getTableroPropio().calcularEstadoNaves();
+        }
+        return Collections.emptyMap();
+    }
+
+    public Map<TipoNave, List<EstadoNave>> getEstadoNavesEnemigas() {
+        return this.navesEnemigas;
+    }
+
+    public TableroModel getTableroPropio() {
+        if (this.yo.getTablero() == null) {
+            this.yo.setTablero(new TableroModel(this.yo.getId()));
+        }
+        return this.yo.getTablero();
+    }
+
+    @Override
+    public String toString() {
+        return "PartidaModel{" + "id=" + id + ", yo=" + yo + ", enemigo=" + enemigo + ", enCurso=" + enCurso + ", turnoDe=" + turnoDe + ", segundosRestantes=" + segundosRestantes + ", estado=" + estado + ", idJugador1=" + idJugador1 + ", nombreJugador1=" + nombreJugador1 + ", nombreJugador2=" + nombreJugador2 + ", soyHost=" + soyHost + ", navesEnemigas=" + navesEnemigas + ", observers=" + observers + '}';
+    }
+
+    public String getNombreJugadorEnTurno() {
+        return obtenerNombrePorId(this.turnoDe);
+    }
+
     public void sincronizarDatosSala(PartidaDTO dto) {
         this.estado = dto.getEstado();
 
@@ -186,31 +318,8 @@ public class PartidaModel implements PartidaSubject {
         this.notifyObservers();
     }
 
-    public PartidaModel() {
-        this.navesEnemigas = new HashMap<>();
-        inicializarNavesEnemigas();
-    }
-
-    public PartidaModel(String id, JugadorModel yo, JugadorModel enemigo, boolean enCurso, String turnoDe, Integer segundosRestantes, EstadoPartida estado) {
-        this.id = id;
-        this.yo = yo;
-        this.enemigo = enemigo;
-        this.enCurso = enCurso;
-        this.turnoDe = turnoDe;
-        this.segundosRestantes = segundosRestantes;
-        this.estado = estado;
-
-        this.navesEnemigas = new HashMap<>();
-        inicializarNavesEnemigas();
-
-    }
-
     public boolean isSoyHost() {
         return yo != null && yo.getId() != null && idJugador1 != null && yo.getId().equals(idJugador1);
-    }
-
-    public void setSoyHost(boolean soyHost) {
-        this.soyHost = soyHost;
     }
 
     public void intentarPosicionarNavePropia(TipoNave tipo, int fila, int col, boolean esHorizontal) throws PosicionarNaveException {
@@ -233,10 +342,6 @@ public class PartidaModel implements PartidaSubject {
         }
     }
 
-    /**
-     * Actualiza el estado de una nave enemiga a HUNDIDO basándose en el tamaño
-     * del barco reportado.
-     */
     private void registrarHundimientoEnemigo(int tamanioBarco) {
         TipoNave tipoHundido = null;
 
@@ -258,24 +363,6 @@ public class PartidaModel implements PartidaSubject {
                 }
             }
         }
-    }
-
-    public Map<TipoNave, List<EstadoNave>> getEstadoMisNaves() {
-        if (this.getTableroPropio() != null) {
-            return this.getTableroPropio().calcularEstadoNaves();
-        }
-        return Collections.emptyMap();
-    }
-
-    public Map<TipoNave, List<EstadoNave>> getEstadoNavesEnemigas() {
-        return this.navesEnemigas;
-    }
-
-    public TableroModel getTableroPropio() {
-        if (this.yo.getTablero() == null) {
-            this.yo.setTablero(new TableroModel(this.yo.getId()));
-        }
-        return this.yo.getTablero();
     }
 
     public void reiniciarPartida() {
@@ -300,10 +387,6 @@ public class PartidaModel implements PartidaSubject {
         notifyObservers();
     }
 
-    /**
-     * Método auxiliar: Recibe un ID (ej: "a1b2...") y devuelve el Nombre (ej:
-     * "Pedro").
-     */
     public String obtenerNombrePorId(String idBusqueda) {
         if (idBusqueda == null) {
             return "Desconocido";
@@ -320,92 +403,6 @@ public class PartidaModel implements PartidaSubject {
         }
 
         return "Jugador Desconocido";
-    }
-
-    // Para usarlo en la etiqueta de turno también
-    public String getNombreJugadorEnTurno() {
-        return obtenerNombrePorId(this.turnoDe);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public JugadorModel getYo() {
-        return yo;
-    }
-
-    public void setYo(JugadorModel yo) {
-        this.yo = yo;
-    }
-
-    public JugadorModel getEnemigo() {
-        return enemigo;
-    }
-
-    public void setEnemigo(JugadorModel enemigo) {
-        this.enemigo = enemigo;
-    }
-
-    public boolean isEnCurso() {
-        return enCurso;
-    }
-
-    public void setEnCurso(boolean enCurso) {
-        this.enCurso = enCurso;
-
-    }
-
-    public String getTurnoDe() {
-        return turnoDe;
-    }
-
-    public void setTurnoDe(String turnoDe) {
-        this.turnoDe = turnoDe;
-
-    }
-
-    public Integer getSegundosRestantes() {
-        return segundosRestantes;
-    }
-
-    public void setSegundosRestantes(Integer segundosRestantes) {
-        this.segundosRestantes = segundosRestantes;
-
-    }
-
-    public EstadoPartida getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoPartida estado) {
-        this.estado = estado;
-
-    }
-
-    @Override
-    public String toString() {
-        return "PartidaModel{" + "id=" + id + ", yo=" + yo + ", enemigo=" + enemigo + ", enCurso=" + enCurso + ", turnoDe=" + turnoDe + ", segundosRestantes=" + segundosRestantes + ", estado=" + estado + '}';
-    }
-
-    public String getNombreJugador1() {
-        return nombreJugador1;
-    }
-
-    public void setNombreJugador1(String nombreJugador1) {
-        this.nombreJugador1 = nombreJugador1;
-    }
-
-    public String getNombreJugador2() {
-        return nombreJugador2;
-    }
-
-    public void setNombreJugador2(String nombreJugador2) {
-        this.nombreJugador2 = nombreJugador2;
     }
 
 }

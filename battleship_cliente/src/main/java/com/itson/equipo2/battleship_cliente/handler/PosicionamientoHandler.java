@@ -29,7 +29,6 @@ public class PosicionamientoHandler implements IMessageHandler {
 
     @Override
     public void onMessage(EventMessage message) {
-        System.out.println("Cliente (Handler): ¡Todos listos! Iniciando fase de posicionamiento.");
 
         javax.swing.SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("posicionar");
