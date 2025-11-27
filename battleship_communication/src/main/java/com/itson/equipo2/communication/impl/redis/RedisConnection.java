@@ -1,4 +1,4 @@
-package com.itson.equipo2.communication.impl;
+package com.itson.equipo2.communication.impl.redis;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -4,64 +4,52 @@
  */
 package com.itson.equipo2.battleship_cliente;
 
-import com.itson.equipo2.battleship_cliente.controllers.AbandonarController;
-import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
-
-import com.itson.equipo2.battleship_cliente.controllers.DisparoController;
-import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
-import com.itson.equipo2.battleship_cliente.controllers.VistaController;
-import com.itson.equipo2.battleship_cliente.handler.DisparoRealizadoHandler;
-import com.itson.equipo2.battleship_cliente.handler.ExceptionHandler;
-import com.itson.equipo2.battleship_cliente.handler.PartidaIniciadaHandler;
-import com.itson.equipo2.battleship_cliente.handler.TurnoTickHandler;
-import com.itson.equipo2.battleship_cliente.handler.PartidaFinalizadaHandler;
-import com.itson.equipo2.battleship_cliente.models.JugadorModel;
-import com.itson.equipo2.battleship_cliente.models.PartidaModel;
-import com.itson.equipo2.battleship_cliente.models.TableroModel;
-import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
-import com.itson.equipo2.battleship_cliente.service.RealizarDisparoService;
+// --- Imports de Infraestructura y Broker ---
+import com.itson.equipo2.communication.broker.ICommunicationProvider;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.impl.EventDispatcher;
-import com.itson.equipo2.communication.impl.RedisConnection;
-import com.itson.equipo2.communication.impl.RedisPublisher;
-import java.util.concurrent.ExecutorService;
-import javax.swing.SwingUtilities;
+import com.itson.equipo2.communication.impl.redis.RedisProvider; // Único lugar donde importamos la implementación concreta
+import com.itson.equipo2.communication.service.NetworkService;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
-import redis.clients.jedis.JedisPool;
-import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
-import com.itson.equipo2.battleship_cliente.controllers.SalaController;
-import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
-import com.itson.equipo2.battleship_cliente.handler.JugadorUnidoHandler;
-import com.itson.equipo2.battleship_cliente.handler.NavesPosicionadasHandler;
-import com.itson.equipo2.battleship_cliente.handler.PartidaActualizadaHandler;
-import com.itson.equipo2.battleship_cliente.handler.PartidaCanceladaHandler;
-import com.itson.equipo2.battleship_cliente.handler.PosicionamientoHandler;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.DerrotaViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.DispararFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.EsperandoPosicionamientoFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.LobbyViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.MenuPrincipalViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.PosicionarNaveFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.RegistroViewFactory;
-import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.UnirseAPartidaViewFactory;
-import com.itson.equipo2.battleship_cliente.pattern.factory.impl.VictoriaViewFactory;
-import com.itson.equipo2.communication.impl.NetworkService;
-import com.itson.equipo2.battleship_cliente.service.RegistrarJugadorService;
-import com.itson.equipo2.battleship_cliente.service.SalaService;
+
+// --- Imports de Java Util ---
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.swing.SwingUtilities;
+
+// --- Imports de Controladores, Modelos, Handlers y Vistas (Igual que antes) ---
+import com.itson.equipo2.battleship_cliente.controllers.*;
+import com.itson.equipo2.battleship_cliente.handler.*;
+import com.itson.equipo2.battleship_cliente.models.*;
+import com.itson.equipo2.battleship_cliente.service.*;
+import com.itson.equipo2.battleship_cliente.pattern.factory.impl.*;
 import com.itson.equipo2.battleship_cliente.view.SalaPartidaView;
 
 public class Battleship_cliente {
 
     public static void main(String[] args) {
-        System.out.println("Iniciando Cliente Battleship (Arquitectura Limpia)...");
+        System.out.println("Iniciando Cliente Battleship (Arquitectura Desacoplada)...");
 
-        // 1. Infraestructura
-        JedisPool jedisPool = RedisConnection.getJedisPool();
-        IMessagePublisher publisher = new RedisPublisher(jedisPool);
-        ExecutorService executor = RedisConnection.getSubscriberExecutor();
+        // -----------------------------------------------------------
+        // 1. INFRAESTRUCTURA
+        // -----------------------------------------------------------
+        
+        // Creamos el Bus de Eventos (Singleton)
+        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        
+        // Creamos un pool de hilos estándar (Ya no dependemos de RedisConnection aquí)
+        ExecutorService executor = Executors.newCachedThreadPool();
 
-        // 2. Modelos
+        // INYECCIÓN DE DEPENDENCIA:
+        // Aquí decidimos usar REDIS. Si cambiamos de tecnología, solo tocamos esta línea.
+        ICommunicationProvider provider = new RedisProvider(eventDispatcher, executor);
+
+        // Obtenemos el Publicador a través del proveedor (para los servicios)
+        IMessagePublisher publisher = provider.getPublisher();
+
+        // -----------------------------------------------------------
+        // 2. MODELOS
+        // -----------------------------------------------------------
         PartidaModel partidaModel = new PartidaModel();
         TableroModel miTablero = new TableroModel((String) null);
 
@@ -69,38 +57,43 @@ public class Battleship_cliente {
         jugadorModel.setTablero(miTablero);
         partidaModel.setYo(jugadorModel);
 
-        // 3. Servicios
+        // -----------------------------------------------------------
+        // 3. SERVICIOS
+        // -----------------------------------------------------------
+        NetworkService networkService = new NetworkService(provider, BrokerConfig.CHANNEL_EVENTOS);
+        
+        // Los demás servicios usan la interfaz 'publisher' obtenida arriba
         RegistrarJugadorService registrarJugadorService = new RegistrarJugadorService(publisher);
-        NetworkService networkService = new NetworkService(BrokerConfig.CHANNEL_EVENTOS);
         SalaService salaService = new SalaService(publisher);
         RealizarDisparoService disparoService = new RealizarDisparoService(publisher, jugadorModel);
         PosicionarNaveService posicionarNaveService = new PosicionarNaveService(publisher, partidaModel);
         AbandonarPartidaService abandonarService = new AbandonarPartidaService(publisher, jugadorModel);
 
-        // 4. Controlador Principal de Vistas
+        // -----------------------------------------------------------
+        // 4. CONTROLADORES
+        // -----------------------------------------------------------
         VistaController viewController = new VistaController(partidaModel);
-
-        // 5. Controladores de Negocio
+        
         ConfiguracionController configController = new ConfiguracionController(networkService);
         RegistroController registroController = new RegistroController(partidaModel);
         UnirsePartidaController unirseController = new UnirsePartidaController(registrarJugadorService, partidaModel);
         DisparoController disparoController = new DisparoController(disparoService);
         PosicionarController posicionarController = new PosicionarController(posicionarNaveService, partidaModel);
         AbandonarController abandonarController = new AbandonarController(abandonarService);
-
         SalaController salaController = new SalaController(salaService, viewController, abandonarService, partidaModel);
 
         posicionarController.setViewController(viewController);
 
-        // 7. Vistas
+        // -----------------------------------------------------------
+        // 5. FACTORÍAS Y VISTAS
+        // -----------------------------------------------------------
         DispararFactory dispararFactory = new DispararFactory(disparoController, abandonarController);
-
         PosicionarNaveFactory posicionarNaveFactory = new PosicionarNaveFactory(posicionarController);
-
-        // Inyectamos el controlador en lugar del publisher
         SalaPartidaView salaPartidaView = new SalaPartidaView(salaController);
 
-        // 8. Registro de Pantallas
+        // -----------------------------------------------------------
+        // 6. REGISTRO DE PANTALLAS
+        // -----------------------------------------------------------
         viewController.registrarPantalla("disparar", dispararFactory);
         viewController.registrarPantalla("posicionar", posicionarNaveFactory);
         viewController.registrarPantalla("menu", new MenuPrincipalViewFactory());
@@ -112,31 +105,40 @@ public class Battleship_cliente {
         viewController.registrarPantalla("derrota", new DerrotaViewFactory());
         viewController.registrarPantalla("salaPartida", salaPartidaView);
 
-        // 9. Configuración de Eventos (Handlers)
-        // Handlers existentes     
-        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        // -----------------------------------------------------------
+        // 7. SUSCRIPCIÓN DE EVENTOS (HANDLERS)
+        // -----------------------------------------------------------
         eventDispatcher.subscribe("DisparoRealizado", new DisparoRealizadoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("EXCEPTION", new ExceptionHandler(viewController));
         eventDispatcher.subscribe("PartidaIniciada", new PartidaIniciadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("TurnoTick", new TurnoTickHandler(partidaModel));
         eventDispatcher.subscribe("PartidaFinalizada", new PartidaFinalizadaHandler(viewController, partidaModel));
         eventDispatcher.subscribe("NavesPosicionadas", new NavesPosicionadasHandler(viewController));
-
         eventDispatcher.subscribe("JugadorRegistrado", new JugadorUnidoHandler(viewController, partidaModel));
         eventDispatcher.subscribe("JugadorUnido", new JugadorUnidoHandler(viewController, partidaModel));
-        eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
-
         eventDispatcher.subscribe("PartidaActualizada", new PartidaActualizadaHandler(partidaModel));
         eventDispatcher.subscribe("InicioPosicionamiento", new PosicionamientoHandler(viewController));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
-//        IMessageSubscriber redisSubscriber = new RedisSubscriber(jedisPool, executor, eventDispatcher);
-//        redisSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
-        networkService.inicializar(eventDispatcher, executor);
+        // -----------------------------------------------------------
+        // 8. ARRANQUE
+        // -----------------------------------------------------------
+        // Inicializar el servicio de red (inicia la suscripción usando el provider)
+        try {
+             // Inicia en localhost por defecto usando el provider que le pasamos
+            networkService.inicializar();
+        } catch (Exception e) {
+            System.err.println("Error al iniciar servicio de red: " + e.getMessage());
+        }
 
-        // 11. Arranque
         SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("menu");
         });
+        
+        // Shutdown Hook: Para cerrar conexiones limpiamente al cerrar la ventana
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Cerrando aplicación...");
+            provider.close();
+        }));
     }
 }

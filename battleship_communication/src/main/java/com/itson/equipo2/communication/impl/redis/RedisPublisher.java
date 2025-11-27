@@ -1,4 +1,4 @@
-package com.itson.equipo2.communication.impl;
+package com.itson.equipo2.communication.impl.redis;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.communication.broker.IMessagePublisher;

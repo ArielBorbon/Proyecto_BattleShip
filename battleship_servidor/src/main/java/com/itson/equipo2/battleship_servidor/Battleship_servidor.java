@@ -4,30 +4,24 @@
 package com.itson.equipo2.battleship_servidor;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.battleship_servidor.application.handler.AbandonarPartidaHandler;
+import com.itson.equipo2.battleship_servidor.application.handler.*;
+import com.itson.equipo2.battleship_servidor.application.service.*;
 import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
-import com.itson.equipo2.battleship_servidor.application.service.PartidaTimerService;
-import com.itson.equipo2.battleship_servidor.application.service.RealizarDisparoService;
-import com.itson.equipo2.battleship_servidor.application.handler.PosicionarNaveHandler;
-import com.itson.equipo2.battleship_servidor.application.handler.RealizarDisparoHandler;
-import com.itson.equipo2.battleship_servidor.application.handler.UnirJugadorHandler;
-import com.itson.equipo2.battleship_servidor.application.service.AbandonarPartidaService;
-import com.itson.equipo2.battleship_servidor.application.service.PosicionarNaveService;
-import com.itson.equipo2.battleship_servidor.application.service.UnirJugadorService;
-import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
-import com.itson.equipo2.battleship_servidor.domain.model.Partida;
+
+// --- NUEVOS IMPORTS DE COMUNICACIÓN ---
+import com.itson.equipo2.communication.broker.ICommunicationProvider;
 import com.itson.equipo2.communication.broker.IMessageHandler;
-import java.util.concurrent.ExecutorService;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
 import com.itson.equipo2.communication.dto.EventMessage;
 import com.itson.equipo2.communication.impl.EventDispatcher;
-import com.itson.equipo2.communication.impl.RedisConnection;
-import com.itson.equipo2.communication.impl.RedisPublisher;
-import com.itson.equipo2.communication.impl.RedisSubscriber;
+// Única referencia concreta a Redis (La Fábrica)
+import com.itson.equipo2.communication.impl.redis.RedisProvider;
+
 import mx.itson.equipo_2.common.broker.BrokerConfig;
-import redis.clients.jedis.JedisPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -36,19 +30,35 @@ import redis.clients.jedis.JedisPool;
 public class Battleship_servidor {
 
     public static void main(String[] args) {
-        System.out.println("Iniciando Battleship Servidor...");
+        System.out.println("Iniciando Battleship Servidor (Arquitectura Desacoplada)...");
 
-        // 1. Infraestructura
-        JedisPool pool = RedisConnection.getJedisPool();
-        ExecutorService executor = RedisConnection.getSubscriberExecutor();
-        IMessagePublisher publisher = new RedisPublisher(pool);
+        // -----------------------------------------------------------
+        // 1. INFRAESTRUCTURA DE COMUNICACIÓN
+        // -----------------------------------------------------------
+        // Singleton del Bus de Eventos
+        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+
+        // Pool de Hilos (Independiente de la tecnología de red)
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        // INYECCIÓN DE DEPENDENCIA:
+        // Aquí decidimos que el servidor usará REDIS.
+        // El Provider encapsula JedisPool, RedisConnection, etc.
+        ICommunicationProvider provider = new RedisProvider(eventDispatcher, executor);
+
+        // Obtenemos el Publicador a través del contrato
+        IMessagePublisher publisher = provider.getPublisher();
+
         Gson gson = new Gson();
 
-        // 2. Repositorio
+        // -----------------------------------------------------------
+        // 2. REPOSITORIO
+        // -----------------------------------------------------------
         IPartidaRepository partidaRepository = new PartidaRepository(null);
 
-        // 3. Servicios de Aplicación
-        EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+        // -----------------------------------------------------------
+        // 3. SERVICIOS DE APLICACIÓN
+        // -----------------------------------------------------------
         PartidaTimerService timerService = new PartidaTimerService();
 
         RealizarDisparoService disparoService = new RealizarDisparoService(
@@ -57,13 +67,11 @@ public class Battleship_servidor {
                 timerService
         );
 
-                
         AbandonarPartidaService abandonarService = new AbandonarPartidaService(
-                partidaRepository, 
-                publisher, 
+                partidaRepository,
+                publisher,
                 timerService
         );
-    
 
         UnirJugadorService registrarJugadorService = new UnirJugadorService(
                 publisher,
@@ -75,44 +83,17 @@ public class Battleship_servidor {
                 partidaRepository,
                 publisher
         );
+        posicionarNaveService.setPartidaTimerService(timerService);
 
-
-//        eventDispatcher.subscribe(
- //               "CrearPartidaVsIA", 
-  //              new CrearPartidaVsIAHandler(crearPartidaService)
-  //      );
-        
-       eventDispatcher.subscribe(
-                "AbandonarPartida", 
-                new AbandonarPartidaHandler(abandonarService)
-        );
-       
-
-        
-        eventDispatcher.subscribe(
-                "PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
-     
-        
-        
-//        eventDispatcher.subscribe("TurnoTick", aiService);
-        
-        eventDispatcher.subscribe("DisparoRealizado", new IMessageHandler() {
-            @Override
-            public boolean canHandle(EventMessage message) { return true; }
-            @Override
-            public void onMessage(EventMessage message) { 
-                // No hacer nada (Silencio) 
-            }
-        });
-        
-
-    //    posicionarNaveService.setCrearPartidaVsIAService(crearPartidaService);
-
-        eventDispatcher.subscribe("RealizarDisparo", new RealizarDisparoHandler(disparoService));
-       // eventDispatcher.subscribe("CrearPartidaVsIA", new CrearPartidaVsIAHandler(crearPartidaService));
-        eventDispatcher.subscribe("RegistrarJugador", new UnirJugadorHandler(registrarJugadorService));
+        // -----------------------------------------------------------
+        // 4. CONFIGURACIÓN DE EVENTOS (HANDLERS)
+        // -----------------------------------------------------------
+        eventDispatcher.subscribe("AbandonarPartida", new AbandonarPartidaHandler(abandonarService));
         eventDispatcher.subscribe("PosicionarFlota", new PosicionarNaveHandler(posicionarNaveService));
+        eventDispatcher.subscribe("RealizarDisparo", new RealizarDisparoHandler(disparoService));
+        eventDispatcher.subscribe("RegistrarJugador", new UnirJugadorHandler(registrarJugadorService));
 
+        // Lógica para iniciar la partida cuando el host lo indica
         eventDispatcher.subscribe("SolicitarInicioPosicionamiento", new IMessageHandler() {
             @Override
             public boolean canHandle(EventMessage message) {
@@ -122,23 +103,36 @@ public class Battleship_servidor {
             @Override
             public void onMessage(EventMessage message) {
                 System.out.println("Servidor: El Host inició la partida. Notificando a todos...");
-                // Rebotamos la señal como un evento público
+                // Rebotamos la señal como un evento público a todos los clientes
                 EventMessage eventoInicio = new EventMessage("InicioPosicionamiento", "GO");
                 publisher.publish(BrokerConfig.CHANNEL_EVENTOS, eventoInicio);
             }
         });
 
-        // 5. Suscripción a Redis (Entrada de comandos)
-        IMessageSubscriber commandSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);
+        // -----------------------------------------------------------
+        // 5. INICIO DE SUSCRIPCIONES (ARRANQUE)
+        // -----------------------------------------------------------
+        // Suscripción al canal de COMANDOS (Lo que los clientes piden al servidor)
+        IMessageSubscriber commandSubscriber = provider.getSubscriber();
+        if (commandSubscriber != null) {
+            commandSubscriber.subscribe(BrokerConfig.CHANNEL_COMANDOS);
+        }
 
-        // (Opcional) El servidor también puede escuchar eventos si es necesario para log o depuración
-        IMessageSubscriber eventSubscriber = new RedisSubscriber(pool, executor, eventDispatcher);
-        eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+        // Suscripción al canal de EVENTOS (Opcional, para logs o monitoreo)
+        IMessageSubscriber eventSubscriber = provider.getSubscriber();
+        if (eventSubscriber != null) {
+            eventSubscriber.subscribe(BrokerConfig.CHANNEL_EVENTOS);
+        }
 
         System.out.println("************************************************************");
-        System.out.println("Battleship Servidor LISTO para recibir jugadores.");
+        System.out.println("Battleship Servidor LISTO (Provider: Redis).");
         System.out.println("Esperando comandos en: '" + BrokerConfig.CHANNEL_COMANDOS + "'");
         System.out.println("************************************************************");
+
+        // Shutdown Hook para cerrar recursos al detener el servidor
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Apagando servidor...");
+            provider.close();
+        }));
     }
 }

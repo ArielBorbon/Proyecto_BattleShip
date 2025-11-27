@@ -38,9 +38,9 @@ public class RegistrarJugadorService {
     public void configurarRed(String ipHost) {
         if (ipHost != null && !ipHost.trim().isEmpty()) {
             try {
-                com.itson.equipo2.communication.impl.RedisConnection.setHost(ipHost);
+                com.itson.equipo2.communication.impl.redis.RedisConnection.setHost(ipHost);
                 
-                com.itson.equipo2.communication.impl.RedisConnection.getJedisPool(); 
+                com.itson.equipo2.communication.impl.redis.RedisConnection.getJedisPool(); 
                 System.out.println("Servicio: Red configurada a " + ipHost);
             } catch (Exception e) {
                 System.err.println("Error configurando red: " + e.getMessage());

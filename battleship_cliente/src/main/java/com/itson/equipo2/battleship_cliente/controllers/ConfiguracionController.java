@@ -4,7 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.controllers;
 
-import com.itson.equipo2.communication.impl.NetworkService;
+import com.itson.equipo2.communication.service.NetworkService;
 
 /**
  *

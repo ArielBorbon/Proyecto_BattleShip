@@ -1,4 +1,4 @@
-package com.itson.equipo2.communication.impl;
+package com.itson.equipo2.communication.impl.redis;
 
 /**
  * Clase de configuración estática para los parámetros de conexión a Redis.

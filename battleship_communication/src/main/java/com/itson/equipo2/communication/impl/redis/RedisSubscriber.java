@@ -1,4 +1,4 @@
-package com.itson.equipo2.communication.impl;
+package com.itson.equipo2.communication.impl.redis;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -6,10 +6,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import com.itson.equipo2.communication.broker.IMessageSubscriber;
 import com.itson.equipo2.communication.dto.EventMessage;
+import com.itson.equipo2.communication.impl.EventDispatcher;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * Implementación de {@code IMessageSubscriber} que utiliza Redis Pub/Sub.

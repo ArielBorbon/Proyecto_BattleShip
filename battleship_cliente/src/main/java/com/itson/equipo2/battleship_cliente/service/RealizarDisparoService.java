@@ -5,7 +5,7 @@
 package com.itson.equipo2.battleship_cliente.service;
 
 import com.google.gson.Gson;
-import com.itson.equipo2.communication.impl.RedisConfig;
+import com.itson.equipo2.communication.impl.redis.RedisConfig;
 import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
