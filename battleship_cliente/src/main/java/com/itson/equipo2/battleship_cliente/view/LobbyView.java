@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.view;
 
+import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
 import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.controllers.VistaController;
@@ -13,6 +14,7 @@ import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import mx.itson.equipo_2.common.enums.AccionPartida;
 
@@ -24,9 +26,11 @@ public class LobbyView extends JPanel {
     private final Font FUENTE_BOTON = new Font("Segoe UI Black", 0, 18);
 
     private final UnirsePartidaController unirsePartidaController;
+    private final ConfiguracionController configController;
 
-    public LobbyView(VistaController viewController, UnirsePartidaController unirsePartidaController) {
+    public LobbyView(VistaController viewController, UnirsePartidaController unirsePartidaController, ConfiguracionController configController) {
         this.unirsePartidaController = unirsePartidaController;
+        this.configController = configController;
         initComponents(viewController);
     }
 
@@ -54,7 +58,19 @@ public class LobbyView extends JPanel {
         btnCrear.setFocusPainted(false);
         btnCrear.setBounds(540, 400, 200, 41);
         btnCrear.addActionListener(e -> {
-            unirsePartidaController.solicitarAcceso(AccionPartida.CREAR);
+            String ip = JOptionPane.showInputDialog(this, "Ingresa la IP del Servidor:", "Conectar al Servidor", JOptionPane.QUESTION_MESSAGE);
+
+            // 2. Validar que no le dio a Cancelar o lo dejó vacío
+            if (ip != null && !ip.trim().isEmpty()) {
+
+                // 3. Intentar conectar
+                if (configController.intentarConexion(ip.trim())) {
+                    // 4. Si conecta, enviamos la solicitud de CREAR
+                    unirsePartidaController.solicitarAcceso(AccionPartida.CREAR);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor en: " + ip, "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
         add(btnCrear);
 

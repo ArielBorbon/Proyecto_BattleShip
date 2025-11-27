@@ -98,7 +98,7 @@ public class Battleship_cliente {
         viewController.registrarPantalla("posicionar", posicionarNaveFactory);
         viewController.registrarPantalla("menu", new MenuPrincipalViewFactory());
         viewController.registrarPantalla("registro", new RegistroViewFactory(registroController));
-        viewController.registrarPantalla("lobby", new LobbyViewFactory(unirseController));
+        viewController.registrarPantalla("lobby", new LobbyViewFactory(unirseController, configController));
         viewController.registrarPantalla("unirse", new UnirseAPartidaViewFactory(unirseController, configController));
         viewController.registrarPantalla("esperandoPosicionamiento", new EsperandoPosicionamientoFactory());
         viewController.registrarPantalla("victoria", new VictoriaViewFactory());
