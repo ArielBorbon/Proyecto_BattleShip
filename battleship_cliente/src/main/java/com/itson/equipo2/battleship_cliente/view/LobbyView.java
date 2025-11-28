@@ -5,7 +5,6 @@
 package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.ConfiguracionController;
-import com.itson.equipo2.battleship_cliente.controllers.RegistroController;
 import com.itson.equipo2.battleship_cliente.controllers.UnirsePartidaController;
 import com.itson.equipo2.battleship_cliente.controllers.VistaController;
 import java.awt.Color;
@@ -60,12 +59,14 @@ public class LobbyView extends JPanel {
         btnCrear.addActionListener(e -> {
             String ip = JOptionPane.showInputDialog(this, "Ingresa la IP del Servidor:", "Conectar al Servidor", JOptionPane.QUESTION_MESSAGE);
 
-            // 2. Validar que no le dio a Cancelar o lo dejó vacío
             if (ip != null && !ip.trim().isEmpty()) {
 
-                // 3. Intentar conectar
                 if (configController.intentarConexion(ip.trim())) {
-                    // 4. Si conecta, enviamos la solicitud de CREAR
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ex) {
+                    }
+
                     unirsePartidaController.solicitarAcceso(AccionPartida.CREAR);
                 } else {
                     JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor en: " + ip, "Error de Conexión", JOptionPane.ERROR_MESSAGE);

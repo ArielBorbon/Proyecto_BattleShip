@@ -44,6 +44,8 @@ public class SalaController {
     }
     
     public String getIpServidorConectada() {
-        return RedisConfig.REDIS_HOST; 
+        String ip = partidaModel.getIpServidor();
+
+        return (ip != null) ? ip : "localhost";
     }
 }

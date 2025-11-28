@@ -4,6 +4,7 @@
  */
 package com.itson.equipo2.battleship_cliente.controllers;
 
+import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.communication.service.NetworkService;
 
 /**
@@ -13,14 +14,19 @@ import com.itson.equipo2.communication.service.NetworkService;
 public class ConfiguracionController {
     
     private final NetworkService networkService;
+    private final PartidaModel partidaModel;
 
-    public ConfiguracionController(NetworkService networkService) {
+    public ConfiguracionController(NetworkService networkService, PartidaModel partidaModel) {
         this.networkService = networkService;
+        this.partidaModel = partidaModel;
     }
 
     public boolean intentarConexion(String ip) {
         try {
             networkService.conectarAServidor(ip);
+            
+            partidaModel.setIpServidor(ip); 
+            
             return true;
         } catch (Exception e) {
             System.err.println("Fallo al conectar con " + ip + ": " + e.getMessage());

@@ -44,7 +44,7 @@ public class UnirJugadorService {
 
             if (request.getAccion() == AccionPartida.CREAR && partidaActual != null) {
                 if (partidaActual.getEstado() != EstadoPartida.FINALIZADA) {
-                    //    sendError("Ya existe una partida en curso. No puedes crear otra hasta que termine.");
+                    sendError("Ya existe una partida en curso. No puedes crear otra hasta que termine.");
                     return;
                 }
             }

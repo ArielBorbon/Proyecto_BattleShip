@@ -9,6 +9,8 @@ public class NetworkService {
     private final ICommunicationProvider communicationProvider;
     private final String eventChannel;
 
+    private String currentIp = null;
+
     // Inyección de Dependencia: Le pasamos CUALQUIER proveedor
     public NetworkService(ICommunicationProvider communicationProvider, String eventChannel) {
         this.communicationProvider = communicationProvider;
@@ -29,15 +31,18 @@ public class NetworkService {
         if (ip == null || ip.trim().isEmpty()) {
             throw new IllegalArgumentException("IP vacía");
         }
+        if (currentIp != null && currentIp.equals(ip)) {
+            System.out.println("NetworkService: Ya estamos conectados a " + ip + ". Omitiendo reconexión.");
+            return;
+        }
 
         System.out.println("NetworkService: Solicitando conexión a " + ip + "...");
 
-        // 1. Polimorfismo: El proveedor sabe cómo conectarse (sea Redis o Sockets)
         communicationProvider.connect(ip);
 
-        System.out.println("Conexión establecida exitosamente.");
+        this.currentIp = ip;
 
-        // 2. Reiniciamos la suscripción en el nuevo canal/host
+        System.out.println("Conexión establecida exitosamente.");
         reiniciarSuscripcion();
     }
 
@@ -55,7 +60,6 @@ public class NetworkService {
     }
 
     private void iniciarSuscripcion() {
-        // La fábrica nos da un suscriptor nuevo configurado
         currentSubscriber = communicationProvider.getSubscriber();
 
         if (currentSubscriber != null) {
@@ -64,4 +68,3 @@ public class NetworkService {
         }
     }
 }
-        

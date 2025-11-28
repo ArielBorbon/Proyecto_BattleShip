@@ -74,7 +74,7 @@ public class Battleship_cliente {
         // -----------------------------------------------------------
         VistaController viewController = new VistaController(partidaModel);
         
-        ConfiguracionController configController = new ConfiguracionController(networkService);
+        ConfiguracionController configController = new ConfiguracionController(networkService, partidaModel);
         RegistroController registroController = new RegistroController(partidaModel);
         UnirsePartidaController unirseController = new UnirsePartidaController(registrarJugadorService, partidaModel);
         DisparoController disparoController = new DisparoController(disparoService);

@@ -37,7 +37,7 @@ public class PartidaModel implements ISubject<PartidaModel> {
     private Integer segundosRestantes;
     private EstadoPartida estado;
     private String idJugador1; //ID del Host
-
+    private String ipServidor;
     private String nombreJugador1;
     private String nombreJugador2;
 
@@ -151,6 +151,14 @@ public class PartidaModel implements ISubject<PartidaModel> {
         this.idJugador1 = idJugador1;
     }
 
+    public String getIpServidor() {
+        return ipServidor;
+    }
+
+    public void setIpServidor(String ipServidor) {
+        this.ipServidor = ipServidor;
+    }
+    
     public String getNombreJugador1() {
         return nombreJugador1;
     }
