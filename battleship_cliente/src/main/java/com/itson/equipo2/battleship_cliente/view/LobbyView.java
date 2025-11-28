@@ -86,7 +86,7 @@ public class LobbyView extends JPanel {
         });
         add(btnUnirse);
 
-        JButton btnVolver = new JButton("+ Volver");
+        JButton btnVolver = new JButton("< Volver");
         btnVolver.setBackground(COLOR_BOTON);
         btnVolver.setFont(FUENTE_BOTON);
         btnVolver.setForeground(COLOR_TEXTO);
