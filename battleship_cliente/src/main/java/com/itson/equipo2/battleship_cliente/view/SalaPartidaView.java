@@ -39,17 +39,17 @@ public class SalaPartidaView extends javax.swing.JPanel implements VistaFactory,
         cargarIconos();
         
         configurarPanelesIconos();
-        
-        mostrarIpLocal();
+
         btnConfirmar.setEnabled(false);
     }
 
-    private void mostrarIpLocal() {
-        try {
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            lblIp.setText("IP de Sala: " + ip);
-        } catch (Exception e) {
-            lblIp.setText("IP: Desconocida");
+    private void mostrarIpSala() {
+        String ipConectada = salaController.getIpServidorConectada();
+        
+        if (ipConectada != null && !ipConectada.isEmpty()) {
+            lblIp.setText("Sala (Servidor): " + ipConectada);
+        } else {
+            lblIp.setText("Sala (Local): localhost");
         }
     }
 
@@ -62,6 +62,8 @@ public class SalaPartidaView extends javax.swing.JPanel implements VistaFactory,
 
     @Override
     public void onChange(PartidaModel model) {
+        mostrarIpSala();
+        
         if (model.getNombreJugador1() != null) {
             lblJugador1.setText(model.getNombreJugador1());
         }

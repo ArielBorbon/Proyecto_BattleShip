@@ -4,6 +4,7 @@ package com.itson.equipo2.battleship_cliente.controllers;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.service.AbandonarPartidaService;
 import com.itson.equipo2.battleship_cliente.service.SalaService;
+import com.itson.equipo2.communication.impl.redis.RedisConfig;
 
 /**
  *
@@ -40,5 +41,9 @@ public class SalaController {
         partidaModel.reiniciarPartida();
 
         viewController.cambiarPantalla("lobby");
+    }
+    
+    public String getIpServidorConectada() {
+        return RedisConfig.REDIS_HOST; 
     }
 }
