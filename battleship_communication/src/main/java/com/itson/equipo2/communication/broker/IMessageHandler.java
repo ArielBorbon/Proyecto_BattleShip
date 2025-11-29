@@ -4,9 +4,13 @@ import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  * Interfaz para los manejadores de mensajes (Handlers).
- * <p>
  * Representa la lógica de aplicación que reacciona a un mensaje recibido.
- * </p>
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public interface IMessageHandler {
 

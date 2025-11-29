@@ -7,22 +7,32 @@ import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * Clase utilitaria para gestionar la conexión y los recursos del pool de Redis.
- * Implementa el patrón Singleton para {@code JedisPool} y {@code ExecutorService}.
+ * Implementa el patrón Singleton para {@code JedisPool} y
+ * {@code ExecutorService}.
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public class RedisConnection {
 
     private static JedisPool jedisPool;
     private static ExecutorService subscriberExecutor;
-    
-    private static String currentHost = "localhost"; 
+
+    private static String currentHost = "localhost";
     private static final int REDIS_PORT = 6379;
 
-    /** Constructor privado para evitar la instanciación externa. */
+    /**
+     * Constructor privado para evitar la instanciación externa.
+     */
     private RedisConnection() {
     }
 
     /**
-     * Configuración del pool de conexiones para optimizar el rendimiento y la concurrencia.
+     * Configuración del pool de conexiones para optimizar el rendimiento y la
+     * concurrencia.
      *
      * @return El objeto {@code JedisPoolConfig} configurado.
      */
@@ -71,25 +81,30 @@ public class RedisConnection {
         }
         return subscriberExecutor;
     }
-    
-    
-    
+
+    /**
+     * Establece el nuevo host para la conexión y reinicia el pool si es
+     * necesario.
+     *
+     * * @param newHost El nuevo host o IP.
+     */
     public static synchronized void setHost(String newHost) {
         System.out.println("Cambiando Host de Redis a: " + newHost);
         currentHost = newHost;
-        
+
         // Si ya había una conexión, la matamos para que se cree la nueva
         if (jedisPool != null && !jedisPool.isClosed()) {
             try {
                 jedisPool.close();
-            } catch (Exception e) { /* Ignorar error de cierre */ }
-            jedisPool = null; 
+            } catch (Exception e) {
+                /* Ignorar error de cierre */ }
+            jedisPool = null;
         }
     }
 
     /**
-     * Cierra y libera todos los recursos de los pools.
-     * Debe llamarse al finalizar la aplicación para evitar fugas de memoria y recursos.
+     * Cierra y libera todos los recursos de los pools. Debe llamarse al
+     * finalizar la aplicación para evitar fugas de memoria y recursos.
      */
     public static void shutdown() {
         System.out.println("Cerrando pools de Redis y Hilos...");

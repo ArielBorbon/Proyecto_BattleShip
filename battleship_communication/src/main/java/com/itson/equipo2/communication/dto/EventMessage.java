@@ -3,6 +3,12 @@ package com.itson.equipo2.communication.dto;
 /**
  * DTO que representa un mensaje de evento en el sistema de comunicación. Es la
  * estructura base para la serialización/deserialización JSON.
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public class EventMessage {
 
@@ -70,5 +76,4 @@ public class EventMessage {
     public void setPayload(String payload) {
         this.payload = payload;
     }
-
 }

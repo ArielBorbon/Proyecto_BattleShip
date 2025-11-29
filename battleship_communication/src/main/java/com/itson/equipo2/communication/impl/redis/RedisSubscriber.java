@@ -12,12 +12,16 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
 /**
- * Implementación de {@code IMessageSubscriber} que utiliza Redis Pub/Sub.
- * <p>
- * La suscripción se realiza en un hilo de ejecución dedicado y utiliza un
+ * Implementación de {@code IMessageSubscriber} que utiliza Redis Pub/Sub. La
+ * suscripción se realiza en un hilo de ejecución dedicado y utiliza un
  * {@code EventDispatcher} para distribuir los mensajes recibidos a los
  * {@code IMessageHandler}.
- * </p>
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public class RedisSubscriber implements IMessageSubscriber {
 
@@ -68,7 +72,7 @@ public class RedisSubscriber implements IMessageSubscriber {
     /**
      * Inicia la suscripción al canal en un hilo separado.
      *
-     * * @param channel El nombre del canal (tema) al que suscribirse.
+     * @param channel El nombre del canal (tema) al que suscribirse.
      */
     @Override
     public void subscribe(String channel) {

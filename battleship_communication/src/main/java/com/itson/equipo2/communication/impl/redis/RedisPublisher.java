@@ -10,6 +10,12 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 /**
  * Implementación de {@code IMessagePublisher} que utiliza Redis Pub/Sub para la
  * publicación.
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public class RedisPublisher implements IMessagePublisher {
 
@@ -50,10 +56,8 @@ public class RedisPublisher implements IMessagePublisher {
             jedis.publish(channel, jsonMessage);
         } catch (JedisConnectionException e) {
             System.err.println("Error publicando en Redis (Canal: " + channel + "): " + e.getMessage());
-            e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Error inesperado al publicar mensaje: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

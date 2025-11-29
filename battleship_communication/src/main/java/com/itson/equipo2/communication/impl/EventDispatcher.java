@@ -9,11 +9,17 @@ import com.itson.equipo2.communication.dto.EventMessage;
 
 /**
  * El Bus de Eventos (Event Dispatcher) del sistema.
- * <p>
+ *
  * Utiliza el patrón **Singleton** para garantizar una única instancia
  * centralizada que gestiona el mapeo entre tipos de eventos y los Handlers
- * interesados.
- * </p>
+ * interesados. Actúa como intermediario para desacoplar el recibo de mensajes
+ * de su procesamiento.
+ *
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public class EventDispatcher {
 
@@ -34,7 +40,7 @@ public class EventDispatcher {
     /**
      * Obtiene la instancia única y sincronizada del EventDispatcher.
      *
-     * @return La instancia del Bus de Eventos.
+     * @return La instancia global del Bus de Eventos.
      */
     public static synchronized EventDispatcher getInstance() {
         if (instance == null) {
@@ -44,7 +50,8 @@ public class EventDispatcher {
     }
 
     /**
-     * Registra un Handler para un tipo de evento específico.
+     * Registra un Handler para un tipo de evento específico. Si no existe una
+     * lista para ese tipo de evento, se crea una nueva.
      *
      * @param eventType El tipo de evento al que se suscribe.
      * @param handler El {@code IMessageHandler} que procesará el evento.
@@ -58,10 +65,9 @@ public class EventDispatcher {
     /**
      * Despacha el mensaje de evento a todos los Handlers registrados para su
      * tipo.
-     * <p>
-     * Este método es invocado por el {@code RedisSubscriber} al recibir un
-     * mensaje.
-     * </p>
+     *
+     * Este método es invocado típicamente por el {@code RedisSubscriber} al
+     * recibir un mensaje desde la red.
      *
      * @param event El mensaje de evento a distribuir.
      */
@@ -81,7 +87,7 @@ public class EventDispatcher {
             }
         } else {
             // Caso donde se recibe un evento pero no hay handlers registrados.
-//            System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
+            // System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
         }
     }
 }
