@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /**
  * Vista principal utilizada para la fase de posicionamiento de naves del
@@ -184,6 +186,7 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         nave2 = new SelectorNaveView(TipoNave.SUBMARINO, this.tablero, this.posicionarController);
         nave3 = new SelectorNaveView(TipoNave.CRUCERO, this.tablero, this.posicionarController);
         nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, this.tablero, this.posicionarController);
+        jLabel1 = new JLabel();
 
         setBackground(new Color(83, 111, 137));
         setMaximumSize(new Dimension(1280, 720));
@@ -285,6 +288,13 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
 
         add(nave4);
         nave4.setBounds(871, 492, 228, 57);
+
+        jLabel1.setFont(new Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new Color(255, 255, 255));
+        jLabel1.setIcon(new ImageIcon(getClass().getResource("/images/r_key.png"))); // NOI18N
+        jLabel1.setText("para rotar mientras sostienes una nave");
+        add(jLabel1);
+        jLabel1.setBounds(120, 640, 410, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
@@ -307,6 +317,7 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnConfirmar;
+    private JLabel jLabel1;
     private JPanel nave1;
     private JPanel nave2;
     private JPanel nave3;

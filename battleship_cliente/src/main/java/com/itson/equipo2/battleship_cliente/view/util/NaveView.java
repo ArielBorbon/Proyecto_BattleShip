@@ -91,6 +91,7 @@ public class NaveView extends JPanel {
         this.tipo = tipo;
         this.tablero = tablero;
         this.partidaController = controller; // Asigna el controlador para la interacción MVC
+        this.setFocusable(true);
 
         // 1. Configuración Visual Inicial
         int ancho = CELL_SIZE * tipo.getTamanio(); // Ancho inicial según el tamaño de la nave
@@ -223,6 +224,9 @@ public class NaveView extends JPanel {
         if (parent == null || this.tablero == null) {
             return;
         }
+
+        this.requestFocusInWindow();
+
         // Convierte el punto del clic de las coordenadas de la NaveView a las del contenedor padre.
         Point eventPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), parent);
         // Calcula el offset (distancia del clic a la esquina superior izquierda de la nave).

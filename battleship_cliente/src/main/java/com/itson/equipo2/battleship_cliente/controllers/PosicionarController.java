@@ -52,8 +52,6 @@ public class PosicionarController {
      * @param col La columna de inicio (coordenada X).
      * @param esHorizontal {@code true} si la nave es horizontal, {@code false}
      * si es vertical.
-     * @return {@code true} si la nave fue posicionada exitosamente en el
-     * modelo, {@code false} en caso contrario.
      */
     public void intentarPosicionarNave(TipoNave tipo, int fila, int col, boolean esHorizontal) throws PosicionarNaveException {
         this.partidaModel.intentarPosicionarNavePropia(tipo, fila, col, esHorizontal);

@@ -81,7 +81,7 @@ public class EventDispatcher {
             }
         } else {
             // Caso donde se recibe un evento pero no hay handlers registrados.
-            System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
+//            System.out.println("Alerta: Se recibió '" + tipo + "' pero nadie lo está escuchando.");
         }
     }
 }
