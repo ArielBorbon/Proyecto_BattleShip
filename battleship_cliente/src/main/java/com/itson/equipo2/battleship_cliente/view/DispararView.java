@@ -35,9 +35,11 @@ import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 
 /**
  *
- * @author Ariel Eduardo Borbon Izaguirre 00000252116 Sebastián Bórquez Huerta
- * 00000252115 Alberto Jiménez García 00000252595 José Eduardo Aguilar García
- * 00000252049 José Luis Islas Molina 00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116 
+ * @author Sebastián Bórquez Huerta 00000252115 
+ * @author Alberto Jiménez García 00000252595 
+ * @author José Eduardo Aguilar García 00000252049 
+ * @author José Luis Islas Molina 00000252574
  */
 public class DispararView extends javax.swing.JPanel implements VistaFactory, IObserver<PartidaModel> {
 

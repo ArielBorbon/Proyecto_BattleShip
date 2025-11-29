@@ -5,12 +5,14 @@
 package mx.itson.equipo_2.common.enums;
 
 /**
+ * Enumerador que define la orientación en la que una nave es colocada en el
+ * tablero.
  *
- * @author Ariel Eduardo Borbon Izaguirre    00000252116
- * @author Sebastián Bórquez Huerta          00000252115
- * @author Alberto Jiménez García            00000252595
- * @author José Eduardo Aguilar García       00000252049
- * @author José Luis Islas Molina            00000252574
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
+ * @author José Luis Islas Molina 00000252574
  */
 public enum OrientacionNave {
     VERTICAL,
