@@ -6,7 +6,6 @@ C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\j
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\NaveDTO.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\PartidaDTO.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\AbandonarPartidaRequest.java
-C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\CrearPartidaVsIARequest.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\PosicionarFlotaRequest.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RealizarDisparoRequest.java
 C:\Users\skyro\Documents\GitHub\Proyecto_BattleShip\battleship_common\src\main\java\mx\itson\equipo_2\common\dto\request\RegistrarJugadorRequest.java

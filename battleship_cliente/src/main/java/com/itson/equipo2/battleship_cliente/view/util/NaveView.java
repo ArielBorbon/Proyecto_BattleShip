@@ -311,4 +311,15 @@ public class NaveView extends JPanel {
             parent.repaint();
         }
     }
+
+    public void setOrientacion(boolean horizontal) {
+        this.esHorizontal = horizontal;
+        // Si la nave viene vertical, invertimos sus dimensiones visuales
+        if (!horizontal) {
+            int w = getWidth();
+            int h = getHeight();
+            setSize(h, w);
+            setPreferredSize(new Dimension(h, w));
+        }
+    }
 }

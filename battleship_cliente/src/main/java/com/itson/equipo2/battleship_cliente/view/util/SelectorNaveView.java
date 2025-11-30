@@ -83,7 +83,7 @@ public class SelectorNaveView extends JPanel {
                 if (barcosRestantes == 0) {
                     setVisible(false);
                 }
-                
+
                 repaint(); // Forzar repintado para asegurar cambio de color inmediato
                 // --------------------------------------
 
@@ -95,7 +95,7 @@ public class SelectorNaveView extends JPanel {
     public void devolverBarco() {
         barcosRestantes++;
         lblCantidad.setText(String.valueOf(barcosRestantes));
-        
+
         // Si recuperamos un barco (ahora hay > 0), volver a color GRIS (habilitado)
         if (barcosRestantes > 0) {
             setVisible(true);
@@ -118,12 +118,16 @@ public class SelectorNaveView extends JPanel {
     public void reiniciarSelector() {
         this.barcosRestantes = tipo.getCantidadInicial();
         lblCantidad.setText(String.valueOf(barcosRestantes));
-        
+
         // Restaurar colores originales
         setBackground(COLOR_DISPONIBLE);
         setVisible(true);
-        
+
         this.revalidate();
         this.repaint();
+    }
+
+    public TipoNave getTipo() {
+        return tipo;
     }
 }

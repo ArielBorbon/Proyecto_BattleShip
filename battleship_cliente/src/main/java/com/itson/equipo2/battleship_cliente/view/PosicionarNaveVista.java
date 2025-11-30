@@ -23,14 +23,14 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
+import com.itson.equipo2.battleship_cliente.view.util.NaveView;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 /**
  * Vista principal utilizada para la fase de posicionamiento de naves del
- * jugador. Implementa {@code VistaFactory} y {@code IObserver} para crear
- * la vista y sincronizar el estado visual del tablero con el
- * {@code PartidaModel}.
+ * jugador. Implementa {@code VistaFactory} y {@code IObserver} para crear la
+ * vista y sincronizar el estado visual del tablero con el {@code PartidaModel}.
  */
 public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver<PartidaModel> {
 
@@ -59,7 +59,6 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
     }
 
     // --- MÉTODOS DE LA INTERFAZ ---
-
     /**
      * Implementación del patrón Observer. Se llama cuando el
      * {@code PartidaModel} cambia, permitiendo la sincronización de la vista
@@ -98,8 +97,8 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
             nave2.setEnabled(true);
             nave3.setEnabled(true);
             nave4.setEnabled(true);
-            btnConfirmar.setEnabled(false); 
-        }   
+            btnConfirmar.setEnabled(false);
+        }
 
         Color colorJugador = Color.GRAY; // Default
         if (model.getYo() != null && model.getYo().getColor() != null) {
@@ -148,12 +147,111 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
                 JButton celdaPropio = new JButton();
-                celdaPropio.setEnabled(false); // Las celdas son solo visuales, no interactivas
-                celdaPropio.setBackground(new Color(50, 70, 100)); // Color de agua inicial
+
+                // Habilitamos la celda para recibir clicks
+                celdaPropio.setEnabled(true);
+                celdaPropio.setFocusPainted(false);
+                celdaPropio.setBorderPainted(true);
+
+                // Guardamos coordenadas para saber dónde se hizo clic
+                celdaPropio.putClientProperty("fila", fila);
+                celdaPropio.putClientProperty("col", col);
+
+                celdaPropio.setBackground(new Color(50, 70, 100));
                 celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
+
+                // Listener para detectar clic en un barco ya puesto
+                celdaPropio.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mousePressed(java.awt.event.MouseEvent e) {
+                        if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
+                            int f = (int) celdaPropio.getClientProperty("fila");
+                            int c = (int) celdaPropio.getClientProperty("col");
+                            // Intentamos levantar la nave
+                            intentarLevantarNave(f, c, e);
+                        }
+                    }
+                });
+
                 tablero.add(celdaPropio);
             }
         }
+    }
+
+    private void intentarLevantarNave(int fila, int col, java.awt.event.MouseEvent e) {
+        // 1. Preguntar al controlador si hay una nave en esa celda
+        com.itson.equipo2.battleship_cliente.models.NaveModel naveEncontrada = posicionarController.obtenerNaveEn(fila, col);
+
+        // Si no hay nave, no hacemos nada
+        if (naveEncontrada == null) {
+            return;
+        }
+
+        // Si el botón de confirmar ya se presionó, no permitir mover nada
+        if (!btnConfirmar.isEnabled() && verificarSiTodoEstaPuesto()) {
+            // Opcional: Si ya confirmaste, quizás no quieras permitir mover. 
+            // Si quieres permitir mover hasta antes de enviar al server, elimina este if.
+        }
+
+        // 2. Extraer datos antes de borrarla
+        TipoNave tipo = naveEncontrada.getTipo();
+        boolean estabaHorizontal = naveEncontrada.isEsHorizontal();
+
+        // Obtenemos el color actual del jugador del modelo
+        Color colorJugador = Color.GRAY;
+        // (Asumiendo que tienes acceso al modelo o lo sacas del selector)
+        SelectorNaveView selectorOrigen = getSelectorPorTipo(tipo);
+        if (selectorOrigen != null) {
+            colorJugador = selectorOrigen.getColorJugador();
+        }
+
+        // 3. ELIMINAR del modelo lógico 
+        // (Esto disparará el onChange, pintando el hueco de agua azul)
+        posicionarController.retirarNave(naveEncontrada);
+
+        // 4. CREAR la nave visual (NaveView) para arrastrar
+        javax.swing.JLayeredPane layered = javax.swing.SwingUtilities.getRootPane(this).getLayeredPane();
+
+        NaveView naveView = new NaveView(tipo, tablero, posicionarController, colorJugador);
+
+        // Configurar la rotación que tenía
+        naveView.setOrientacion(estabaHorizontal);
+
+        // Ubicar la nave visualmente donde está el ratón
+        java.awt.Point puntoEnLayered = javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), layered);
+
+        // Centramos la nave en el cursor para mejor experiencia
+        naveView.setLocation(
+                puntoEnLayered.x - (naveView.getWidth() / 2),
+                puntoEnLayered.y - (naveView.getHeight() / 2)
+        );
+
+        // 5. Manejar el caso de que la suelte fuera (Cancelar movimiento)
+        if (selectorOrigen != null) {
+            naveView.addPropertyChangeListener("naveDevuelta", (evt) -> {
+                // Si la suelta fuera, vuelve al inventario del selector
+                selectorOrigen.devolverBarco();
+                actualizarEstadoBoton();
+            });
+        }
+
+        // 6. Añadir al panel y forzar el inicio del arrastre
+        layered.add(naveView, javax.swing.JLayeredPane.DRAG_LAYER);
+        layered.revalidate();
+        layered.repaint();
+
+        naveView.startDragFromEvent(e);
+
+        // Actualizamos el botón "Confirmar" (se desactiva porque acabamos de quitar un barco)
+        actualizarEstadoBoton();
+    }
+
+// Método auxiliar necesario para el chequeo del if anterior
+    private boolean verificarSiTodoEstaPuesto() {
+        return ((SelectorNaveView) nave1).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave2).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave3).getBarcosRestantes() == 0
+                && ((SelectorNaveView) nave4).getBarcosRestantes() == 0;
     }
 
     /**
@@ -169,6 +267,22 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
                 && ((SelectorNaveView) nave4).getBarcosRestantes() == 0;
 
         btnConfirmar.setEnabled(todosPuestos);
+    }
+
+    private SelectorNaveView getSelectorPorTipo(TipoNave tipo) {
+        if (nave1 instanceof SelectorNaveView && ((SelectorNaveView) nave1).getTipo() == tipo) {
+            return (SelectorNaveView) nave1;
+        }
+        if (nave2 instanceof SelectorNaveView && ((SelectorNaveView) nave2).getTipo() == tipo) {
+            return (SelectorNaveView) nave2;
+        }
+        if (nave3 instanceof SelectorNaveView && ((SelectorNaveView) nave3).getTipo() == tipo) {
+            return (SelectorNaveView) nave3;
+        }
+        if (nave4 instanceof SelectorNaveView && ((SelectorNaveView) nave4).getTipo() == tipo) {
+            return (SelectorNaveView) nave4;
+        }
+        return null;
     }
 
     /**

@@ -262,4 +262,60 @@ public class TableroModel {
         return navesPosicionadas;
     }
 
+    // EN TableroModel.java
+    /**
+     * Busca y devuelve el modelo de la nave que ocupa la coordenada
+     * especificada.
+     */
+    public NaveModel getNaveEnCasilla(int fila, int columna) {
+        for (NaveModel nave : navesPosicionadas) {
+            // Calcular las coordenadas que ocupa esta nave
+            for (int i = 0; i < nave.getTipo().getTamanio(); i++) {
+                int f = nave.getFila();
+                int c = nave.getColumna();
+
+                if (nave.isEsHorizontal()) {
+                    c += i;
+                } else {
+                    f += i;
+                }
+
+                if (f == fila && c == columna) {
+                    return nave; // Encontramos la nave
+                }
+            }
+        }
+        return null; // No hay nave aquí
+    }
+
+    /**
+     * Elimina una nave de la lista y limpia las celdas que ocupaba (las pone en
+     * null).
+     */
+    public void eliminarNave(NaveModel nave) {
+        if (nave == null) {
+            return;
+        }
+
+        // 1. Limpiar las celdas (ponerlas como agua/null)
+        for (int i = 0; i < nave.getTipo().getTamanio(); i++) {
+            int f = nave.getFila();
+            int c = nave.getColumna();
+
+            if (nave.isEsHorizontal()) {
+                c += i;
+            } else {
+                f += i;
+            }
+
+            if (esCoordenadaValida(f, c)) {
+                celdas[f][c].setTipoNave(null);
+                celdas[f][c].setEstadoNave(null);
+            }
+        }
+
+        // 2. Eliminar de la lista lógica
+        navesPosicionadas.remove(nave);
+    }
+
 }
