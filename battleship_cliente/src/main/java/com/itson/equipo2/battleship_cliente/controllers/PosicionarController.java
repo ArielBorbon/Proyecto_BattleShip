@@ -1,6 +1,7 @@
 package com.itson.equipo2.battleship_cliente.controllers;
 
 import com.itson.equipo2.battleship_cliente.exceptions.PosicionarNaveException;
+import com.itson.equipo2.battleship_cliente.models.NaveModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.service.PosicionarNaveService;
 import mx.itson.equipo_2.common.enums.TipoNave;
@@ -67,6 +68,26 @@ public class PosicionarController {
         if (viewController != null) {
             System.out.println("Cliente: Flota enviada. Esperando al rival...");
             viewController.cambiarPantalla("esperandoPosicionamiento");
+        }
+    }
+
+    public NaveModel obtenerNaveEn(int fila, int columna) {
+        // 1. Validar que tengamos un modelo y tablero cargado
+        if (partidaModel == null || partidaModel.getTableroPropio() == null) {
+            return null;
+        }
+
+        // (Opcional) Aquí podrías validar si el estado del juego permite editar
+        // if (partidaModel.getEstado() != EstadoPartida.CONFIGURACION) return null;
+        // 2. Pedir al modelo la nave (Delegación)
+        return partidaModel.getTableroPropio().getNaveEnCasilla(fila, columna);
+    }
+
+    public void retirarNave(NaveModel nave) {
+        if (partidaModel.getTableroPropio() != null) {
+            partidaModel.getTableroPropio().eliminarNave(nave);
+            // Notificar cambio para que la vista se repinte (Observer)
+            partidaModel.notifyObservers(partidaModel);
         }
     }
 
