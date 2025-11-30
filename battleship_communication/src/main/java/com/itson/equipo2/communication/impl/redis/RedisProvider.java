@@ -23,7 +23,7 @@ public class RedisProvider implements ICommunicationProvider {
     /**
      * Constructor del proveedor de Redis.
      *
-     * * @param eventDispatcher Despachador para manejar eventos entrantes.
+     * @param eventDispatcher Despachador para manejar eventos entrantes.
      * @param executorService Servicio de ejecución para hilos de suscripción.
      */
     public RedisProvider(EventDispatcher eventDispatcher, ExecutorService executorService) {
