@@ -22,7 +22,6 @@ public class RedisConnection {
     private static ExecutorService subscriberExecutor;
 
     private static String currentHost = "localhost";
-    private static final int REDIS_PORT = 6379;
 
     /**
      * Constructor privado para evitar la instanciación externa.
@@ -60,7 +59,7 @@ public class RedisConnection {
             jedisPool = new JedisPool(
                     poolConfig,
                     currentHost, // <-- Aquí entra la IP que escribas
-                    REDIS_PORT
+                    RedisConfig.REDIS_PORT
             );
         }
         return jedisPool;
