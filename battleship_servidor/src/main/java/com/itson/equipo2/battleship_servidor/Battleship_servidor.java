@@ -6,7 +6,7 @@ package com.itson.equipo2.battleship_servidor;
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.application.handler.*;
 import com.itson.equipo2.battleship_servidor.application.service.*;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
+import com.itson.equipo2.battleship_servidor.domain.model.Partida;
 import com.itson.equipo2.battleship_servidor.infrastructure.persistence.PartidaRepository;
 
 // --- NUEVOS IMPORTS DE COMUNICACIÓN ---
@@ -22,6 +22,7 @@ import com.itson.equipo2.communication.impl.redis.RedisProvider;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 /**
  *
@@ -54,7 +55,7 @@ public class Battleship_servidor {
         // -----------------------------------------------------------
         // 2. REPOSITORIO
         // -----------------------------------------------------------
-        IPartidaRepository partidaRepository = new PartidaRepository(null);
+        IRepository partidaRepository = new PartidaRepository(null);
 
         // -----------------------------------------------------------
         // 3. SERVICIOS DE APLICACIÓN

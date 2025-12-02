@@ -7,7 +7,6 @@ package com.itson.equipo2.battleship_servidor.application.service;
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import java.util.UUID;
@@ -20,14 +19,15 @@ import mx.itson.equipo_2.common.enums.AccionPartida;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 public class UnirJugadorService {
 
     private final IMessagePublisher eventPublisher;
     private final Gson gson;
-    private final IPartidaRepository partidaRepository;
+    private final IRepository<Partida> partidaRepository;
 
-    public UnirJugadorService(IMessagePublisher eventPublisher, Gson gson, IPartidaRepository partidaRepository) {
+    public UnirJugadorService(IMessagePublisher eventPublisher, Gson gson, IRepository partidaRepository) {
         this.eventPublisher = eventPublisher;
         this.gson = gson;
         this.partidaRepository = partidaRepository;
@@ -40,7 +40,7 @@ public class UnirJugadorService {
                 return;
             }
 
-            Partida partidaActual = partidaRepository.getPartida();
+            Partida partidaActual = partidaRepository.obtener();
 
             if (request.getAccion() == AccionPartida.CREAR && partidaActual != null) {
                 if (partidaActual.getEstado() != EstadoPartida.FINALIZADA) {
@@ -108,7 +108,7 @@ public class UnirJugadorService {
     }
 
     private void broadcastEstadoSala() {
-        Partida partida = partidaRepository.getPartida();
+        Partida partida = partidaRepository.obtener();
         if (partida == null) {
             return;
         }

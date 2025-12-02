@@ -5,7 +5,6 @@ import com.itson.equipo2.battleship_servidor.domain.model.Coordenada;
 import com.itson.equipo2.battleship_servidor.domain.model.Jugador;
 import com.itson.equipo2.battleship_servidor.domain.model.Nave;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import java.util.List;
@@ -15,6 +14,7 @@ import mx.itson.equipo_2.common.dto.JugadorDTO;
 import mx.itson.equipo_2.common.dto.request.PosicionarFlotaRequest;
 import mx.itson.equipo_2.common.dto.response.PartidaIniciadaResponse;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 /**
  * Servicio de aplicación encargado de procesar la solicitud de posicionamiento
@@ -25,7 +25,7 @@ public class PosicionarNaveService {
     /**
      * Repositorio para acceder y modificar el objeto Partida en curso.
      */
-    private final IPartidaRepository partidaRepository;
+    private final IRepository<Partida> partidaRepository;
 
     /**
      * Publicador de eventos para enviar notificaciones al Broker.
@@ -50,7 +50,7 @@ public class PosicionarNaveService {
      * @param partidaRepository El repositorio de la partida.
      * @param eventPublisher El publicador de mensajes del Broker.
      */
-    public PosicionarNaveService(IPartidaRepository partidaRepository, IMessagePublisher eventPublisher) {
+    public PosicionarNaveService(IRepository partidaRepository, IMessagePublisher eventPublisher) {
         this.partidaRepository = partidaRepository;
         this.eventPublisher = eventPublisher;
     }
@@ -63,7 +63,7 @@ public class PosicionarNaveService {
      * {@code NaveDTO}.
      */
     public void posicionarNaves(PosicionarFlotaRequest request) {
-        Partida partida = partidaRepository.getPartida();
+        Partida partida = partidaRepository.obtener();
         if (partida == null) {
             return;
         }

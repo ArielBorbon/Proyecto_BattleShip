@@ -6,7 +6,6 @@ package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import java.util.Timer;
 import java.util.TimerTask;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
@@ -14,6 +13,7 @@ import mx.itson.equipo_2.common.dto.response.TurnoTickResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 /**
  *
@@ -27,7 +27,7 @@ public class PartidaTimerService {
     /**
      * Inicia un nuevo temporizador de turno. Cancela cualquier timer anterior.
      */
-    public void startTurnoTimer(IPartidaRepository repo, IMessagePublisher publisher) {
+    public void startTurnoTimer(IRepository<Partida> repo, IMessagePublisher publisher) {
         cancelCurrentTimer();
 
         timer = new Timer();
@@ -35,7 +35,7 @@ public class PartidaTimerService {
             @Override
             public void run() {
                 try {
-                    Partida partida = repo.getPartida();
+                    Partida partida = repo.obtener();
                     if (partida == null || partida.getEstado() != EstadoPartida.EN_BATALLA) {
                         cancel(); 
                         return;

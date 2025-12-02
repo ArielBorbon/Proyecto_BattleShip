@@ -4,17 +4,15 @@
  */
 package com.itson.equipo2.battleship_servidor.domain.repository;
 
-import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-
 /**
  *
  * @author Cricri
  */
-public interface IPartidaRepository {
+public interface IRepository<T> {
 
-    Partida getPartida();
+    T obtener();
 
-    void guardar(Partida partida);
+    void guardar(T t);
     
-    public void eliminarPartida();
+    void eliminar();
 }

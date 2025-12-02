@@ -6,7 +6,6 @@ package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import mx.itson.equipo_2.common.dto.request.RealizarDisparoRequest;
 import mx.itson.equipo_2.common.dto.response.ErrorResponse;
@@ -16,6 +15,7 @@ import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 /**
  *
@@ -23,12 +23,12 @@ import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
  */
 public class RealizarDisparoService {
 
-    private final IPartidaRepository partidaRepository;
+    private final IRepository<Partida> partidaRepository;
     private final IMessagePublisher eventPublisher;
     private final PartidaTimerService partidaTimerService;
     private final Gson gson = new Gson();
 
-    public RealizarDisparoService(IPartidaRepository partidaRepository, IMessagePublisher eventPublisher, PartidaTimerService partidaTimerService) {
+    public RealizarDisparoService(IRepository partidaRepository, IMessagePublisher eventPublisher, PartidaTimerService partidaTimerService) {
         this.partidaRepository = partidaRepository;
         this.eventPublisher = eventPublisher;
         this.partidaTimerService = partidaTimerService;
@@ -40,7 +40,7 @@ public class RealizarDisparoService {
         try {
             partidaTimerService.cancelCurrentTimer();
 
-            Partida partida = partidaRepository.getPartida();
+            Partida partida = partidaRepository.obtener();
             if (partida == null) {
                 throw new Exception("Error: No se encontró la partida en el repositorio.");
             }
@@ -99,7 +99,7 @@ public class RealizarDisparoService {
             ErrorResponse error = new ErrorResponse(e.getMessage());
             eventPublisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("ErrorDisparo", gson.toJson(error)));
 
-            Partida partida = partidaRepository.getPartida();
+            Partida partida = partidaRepository.obtener();
             if (partida != null && partida.getEstado() == EstadoPartida.EN_BATALLA) {
                 partidaTimerService.startTurnoTimer(partidaRepository, eventPublisher);
             }

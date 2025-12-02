@@ -3,7 +3,6 @@ package com.itson.equipo2.battleship_servidor.application.service;
 
 import com.google.gson.Gson;
 import com.itson.equipo2.battleship_servidor.domain.model.Partida;
-import com.itson.equipo2.battleship_servidor.domain.repository.IPartidaRepository;
 import com.itson.equipo2.communication.broker.IMessagePublisher;
 import com.itson.equipo2.communication.dto.EventMessage;
 import mx.itson.equipo_2.common.broker.BrokerConfig;
@@ -12,6 +11,7 @@ import mx.itson.equipo_2.common.dto.PartidaDTO;
 import mx.itson.equipo_2.common.dto.request.AbandonarPartidaRequest;
 import mx.itson.equipo_2.common.dto.response.PartidaFinalizadaResponse;
 import mx.itson.equipo_2.common.enums.EstadoPartida;
+import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
 
 /**
  *
@@ -19,19 +19,19 @@ import mx.itson.equipo_2.common.enums.EstadoPartida;
  */
 public class AbandonarPartidaService {
 
-    private final IPartidaRepository partidaRepository;
+    private final IRepository<Partida> partidaRepository;
     private final IMessagePublisher publisher;
     private final PartidaTimerService timerService;
     private final Gson gson = new Gson();
 
-    public AbandonarPartidaService(IPartidaRepository repo, IMessagePublisher pub, PartidaTimerService timer) {
+    public AbandonarPartidaService(IRepository repo, IMessagePublisher pub, PartidaTimerService timer) {
         this.partidaRepository = repo;
         this.publisher = pub;
         this.timerService = timer;
     }
 
     public void procesarAbandono(AbandonarPartidaRequest request) {
-        Partida partida = partidaRepository.getPartida();
+        Partida partida = partidaRepository.obtener();
         if (partida == null) {
             return;
         }
@@ -63,7 +63,7 @@ public class AbandonarPartidaService {
     }
 
     public void execute(AbandonarPartidaRequest request) {
-        Partida partida = partidaRepository.getPartida();
+        Partida partida = partidaRepository.obtener();
         if (partida == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class AbandonarPartidaService {
 
             if (partida.getJugador1().getId().equals(request.getJugadorId())) {
                 System.out.println("El Host canceló la sala. Destruyendo partida...");
-                partidaRepository.eliminarPartida();
+                partidaRepository.eliminar();
 
                 EventMessage msg = new EventMessage("PartidaCancelada", "El host ha cerrado la sala.");
                 publisher.publish(BrokerConfig.CHANNEL_EVENTOS, msg);
@@ -90,7 +90,7 @@ public class AbandonarPartidaService {
     private void manejarSalidaLobby(Partida partida, String jugadorId) {
         if (partida.getJugador1().getId().equals(jugadorId)) {
             System.out.println("El Host canceló la sala. Destruyendo partida...");
-            partidaRepository.eliminarPartida(); 
+            partidaRepository.eliminar();
 
             EventMessage msg = new EventMessage("PartidaCancelada", "El host ha cerrado la sala.");
             publisher.publish(BrokerConfig.CHANNEL_EVENTOS, msg);
