@@ -22,17 +22,7 @@ public class RegistroController {
     }
 
     public void guardarDatosJugador(String nombre, ColorJugador color) {
-        System.out.println("RegistroLocal: Guardando datos...");
-
-        JugadorModel yo = partidaModel.getYo();
-        if (yo == null) {
-            yo = new JugadorModel();
-            partidaModel.setYo(yo);
-        }
-        yo.setId(UUID.randomUUID().toString());
-        yo.setNombre(nombre);
-        yo.setColor(color);
-
+        partidaModel.registrarJugador(nombre, color);
         
     }
 

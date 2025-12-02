@@ -22,6 +22,8 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 import com.itson.equipo2.battleship_cliente.pattern.observer.ISubject;
+import java.util.UUID;
+import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
  *
@@ -411,6 +413,22 @@ public class PartidaModel implements ISubject<PartidaModel> {
         }
 
         return "Jugador Desconocido";
+    }
+    
+    
+     public void registrarJugador(String nombre, ColorJugador color) {
+        System.out.println("RegistroLocal: Guardando datos...");
+
+        JugadorModel yo = getYo();
+        if (yo == null) {
+            yo = new JugadorModel();
+            setYo(yo);
+        }
+        yo.setId(UUID.randomUUID().toString());
+        yo.setNombre(nombre);
+        yo.setColor(color);
+
+        
     }
 
 }
