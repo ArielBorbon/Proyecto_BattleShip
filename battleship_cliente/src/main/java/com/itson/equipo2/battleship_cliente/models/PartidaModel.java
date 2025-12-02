@@ -421,13 +421,10 @@ public class PartidaModel implements ISubject<PartidaModel> {
 
         JugadorModel yo = getYo();
         if (yo == null) {
-            yo = new JugadorModel();
+            yo = new JugadorModel(nombre,color);
             setYo(yo);
         }
-        yo.setId(UUID.randomUUID().toString());
-        yo.setNombre(nombre);
-        yo.setColor(color);
-
+        
         
     }
 
