@@ -4,8 +4,10 @@
  */
 package com.itson.equipo2.battleship_cliente.models;
 
-import java.awt.Color;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import mx.itson.equipo_2.common.dto.CoordenadaDTO;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 import mx.itson.equipo_2.common.enums.EstadoJugador;
@@ -26,6 +28,15 @@ public class JugadorModel {
 
     public JugadorModel() {
     }
+
+    public JugadorModel(String nombre, ColorJugador color) {
+        this.id= UUID.randomUUID().toString();
+        this.nombre = nombre;
+        this.color = color;
+        this.disparos=new ArrayList();
+    }
+    
+    
 
     public JugadorModel(String id, String nombre, ColorJugador color, EstadoJugador estado, TableroModel tablero, List<CoordenadaDTO> disparos) {
         this.id = id;
