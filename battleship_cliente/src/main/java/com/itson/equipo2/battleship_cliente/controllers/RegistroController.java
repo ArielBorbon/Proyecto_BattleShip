@@ -3,10 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.itson.equipo2.battleship_cliente.controllers;
-
-import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
-import java.util.UUID;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
 /**
