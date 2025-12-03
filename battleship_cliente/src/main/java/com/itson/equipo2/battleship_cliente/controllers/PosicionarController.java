@@ -92,47 +92,7 @@ public class PosicionarController {
     }
 
     public void generarPosicionamientoAleatorio() {
-        // 1. Limpiar tablero actual
-        if (partidaModel.getTableroPropio() != null) {
-            partidaModel.getTableroPropio().limpiarTablero();
-        }
-
-        java.util.Random random = new java.util.Random();
-
-        // 2. Iterar por cada TIPO de nave
-        for (TipoNave tipo : TipoNave.values()) {
-
-            // --- CORRECCIÓN: Bucle interno según la cantidad de barcos de ese tipo ---
-            int cantidad = tipo.getCantidadInicial();
-
-            for (int i = 0; i < cantidad; i++) {
-                boolean posicionado = false;
-                int intentos = 0; // Seguridad para evitar bucles infinitos
-
-                while (!posicionado && intentos < 100) {
-                    int fila = random.nextInt(10);
-                    int col = random.nextInt(10);
-                    boolean horizontal = random.nextBoolean();
-
-                    try {
-                        // Intentamos posicionar
-                        partidaModel.intentarPosicionarNavePropia(tipo, fila, col, horizontal);
-                        posicionado = true; // ¡Éxito!
-                    } catch (PosicionarNaveException e) {
-                        // Si choca o se sale, intentamos de nuevo
-                        intentos++;
-                    }
-                }
-
-                if (!posicionado) {
-                    System.err.println("No se pudo colocar una nave tipo " + tipo + " después de 100 intentos.");
-                    // Opcional: Podrías reiniciar todo el proceso recursivamente si falla
-                }
-            }
-        }
-
-        // 3. Notificar cambios a la vista para que se pinten los barcos
-        partidaModel.notifyObservers(partidaModel);
+        this.partidaModel.posicionarFlotaAleatoria();
     }
 
     public void setViewController(VistaController viewController) {

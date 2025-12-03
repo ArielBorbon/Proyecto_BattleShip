@@ -428,7 +428,13 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-        int resultado = JOptionPane.showConfirmDialog(this, "¿Deseas confirmar el tablero?");
+        int resultado = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas confirmar el tablero?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
 
         if (resultado != JOptionPane.YES_OPTION) {
             return;

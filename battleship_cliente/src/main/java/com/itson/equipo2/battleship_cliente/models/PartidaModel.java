@@ -22,6 +22,7 @@ import mx.itson.equipo_2.common.enums.ResultadoDisparo;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 import com.itson.equipo2.battleship_cliente.pattern.observer.ISubject;
+import java.util.Random;
 import java.util.UUID;
 import mx.itson.equipo_2.common.enums.ColorJugador;
 
@@ -417,11 +418,60 @@ public class PartidaModel implements ISubject<PartidaModel> {
 
     public void registrarJugador(String nombre, ColorJugador color) {
         System.out.println("RegistroLocal: Guardando datos...");
-        
+
         yo.setNombre(nombre);
         yo.setColor(color);
 
         System.out.println(yo.toString());
     }
 
+    /**
+     * Lógica de negocio para posicionar toda la flota aleatoriamente. El modelo
+     * se encarga de limpiar, calcular y reintentar.
+     */
+    public void posicionarFlotaAleatoria() {
+        TableroModel tablero = getTableroPropio();
+
+        // 1. Limpiamos el tablero antes de empezar
+        if (tablero != null) {
+            tablero.limpiarTablero();
+        } else {
+            return; // O inicializarlo si es nulo
+        }
+
+        Random random = new Random();
+
+        // 2. Iteramos por cada Tipo de Nave
+        for (TipoNave tipo : TipoNave.values()) {
+            int cantidad = tipo.getCantidadInicial();
+
+            // 3. Iteramos por la cantidad de barcos de ese tipo
+            for (int i = 0; i < cantidad; i++) {
+                boolean posicionado = false;
+                int intentos = 0;
+
+                while (!posicionado && intentos < 200) {
+                    int fila = random.nextInt(10);
+                    int col = random.nextInt(10);
+                    boolean horizontal = random.nextBoolean();
+
+                    try {
+                        // Llamamos directamente al tablero para evitar notificaciones innecesarias en cada paso
+                        tablero.agregarNave(tipo, fila, col, horizontal);
+                        posicionado = true;
+                    } catch (PosicionarNaveException e) {
+                        // Falló la posición (choque o fuera de rango), intentamos de nuevo
+                        intentos++;
+                    }
+                }
+
+                if (!posicionado) {
+                    System.err.println("Advertencia: No se pudo colocar una nave " + tipo);
+                }
+            }
+        }
+
+        // 4. Notificamos a la vista UNA sola vez al terminar todo el proceso
+        notifyObservers(this);
+    }
 }
