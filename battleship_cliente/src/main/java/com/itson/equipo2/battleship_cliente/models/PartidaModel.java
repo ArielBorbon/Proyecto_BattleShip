@@ -160,7 +160,7 @@ public class PartidaModel implements ISubject<PartidaModel> {
     public void setIpServidor(String ipServidor) {
         this.ipServidor = ipServidor;
     }
-    
+
     public String getNombreJugador1() {
         return nombreJugador1;
     }
@@ -414,18 +414,13 @@ public class PartidaModel implements ISubject<PartidaModel> {
 
         return "Jugador Desconocido";
     }
-    
-    
-     public void registrarJugador(String nombre, ColorJugador color) {
+
+    public void registrarJugador(String nombre, ColorJugador color) {
         System.out.println("RegistroLocal: Guardando datos...");
 
-        JugadorModel yo = getYo();
-        if (yo == null) {
-            yo = new JugadorModel(nombre,color);
-            setYo(yo);
-        }
-        
-        
+        JugadorModel jugador = new JugadorModel(nombre, color);
+        setYo(jugador);
+
     }
 
 }
