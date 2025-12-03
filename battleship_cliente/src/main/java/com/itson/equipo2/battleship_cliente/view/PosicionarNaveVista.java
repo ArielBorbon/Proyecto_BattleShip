@@ -75,29 +75,30 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         TableroModel tableroPropio = model.getTableroPropio();
 
         if (tableroPropio == null) {
-            System.out.println("tablero nulo");
             return;
         }
 
-        if (tableroPropio.getNavesPosicionadas().isEmpty()) {
-            if (nave1 instanceof SelectorNaveView) {
-                ((SelectorNaveView) nave1).reiniciarSelector();
-            }
-            if (nave2 instanceof SelectorNaveView) {
-                ((SelectorNaveView) nave2).reiniciarSelector();
-            }
-            if (nave3 instanceof SelectorNaveView) {
-                ((SelectorNaveView) nave3).reiniciarSelector();
-            }
-            if (nave4 instanceof SelectorNaveView) {
-                ((SelectorNaveView) nave4).reiniciarSelector();
-            }
+        long barcosPuestos = tableroPropio.getNavesPosicionadas().stream()
+                .filter(n -> n.getTipo() == TipoNave.BARCO).count();
+        long submarinosPuestos = tableroPropio.getNavesPosicionadas().stream()
+                .filter(n -> n.getTipo() == TipoNave.SUBMARINO).count();
+        long crucerosPuestos = tableroPropio.getNavesPosicionadas().stream()
+                .filter(n -> n.getTipo() == TipoNave.CRUCERO).count();
+        long portasPuestos = tableroPropio.getNavesPosicionadas().stream()
+                .filter(n -> n.getTipo() == TipoNave.PORTA_AVIONES).count();
 
-            nave1.setEnabled(true);
-            nave2.setEnabled(true);
-            nave3.setEnabled(true);
-            nave4.setEnabled(true);
-            btnConfirmar.setEnabled(false);
+        // Actualizamos cada selector restando el total inicial menos los puestos
+        if (nave1 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave1).setBarcosRestantes(TipoNave.BARCO.getCantidadInicial() - (int) barcosPuestos);
+        }
+        if (nave2 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave2).setBarcosRestantes(TipoNave.SUBMARINO.getCantidadInicial() - (int) submarinosPuestos);
+        }
+        if (nave3 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave3).setBarcosRestantes(TipoNave.CRUCERO.getCantidadInicial() - (int) crucerosPuestos);
+        }
+        if (nave4 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave4).setBarcosRestantes(TipoNave.PORTA_AVIONES.getCantidadInicial() - (int) portasPuestos);
         }
 
         Color colorJugador = Color.GRAY; // Default
@@ -301,6 +302,7 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         nave3 = new SelectorNaveView(TipoNave.CRUCERO, this.tablero, this.posicionarController);
         nave4 = new SelectorNaveView(TipoNave.PORTA_AVIONES, this.tablero, this.posicionarController);
         jLabel1 = new JLabel();
+        btnConfirmar1 = new JButton();
 
         setBackground(new Color(83, 111, 137));
         setMaximumSize(new Dimension(1280, 720));
@@ -409,6 +411,20 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         jLabel1.setText("para rotar mientras sostienes una nave");
         add(jLabel1);
         jLabel1.setBounds(120, 640, 410, 30);
+
+        btnConfirmar1.setBackground(new Color(75, 75, 75));
+        btnConfirmar1.setFont(new Font("Segoe UI Black", 0, 14)); // NOI18N
+        btnConfirmar1.setForeground(new Color(255, 255, 255));
+        btnConfirmar1.setText("<html>Posicionar<br>Random</html>");
+        btnConfirmar1.setBorder(null);
+        btnConfirmar1.setFocusPainted(false);
+        btnConfirmar1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnConfirmar1ActionPerformed(evt);
+            }
+        });
+        add(btnConfirmar1);
+        btnConfirmar1.setBounds(880, 640, 156, 41);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConfirmarActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
@@ -428,9 +444,14 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
         ((SelectorNaveView) nave4).reiniciarSelector();
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
+    private void btnConfirmar1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnConfirmar1ActionPerformed
+        posicionarController.generarPosicionamientoAleatorio();
+    }//GEN-LAST:event_btnConfirmar1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton btnConfirmar;
+    private JButton btnConfirmar1;
     private JLabel jLabel1;
     private JPanel nave1;
     private JPanel nave2;

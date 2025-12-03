@@ -127,6 +127,22 @@ public class SelectorNaveView extends JPanel {
         this.repaint();
     }
 
+    /**
+     * Fuerza la actualización de la cantidad de barcos restantes desde fuera.
+     * Útil para cuando el posicionamiento automático consume los barcos.
+     */
+    public void setBarcosRestantes(int cantidad) {
+        this.barcosRestantes = cantidad;
+        lblCantidad.setText(String.valueOf(barcosRestantes));
+        
+        if (barcosRestantes <= 0) {
+            setVisible(false);
+        } else {
+            setVisible(true);
+        }
+        repaint();
+    }
+    
     public TipoNave getTipo() {
         return tipo;
     }

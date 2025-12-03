@@ -317,5 +317,15 @@ public class TableroModel {
         // 2. Eliminar de la lista lógica
         navesPosicionadas.remove(nave);
     }
-
+    
+    public void limpiarTablero() {
+        this.navesPosicionadas.clear();
+        for (int f = 0; f < TAMANIO; f++) {
+            for (int c = 0; c < TAMANIO; c++) {
+                celdas[f][c].setTipoNave(null);
+                celdas[f][c].setEstadoNave(null);
+                celdas[f][c].setEstadoDisparo(mx.itson.equipo_2.common.enums.EstadoCelda.NO_DISPARADA);
+            }
+        }
+    }
 }
