@@ -36,6 +36,7 @@ public class RealizarDisparoService {
 
     public void realizarDisparo(RealizarDisparoRequest request) {
 
+        System.out.println("Jugador " + request.getJugadorId() + "disparó");
         System.out.println("DISPARO PARA PROCESAR EN:" + request.getCoordenada().toString());
         try {
             partidaTimerService.cancelCurrentTimer();

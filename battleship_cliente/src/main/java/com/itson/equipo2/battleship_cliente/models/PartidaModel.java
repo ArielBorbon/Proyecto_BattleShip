@@ -417,10 +417,11 @@ public class PartidaModel implements ISubject<PartidaModel> {
 
     public void registrarJugador(String nombre, ColorJugador color) {
         System.out.println("RegistroLocal: Guardando datos...");
+        
+        yo.setNombre(nombre);
+        yo.setColor(color);
 
-        JugadorModel jugador = new JugadorModel(nombre, color);
-        setYo(jugador);
-
+        System.out.println(yo.toString());
     }
 
 }

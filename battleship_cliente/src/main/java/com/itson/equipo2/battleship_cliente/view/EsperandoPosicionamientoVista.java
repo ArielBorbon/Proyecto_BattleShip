@@ -53,9 +53,9 @@ public class EsperandoPosicionamientoVista extends javax.swing.JPanel {
         add(jLabel1);
         jLabel1.setBounds(320, 510, 600, 50);
 
-        jLabel2.setIcon(new ImageIcon(getClass().getResource("/image/cargando.gif"))); // NOI18N
+        jLabel2.setIcon(new ImageIcon(getClass().getResource("/images/cargando.gif"))); // NOI18N
         add(jLabel2);
-        jLabel2.setBounds(380, 40, 480, 480);
+        jLabel2.setBounds(380, 50, 480, 480);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
