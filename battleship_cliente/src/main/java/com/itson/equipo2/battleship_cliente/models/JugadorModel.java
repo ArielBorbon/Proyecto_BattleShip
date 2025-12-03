@@ -27,6 +27,7 @@ public class JugadorModel {
     private List<CoordenadaDTO> disparos;
 
     public JugadorModel() {
+        this.id = UUID.randomUUID().toString();
     }
 
     public JugadorModel(String nombre, ColorJugador color) {
