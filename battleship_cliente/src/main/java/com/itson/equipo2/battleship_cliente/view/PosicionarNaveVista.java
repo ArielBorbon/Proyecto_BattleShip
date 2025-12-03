@@ -6,6 +6,7 @@ package com.itson.equipo2.battleship_cliente.view;
 
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import com.itson.equipo2.battleship_cliente.models.CeldaModel;
+import com.itson.equipo2.battleship_cliente.models.NaveModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.view.util.SelectorNaveView;
@@ -24,6 +25,10 @@ import javax.swing.border.LineBorder;
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
 import com.itson.equipo2.battleship_cliente.view.util.NaveView;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -33,6 +38,9 @@ import javax.swing.JLabel;
  * vista y sincronizar el estado visual del tablero con el {@code PartidaModel}.
  */
 public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver<PartidaModel> {
+
+    // Lista para rastrear las naves visuales agregadas al panel
+    private List<Component> navesPintadas = new ArrayList<>();
 
     // --- Variables de Referencia y Modelo ---
     /**
@@ -55,7 +63,8 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
     public PosicionarNaveVista(PosicionarController posicionarController) {
         this.posicionarController = posicionarController;
         initComponents();
-        crearCeldas();
+        crearCeldas(); // Mantenemos las celdas (botones) debajo como referencia y click
+        setLayout(null); // Aseguramos Layout Absoluto para poder posicionar encima
     }
 
     // --- MÉTODOS DE LA INTERFAZ ---
@@ -73,12 +82,11 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
     @Override
     public void onChange(PartidaModel model) {
         TableroModel tableroPropio = model.getTableroPropio();
-
         if (tableroPropio == null) {
-            System.out.println("tablero nulo");
             return;
         }
 
+        // 1. Lógica de habilitar/deshabilitar selectores (Tu código original intacto)
         if (tableroPropio.getNavesPosicionadas().isEmpty()) {
             if (nave1 instanceof SelectorNaveView) {
                 ((SelectorNaveView) nave1).reiniciarSelector();
@@ -92,50 +100,91 @@ public class PosicionarNaveVista extends javax.swing.JPanel implements IObserver
             if (nave4 instanceof SelectorNaveView) {
                 ((SelectorNaveView) nave4).reiniciarSelector();
             }
-
-            nave1.setEnabled(true);
-            nave2.setEnabled(true);
-            nave3.setEnabled(true);
-            nave4.setEnabled(true);
             btnConfirmar.setEnabled(false);
         }
 
-        Color colorJugador = Color.GRAY; // Default
+        Color colorJugador = Color.GRAY;
         if (model.getYo() != null && model.getYo().getColor() != null) {
             colorJugador = model.getYo().getColor().getColor();
         }
+        actualizarSelectoresColor(colorJugador);
 
-        if (nave1 instanceof SelectorNaveView) {
-            ((SelectorNaveView) nave1).setColorJugador(colorJugador);
+        // --- 2. NUEVA LÓGICA DE PINTADO ---
+        // A) Limpiar naves visuales anteriores
+        for (Component c : navesPintadas) {
+            this.remove(c);
         }
-        if (nave2 instanceof SelectorNaveView) {
-            ((SelectorNaveView) nave2).setColorJugador(colorJugador);
-        }
-        if (nave3 instanceof SelectorNaveView) {
-            ((SelectorNaveView) nave3).setColorJugador(colorJugador);
-        }
-        if (nave4 instanceof SelectorNaveView) {
-            ((SelectorNaveView) nave4).setColorJugador(colorJugador);
-        }
+        navesPintadas.clear();
 
-        // Recorre las celdas y sincroniza el color con el estado del modelo.
-        for (int f = 0; f < 10; f++) {
-            for (int c = 0; c < 10; c++) {
-                CeldaModel celdaModelo = tableroPropio.getCelda(f, c);
-                // La celda en la UI se obtiene por índice (f * 10 + c)
-                JButton celdaUI = (JButton) tablero.getComponent(f * 10 + c);
-
-                if (celdaModelo.tieneNave()) {
-                    // Colorea la celda con el color del jugador si tiene una nave.
-                    celdaUI.setBackground(model.getYo().getColor().getColor());
-                } else {
-                    // Mantiene el color base (agua) si no tiene nave.
-                    celdaUI.setBackground(new Color(50, 70, 100));
-                }
+        // B) Resetear colores de celdas a "Agua" (limpieza visual del fondo)
+        for (Component c : tablero.getComponents()) {
+            if (c instanceof JButton) {
+                c.setBackground(new Color(50, 70, 100)); // Agua
             }
         }
 
+        // C) Crear y colocar las imágenes de las naves
+        for (NaveModel naveModel : tableroPropio.getNavesPosicionadas()) {
+
+            // Crear la vista de la nave (reutilizamos NaveView pero estática)
+            NaveView naveVisual = new NaveView(
+                    naveModel.getTipo(),
+                    tablero,
+                    posicionarController,
+                    colorJugador
+            );
+
+            // Configurar estado estático
+            naveVisual.setOrientacion(naveModel.isEsHorizontal());
+            naveVisual.setDraggable(false); // ¡Importante! No queremos que se arrastre sola
+
+            // Calcular posición absoluta
+            // El tablero está en (40, 40) y cada celda mide 57
+            int size = 57;
+            int xTablero = tablero.getX();
+            int yTablero = tablero.getY();
+
+            int xFinal = xTablero + (naveModel.getColumna() * size);
+            int yFinal = yTablero + (naveModel.getFila() * size);
+
+            naveVisual.setLocation(xFinal, yFinal);
+
+            // Listener para levantar la nave al hacer clic en la imagen
+            naveVisual.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (!btnConfirmar.isEnabled() || !verificarSiTodoEstaPuesto()) {
+                        // Lógica de "Levantar" nave
+                        posicionarController.retirarNave(naveModel);
+                        // Nota: Al retirar, el modelo notifica, entra a onChange y se repinta todo sin esta nave
+                    }
+                }
+            });
+
+            // Agregar al panel principal (encima del tablero)
+            this.add(naveVisual);
+            this.setComponentZOrder(naveVisual, 0); // Poner al frente de todo
+            navesPintadas.add(naveVisual);
+        }
+
+        this.revalidate();
+        this.repaint();
         actualizarEstadoBoton();
+    }
+
+    private void actualizarSelectoresColor(Color c) {
+        if (nave1 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave1).setColorJugador(c);
+        }
+        if (nave2 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave2).setColorJugador(c);
+        }
+        if (nave3 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave3).setColorJugador(c);
+        }
+        if (nave4 instanceof SelectorNaveView) {
+            ((SelectorNaveView) nave4).setColorJugador(c);
+        }
     }
 
     // --- MÉTODOS AUXILIARES ---

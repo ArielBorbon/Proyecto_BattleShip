@@ -2,12 +2,15 @@ package com.itson.equipo2.battleship_cliente.view.util;
 
 import com.itson.equipo2.battleship_cliente.controllers.PosicionarController;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.BorderFactory;
+import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -25,8 +28,11 @@ public class SelectorNaveView extends JPanel {
     private final PosicionarController posicionarController;
     private Color colorJugador = Color.GRAY;
 
-    // Colores constantes para fácil modificación
-    private final Color COLOR_DISPONIBLE = Color.LIGHT_GRAY;
+    // Imagen generada por la fábrica
+    private BufferedImage imagenBarco;
+
+    // Constante para el tamaño base de celda (debe coincidir con el resto del juego)
+    private static final int CELL_SIZE = 57;
 
     public SelectorNaveView(TipoNave tipo, JPanel tablero, PosicionarController posicionarController) {
         this.tipo = tipo;
@@ -34,13 +40,18 @@ public class SelectorNaveView extends JPanel {
         this.tablero = tablero;
         this.posicionarController = posicionarController;
 
-        setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
-        setBackground(COLOR_DISPONIBLE); // Color inicial
-        setPreferredSize(new Dimension(200, 80));
+        setLayout(new GridBagLayout()); // Mantiene el número centrado
+        setOpaque(false); // Importante: fondo transparente para ver solo la silueta
 
+        // Generamos la imagen inicial
+        actualizarImagen();
+
+        // Estilo del número (Blanco y Grande para que se vea sobre el barco)
         lblCantidad = new JLabel(String.valueOf(barcosRestantes), SwingConstants.CENTER);
-        lblCantidad.setForeground(Color.BLACK); // Texto negro inicialmente
+        lblCantidad.setForeground(Color.WHITE);
+        lblCantidad.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        // Sombra negra simple al texto para asegurar legibilidad en barcos claros
+        // (Opcional, pero ayuda mucho en UI de juegos)
 
         add(lblCantidad);
 
@@ -62,6 +73,7 @@ public class SelectorNaveView extends JPanel {
                 }
 
                 JLayeredPane layered = frame.getLayeredPane();
+                // La NaveView ya sabe generar su propia imagen internamente ahora
                 NaveView nave = new NaveView(tipo, tablero, posicionarController, colorJugador);
 
                 Point puntoEnLayered = SwingUtilities.convertPoint(SelectorNaveView.this, e.getPoint(), layered);
@@ -75,28 +87,49 @@ public class SelectorNaveView extends JPanel {
                 layered.revalidate();
                 layered.repaint();
 
-                // --- LÓGICA DE ACTUALIZACIÓN VISUAL ---
+                // Lógica de actualización
                 barcosRestantes--;
                 lblCantidad.setText(String.valueOf(barcosRestantes));
 
-                // Si ya no quedan barcos, cambiar a NEGRO (deshabilitado)
                 if (barcosRestantes == 0) {
-                    setVisible(false);
+                    setVisible(false); // Ocultar el selector si se acabaron
                 }
 
-                repaint(); // Forzar repintado para asegurar cambio de color inmediato
-                // --------------------------------------
-
+                repaint();
                 nave.startDragFromEvent(e);
             }
         });
+    }
+
+    /**
+     * Regenera la imagen del barco usando la fábrica.
+     */
+    private void actualizarImagen() {
+        // Usamos la misma fábrica que creaste anteriormente
+        this.imagenBarco = BarcoImageFactory.createImagenBarco(tipo, CELL_SIZE, colorJugador);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Dibujamos la imagen solo si hay barcos disponibles
+        if (imagenBarco != null && barcosRestantes > 0) {
+            Graphics2D g2 = (Graphics2D) g;
+
+            // Renderizado de alta calidad
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            // Dibujar la imagen ocupando todo el panel
+            g2.drawImage(imagenBarco, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 
     public void devolverBarco() {
         barcosRestantes++;
         lblCantidad.setText(String.valueOf(barcosRestantes));
 
-        // Si recuperamos un barco (ahora hay > 0), volver a color GRIS (habilitado)
         if (barcosRestantes > 0) {
             setVisible(true);
             repaint();
@@ -109,6 +142,9 @@ public class SelectorNaveView extends JPanel {
 
     public void setColorJugador(Color colorJugador) {
         this.colorJugador = colorJugador;
+        // Importante: Regenerar la imagen si cambia el color (ej. al conectar al server)
+        actualizarImagen();
+        repaint();
     }
 
     public int getBarcosRestantes() {
@@ -119,10 +155,8 @@ public class SelectorNaveView extends JPanel {
         this.barcosRestantes = tipo.getCantidadInicial();
         lblCantidad.setText(String.valueOf(barcosRestantes));
 
-        // Restaurar colores originales
-        setBackground(COLOR_DISPONIBLE);
+        // Asegurar visibilidad y repintado
         setVisible(true);
-
         this.revalidate();
         this.repaint();
     }

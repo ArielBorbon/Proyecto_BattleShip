@@ -7,6 +7,7 @@ import com.itson.equipo2.battleship_cliente.models.JugadorModel;
 import com.itson.equipo2.battleship_cliente.models.PartidaModel;
 import com.itson.equipo2.battleship_cliente.models.TableroModel;
 import com.itson.equipo2.battleship_cliente.controllers.VistaController;
+import com.itson.equipo2.battleship_cliente.models.NaveModel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -32,13 +33,20 @@ import static mx.itson.equipo_2.common.enums.ResultadoDisparo.IMPACTO_CON_HUNDIM
 import mx.itson.equipo_2.common.enums.TipoNave;
 import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
 import com.itson.equipo2.battleship_cliente.pattern.observer.IObserver;
+import com.itson.equipo2.battleship_cliente.view.util.BarcoImageFactory;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
 /**
  *
- * @author Ariel Eduardo Borbon Izaguirre 00000252116 
- * @author Sebastián Bórquez Huerta 00000252115 
- * @author Alberto Jiménez García 00000252595 
- * @author José Eduardo Aguilar García 00000252049 
+ * @author Ariel Eduardo Borbon Izaguirre 00000252116
+ * @author Sebastián Bórquez Huerta 00000252115
+ * @author Alberto Jiménez García 00000252595
+ * @author José Eduardo Aguilar García 00000252049
  * @author José Luis Islas Molina 00000252574
  */
 public class DispararView extends javax.swing.JPanel implements VistaFactory, IObserver<PartidaModel> {
@@ -46,10 +54,12 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
     private JButton[][] botonesPropio = new JButton[10][10];
     private JButton[][] botonesEnemigo = new JButton[10][10];
 
+    private List<Component> capasVisuales = new ArrayList<>();
+
     private CoordenadaDTO coordSeleccionada;
     private JButton ultimaSeleccionada;
     private Timer timerNotificacion;
-    
+
     private final DisparoController disparoController;
     private final AbandonarController abandonarController;
 
@@ -59,15 +69,19 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
     private PartidaModel partidaModel; // refeerencia local
     private MarcadorView marcadorView;
 
+    private final int CELL_SIZE_PROPIO = 25;
+
     private final Color COLOR_AGUA_IMPACTO = new Color(175, 238, 238);
     private final Color COLOR_DESTRUIDO = Color.BLACK;
     private final Color COLOR_DANIADO = Color.DARK_GRAY;
     private final Color COLOR_MAR_OCULTO = new Color(50, 70, 100);
+    private final Color COLOR_IMPACTO_SOBRE_BARCO = new Color(255, 0, 0, 180); // Rojo semitransparente
 
     public DispararView(DisparoController disparoController, AbandonarController abandonarController) {
         this.disparoController = disparoController;
         this.abandonarController = abandonarController;
         initComponents();
+        panelTableroPropio.setLayout(null);
         crearCeldas();
 
     }
@@ -96,7 +110,8 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
             if (model.getYo() != null && model.getYo().getColor() != null) {
                 colorJugador = model.getYo().getColor().getColor();
             }
-            repintarPropio(miTableroActual, colorJugador);
+            // Llamamos al nuevo método de pintado visual
+            actualizarTableroPropioVisual(miTableroActual, colorJugador);
         }
 
         if (model.getEnemigo() != null) {
@@ -117,6 +132,125 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
                 btnRendirse.setEnabled(false);
             }
         }
+    }
+
+    /**
+     * Nuevo método que gestiona la visualización del tablero propio con
+     * imágenes.
+     */
+    private void actualizarTableroPropioVisual(TableroModel tablero, Color colorUsuario) {
+        if (tablero == null) {
+            return;
+        }
+
+        // 1. Limpiar capas visuales anteriores
+        for (Component c : capasVisuales) {
+            panelTableroPropio.remove(c);
+        }
+        capasVisuales.clear();
+
+        // Constante de referencia: El tamaño con el que se ven bien (el de PosicionarView)
+        final int CELL_SIZE_ORIGINAL = 57;
+
+        // 2. Pintar Barcos
+        for (NaveModel nave : tablero.getNavesPosicionadas()) {
+
+            // A) GENERAR EN ALTA CALIDAD:
+            // Pedimos la imagen en tamaño 57px (grande) para que los márgenes y bordes se calculen bien
+            BufferedImage imgGrande = BarcoImageFactory.createImagenBarco(nave.getTipo(), CELL_SIZE_ORIGINAL, colorUsuario);
+
+            // B) CALCULAR TAMAÑO DESTINO:
+            // Queremos que mida 25px por celda
+            int anchoObjetivo = CELL_SIZE_PROPIO * nave.getTipo().getTamanio();
+            int altoObjetivo = CELL_SIZE_PROPIO;
+
+            // C) ESCALAR:
+            // Reducimos la imagen grande al tamaño pequeño
+            BufferedImage imgPeque = escalarImagen(imgGrande, anchoObjetivo, altoObjetivo);
+
+            // D) ROTAR (si es necesario):
+            // Nota: Rotamos la imagen YA escalada
+            if (!nave.isEsHorizontal()) {
+                imgPeque = rotarImagen(imgPeque);
+            }
+
+            JLabel lblNave = new JLabel(new ImageIcon(imgPeque));
+
+            // Posicionamiento en el tablero pequeño
+            int x = nave.getColumna() * CELL_SIZE_PROPIO;
+            int y = nave.getFila() * CELL_SIZE_PROPIO;
+
+            // Usamos las dimensiones de la imagen final (rotada o no)
+            lblNave.setBounds(x, y, imgPeque.getWidth(), imgPeque.getHeight());
+
+            panelTableroPropio.add(lblNave);
+            capasVisuales.add(lblNave);
+            panelTableroPropio.setComponentZOrder(lblNave, 0);
+        }
+
+        // 3. Pintar Daños / Agua (Capa superior) - ESTO SE MANTIENE IGUAL
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                CeldaModel celda = tablero.getCelda(fila, col);
+                JButton botonBase = botonesPropio[fila][col];
+                botonBase.setBackground(COLOR_MAR_OCULTO);
+
+                if (celda.getEstado() == EstadoCelda.DISPARADA) {
+                    if (celda.tieneNave()) {
+                        JPanel panelImpacto = new JPanel();
+                        panelImpacto.setBackground(COLOR_IMPACTO_SOBRE_BARCO);
+                        panelImpacto.setBorder(new LineBorder(Color.RED, 1));
+                        panelImpacto.setBounds(col * CELL_SIZE_PROPIO, fila * CELL_SIZE_PROPIO, CELL_SIZE_PROPIO, CELL_SIZE_PROPIO);
+
+                        panelTableroPropio.add(panelImpacto);
+                        capasVisuales.add(panelImpacto);
+                        panelTableroPropio.setComponentZOrder(panelImpacto, 0);
+
+                    } else {
+                        botonBase.setBackground(COLOR_AGUA_IMPACTO);
+                    }
+                }
+            }
+        }
+
+        panelTableroPropio.repaint();
+    }
+
+    private BufferedImage escalarImagen(BufferedImage src, int w, int h) {
+        BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resized.createGraphics();
+
+        // Activamos la interpolación BILINEAR o BICUBIC para que al reducir no se pierdan líneas
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2.drawImage(src, 0, 0, w, h, null);
+        g2.dispose();
+        return resized;
+    }
+
+    private BufferedImage rotarImagen(BufferedImage src) {
+        int w = src.getWidth();
+        int h = src.getHeight();
+        // Al rotar 90 grados, el ancho es el alto y viceversa
+        BufferedImage dest = new BufferedImage(h, w, src.getType());
+        Graphics2D g2 = dest.createGraphics();
+
+        AffineTransform at = new AffineTransform();
+        // Trasladar al centro de la NUEVA imagen
+        at.translate(h / 2.0, w / 2.0);
+        at.rotate(Math.toRadians(90));
+        // Trasladar atrás desde el centro de la imagen ORIGINAL
+        at.translate(-w / 2.0, -h / 2.0);
+
+        // Mejorar calidad también en la rotación
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        g2.setTransform(at);
+        g2.drawImage(src, 0, 0, null);
+        g2.dispose();
+        return dest;
     }
 
     /**
@@ -327,10 +461,12 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
     // End of variables declaration//GEN-END:variables
 
     private void crearCeldas() {
+        // Tablero Enemigo (Sigue siendo GridLayout, no cambia)
         botonesEnemigo = new JButton[10][10];
-        botonesPropio = new JButton[10][10];
+        panelTableroEnemigo.removeAll(); // Limpieza por si acaso
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
+                // ... (Tu código de creación de botones enemigos INTACTO) ...
                 JButton celdaEnemigo = new JButton();
                 celdaEnemigo.setBackground(COLOR_MAR_OCULTO);
                 celdaEnemigo.setBorder(new LineBorder(Color.BLACK, 1));
@@ -353,9 +489,24 @@ public class DispararView extends javax.swing.JPanel implements VistaFactory, IO
                 });
                 panelTableroEnemigo.add(celdaEnemigo);
                 botonesEnemigo[fila][col] = celdaEnemigo;
+            }
+        }
+
+        // Tablero Propio (AHORA MANUAL con setBounds)
+        botonesPropio = new JButton[10][10];
+        panelTableroPropio.removeAll();
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
                 JButton celdaPropio = new JButton();
                 celdaPropio.setBackground(COLOR_MAR_OCULTO);
-                celdaPropio.setBorder(new LineBorder(Color.BLACK, 1));
+                celdaPropio.setBorder(new LineBorder(new Color(60, 80, 110), 1)); // Borde sutil
+                celdaPropio.setEnabled(false); // No interactuable
+
+                // CALCULAR POSICIÓN MANUALMENTE
+                int x = col * CELL_SIZE_PROPIO;
+                int y = fila * CELL_SIZE_PROPIO;
+                celdaPropio.setBounds(x, y, CELL_SIZE_PROPIO, CELL_SIZE_PROPIO);
+
                 panelTableroPropio.add(celdaPropio);
                 botonesPropio[fila][col] = celdaPropio;
             }
