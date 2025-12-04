@@ -23,6 +23,7 @@ import mx.itson.equipo_2.common.broker.BrokerConfig;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import com.itson.equipo2.battleship_servidor.domain.repository.IRepository;
+import java.util.Scanner;
 
 /**
  *
@@ -36,16 +37,47 @@ public class Battleship_servidor {
         // -----------------------------------------------------------
         // 1. INFRAESTRUCTURA DE COMUNICACIÓN
         // -----------------------------------------------------------
-        // Singleton del Bus de Eventos
         EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 
         // Pool de Hilos (Independiente de la tecnología de red)
         ExecutorService executor = Executors.newCachedThreadPool();
 
         // INYECCIÓN DE DEPENDENCIA:
-        // Aquí decidimos que el servidor usará REDIS.
-        // El Provider encapsula JedisPool, RedisConnection, etc.
         ICommunicationProvider provider = new RedisProvider(eventDispatcher, executor);
+
+        // =========================================================================
+        //    BLOQUE DE CONEXIÓN INTERACTIVA (Nuevo código)
+        // =========================================================================
+        Scanner scanner = new Scanner(System.in);
+        boolean conectado = false;
+
+        System.out.println("------------------------------------------------------------");
+        System.out.println("CONFIGURACIÓN DE BROKER");
+        System.out.println("------------------------------------------------------------");
+
+        while (!conectado) {
+            System.out.print("Ingrese la IP del Broker (Presione ENTER para 'localhost'): ");
+            String ipInput = scanner.nextLine().trim();
+
+            if (ipInput.isEmpty()) {
+                ipInput = "localhost";
+            }
+
+            try {
+                System.out.println("Intentando conectar a " + ipInput + "...");
+
+                provider.connect(ipInput);
+
+                System.out.println("¡Conexión exitosa con el Broker!");
+                conectado = true; // Rompe el ciclo
+            } catch (Exception e) {
+                System.err.println("Error al conectar con " + ipInput);
+                System.err.println("   Detalle: " + e.getMessage());
+                System.out.println("   -> Intente nuevamente.");
+            }
+        }
+        System.out.println("------------------------------------------------------------");
+        // =========================================================================
 
         // Obtenemos el Publicador a través del contrato
         IMessagePublisher publisher = provider.getPublisher();
