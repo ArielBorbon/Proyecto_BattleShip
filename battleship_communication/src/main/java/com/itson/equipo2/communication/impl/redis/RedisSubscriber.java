@@ -10,6 +10,7 @@ import com.itson.equipo2.communication.impl.EventDispatcher;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * Implementación de {@code IMessageSubscriber} que utiliza Redis Pub/Sub. La
@@ -104,10 +105,13 @@ public class RedisSubscriber implements IMessageSubscriber {
             try (Jedis jedis = jedisPool.getResource()) {
                 // El método subscribe() es bloqueante
                 jedis.subscribe(jedisPubSub, channel);
+            } catch (JedisConnectionException e) {
+                System.out.println("");
             } catch (Exception e) {
+                
                 e.printStackTrace();
             } finally {
-                // Restablece la bandera si la suscripción termina por cualquier razón
+
                 isSubscribed.set(false);
             }
         });
