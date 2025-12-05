@@ -120,16 +120,6 @@ public class Battleship_cliente {
         eventDispatcher.subscribe("InicioPosicionamiento", new PosicionamientoHandler(viewController));
         eventDispatcher.subscribe("PartidaCancelada", new PartidaCanceladaHandler(viewController, partidaModel));
 
-        // -----------------------------------------------------------
-        // 8. ARRANQUE
-        // -----------------------------------------------------------
-        // Inicializar el servicio de red (inicia la suscripción usando el provider)
-        try {
-             // Inicia en localhost por defecto usando el provider que le pasamos
-            networkService.inicializar();
-        } catch (Exception e) {
-            System.err.println("Error al iniciar servicio de red: " + e.getMessage());
-        }
 
         SwingUtilities.invokeLater(() -> {
             viewController.cambiarPantalla("menu");
