@@ -1,8 +1,6 @@
 
 package com.itson.equipo2.battleship_cliente.pattern.factory;
 
-import com.itson.equipo2.battleship_cliente.pattern.factory.VistaFactory;
-
 /**
  *
  * @author 
