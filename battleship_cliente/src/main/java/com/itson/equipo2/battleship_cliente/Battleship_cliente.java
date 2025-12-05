@@ -125,6 +125,7 @@ public class Battleship_cliente {
             viewController.cambiarPantalla("menu");
         });
         
+        
         // Shutdown Hook: Para cerrar conexiones limpiamente al cerrar la ventana
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Cerrando aplicación...");
