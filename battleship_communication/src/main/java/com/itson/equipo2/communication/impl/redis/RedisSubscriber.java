@@ -106,9 +106,8 @@ public class RedisSubscriber implements IMessageSubscriber {
                 // El método subscribe() es bloqueante
                 jedis.subscribe(jedisPubSub, channel);
             } catch (JedisConnectionException e) {
-                System.out.println("");
+                System.err.println("Conexión Redis perdida en suscriptor del canal '" + channel + "': " + e.getMessage());
             } catch (Exception e) {
-                
                 e.printStackTrace();
             } finally {
 

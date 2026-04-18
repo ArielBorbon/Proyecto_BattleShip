@@ -96,7 +96,9 @@ public class RedisConnection {
             try {
                 jedisPool.close();
             } catch (Exception e) {
-                /* Ignorar error de cierre */ }
+                System.err.println("Error cerrando JedisPool al cambiar de host: " + e.getMessage());
+                e.printStackTrace();
+            }
             jedisPool = null;
         }
     }

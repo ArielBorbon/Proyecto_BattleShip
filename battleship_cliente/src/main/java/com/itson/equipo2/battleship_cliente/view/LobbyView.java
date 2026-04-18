@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import mx.itson.equipo_2.common.enums.AccionPartida;
 
 public class LobbyView extends JPanel {
@@ -62,12 +63,9 @@ public class LobbyView extends JPanel {
             if (ip != null && !ip.trim().isEmpty()) {
 
                 if (configController.intentarConexion(ip.trim())) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ex) {
-                    }
-
-                    unirsePartidaController.solicitarAcceso(AccionPartida.CREAR);
+                    Timer delay = new Timer(200, evt -> unirsePartidaController.solicitarAcceso(AccionPartida.CREAR));
+                    delay.setRepeats(false);
+                    delay.start();
                 } else {
                     JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor en: " + ip, "Error de Conexión", JOptionPane.ERROR_MESSAGE);
                 }

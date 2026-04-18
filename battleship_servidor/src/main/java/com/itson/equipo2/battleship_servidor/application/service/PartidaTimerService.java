@@ -49,15 +49,12 @@ public class PartidaTimerService {
 
                     if (tiempo <= 0) {
                         System.out.println("¡Tiempo agotado! Forzando cambio de turno.");
-                        cancel(); 
 
-                        partida.cambiarTurno(); 
+                        partida.cambiarTurno();
                         repo.guardar(partida);
 
                         TurnoTickResponse timeoutTick = new TurnoTickResponse(partida.getTurnoActual(), partida.getTiempoRestante());
                         publisher.publish(BrokerConfig.CHANNEL_EVENTOS, new EventMessage("TurnoTick", gson.toJson(timeoutTick)));
-                        
-                        startTurnoTimer(repo, publisher);
                     }
                 } catch (Exception e) {
                     System.err.println("Error en PartidaTimerService: " + e.getMessage());
